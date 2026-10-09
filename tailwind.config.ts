@@ -13,6 +13,15 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        display: [
+          "Bricolage Grotesque",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+        ],
+        sans: ["Manrope", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -38,6 +47,18 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+        },
+        apricot: {
+          DEFAULT: "hsl(var(--apricot))",
+          foreground: "hsl(var(--apricot-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          soft: "hsl(var(--success-soft))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          soft: "hsl(var(--warning-soft))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
