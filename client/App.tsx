@@ -10,6 +10,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import Index from "./pages/Index";
 import ItemDetail from "./pages/ItemDetail";
 import Placeholder from "./pages/Placeholder";
+import Requests from "./pages/Requests";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,7 +19,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner />
+      <Sonner position="top-center" />
       <BrowserRouter>
         <Routes>
           <Route element={<AppLayout />}>
@@ -26,7 +27,7 @@ const App = () => (
             <Route path="/items/:id" element={<ItemDetail />} />
             <Route path="/food" element={<Placeholder title="Food corner" />} />
             <Route path="/add" element={<Placeholder title="Share an item" />} />
-            <Route path="/requests" element={<Placeholder title="Your requests" />} />
+            <Route path="/requests" element={<Requests />} />
             <Route path="/profile" element={<Placeholder title="Your profile" />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

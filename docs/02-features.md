@@ -29,7 +29,8 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 **Story:** As a borrower, I want to ask an owner to lend me an item and see whether it is free.
 
 - AC1: Borrowers see only `available` or `unavailable` for each item, never the owner's controls.
-- AC2: Tapping "Ask to borrow" on an available item creates a borrow request with status `pending`. (Planned for the data phase. The first pass only shows the button state.)
+- AC2: Tapping "Demander à emprunter" on an available item creates a borrow request with status `pending`. The button turns grey, reads "Demande envoyée" and stays disabled while the request is open. A toast confirms the request. (Requests are kept in the browser's local storage until the data phase.)
+- AC2b: The Requests tab ("Mes demandes") lists the borrower's requests, newest first, with item, owner, status and date. A pending request can be cancelled, which makes the button active again.
 - AC3: When the owner approves, the item becomes `unavailable` for everyone else.
 - AC4: When the item is returned, the owner marks it returned and it becomes `available` again.
 

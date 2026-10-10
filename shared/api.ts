@@ -49,6 +49,9 @@ export interface BorrowRequest {
   itemId: string;
   borrowerId: string;
   status: BorrowRequestStatus;
-  requestedFrom: string;
-  requestedUntil: string;
+  /** ISO date-time when the borrower sent the request. */
+  createdAt: string;
+  /** Pickup and return dates, agreed later with the owner. */
+  requestedFrom?: string;
+  requestedUntil?: string;
 }
