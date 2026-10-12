@@ -39,6 +39,8 @@ export type Civility = "Monsieur" | "Madame" | "Famille";
 export interface NeighborProfile {
   civility: Civility;
   lastName: string;
+  /** Flat reference X-Nn, e.g. "A-3a". */
+  location: string;
 }
 
 /** Something a neighbor is looking for, typed freely. */

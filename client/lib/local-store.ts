@@ -1,33 +1,36 @@
 import { useSyncExternalStore } from "react";
 
 /**
- * A list kept in the browser's localStorage until the database is connected.
+ * A value kept in the browser's localStorage until the database is connected.
  * Reads and writes never throw: if storage is blocked (private mode),
- * the list lives in memory for the current visit.
+ * the value lives in memory for the current visit.
  */
-export function createLocalList<T>(storageKey: string) {
-  const empty: T[] = [];
-  let cache: T[] | null = null;
+export function createLocalValue<T>(
+  storageKey: string,
+  fallback: T,
+  isValid: (value: unknown) => boolean,
+) {
+  let cache: T | undefined;
   const listeners = new Set<() => void>();
 
-  function read(): T[] {
-    if (cache) return cache;
+  function read(): T {
+    if (cache !== undefined) return cache;
     try {
       const raw = localStorage.getItem(storageKey);
-      const parsed: unknown = raw ? JSON.parse(raw) : [];
-      cache = Array.isArray(parsed) ? (parsed as T[]) : [];
+      const parsed: unknown = raw ? JSON.parse(raw) : undefined;
+      cache = isValid(parsed) ? (parsed as T) : fallback;
     } catch {
-      cache = [];
+      cache = fallback;
     }
     return cache;
   }
 
-  function write(next: T[]) {
+  function write(next: T) {
     cache = next;
     try {
       localStorage.setItem(storageKey, JSON.stringify(next));
     } catch {
-      // Storage blocked: keep the list in memory for this visit.
+      // Storage blocked: keep the value in memory for this visit.
     }
     listeners.forEach((listener) => listener());
   }
@@ -36,7 +39,7 @@ export function createLocalList<T>(storageKey: string) {
     listeners.add(listener);
     const onStorage = (event: StorageEvent) => {
       if (event.key !== storageKey) return;
-      cache = null;
+      cache = undefined;
       listener();
     };
     window.addEventListener("storage", onStorage);
@@ -49,8 +52,13 @@ export function createLocalList<T>(storageKey: string) {
   return {
     read,
     write,
-    useList: () => useSyncExternalStore(subscribe, read, () => empty),
+    useValue: () => useSyncExternalStore(subscribe, read, () => fallback),
   };
+}
+
+export function createLocalList<T>(storageKey: string) {
+  const store = createLocalValue<T[]>(storageKey, [], Array.isArray);
+  return { read: store.read, write: store.write, useList: store.useValue };
 }
 
 export function newId(): string {

@@ -144,10 +144,11 @@ export const items: Item[] = [
   },
 ];
 
-/** The neighbor using the app, until accounts exist. */
-export const currentNeighbor: NeighborProfile = {
+/** Profile used until the neighbor saves their own on the Profil page. */
+export const defaultNeighbor: NeighborProfile = {
   civility: "Madame",
   lastName: "Martin",
+  location: "B-2c",
 };
 
 export function visibleItems(all: Item[]): Item[] {

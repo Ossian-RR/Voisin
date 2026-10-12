@@ -10,14 +10,22 @@ import {
 const now = new Date("2026-10-12T09:00:00.000Z");
 const author = {
   id: "me",
-  profile: { civility: "Madame" as const, lastName: "Martin" },
+  profile: {
+    civility: "Madame" as const,
+    lastName: "Martin",
+    location: "B-2c",
+  },
 };
 
 describe("displayName", () => {
   it("puts the civility before the family name", () => {
-    expect(displayName({ civility: "Famille", lastName: "Martin" })).toBe(
-      "Famille Martin",
-    );
+    expect(
+      displayName({
+        civility: "Famille",
+        lastName: "Martin",
+        location: "A-1a",
+      }),
+    ).toBe("Famille Martin");
   });
 });
 

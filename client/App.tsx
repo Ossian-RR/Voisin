@@ -10,6 +10,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import Index from "./pages/Index";
 import ItemDetail from "./pages/ItemDetail";
 import Placeholder from "./pages/Placeholder";
+import Profile from "./pages/Profile";
 import Requests from "./pages/Requests";
 import Wanted from "./pages/Wanted";
 import NotFound from "./pages/NotFound";
@@ -29,7 +30,7 @@ const App = () => (
             <Route path="/search" element={<Wanted />} />
             <Route path="/add" element={<Placeholder title="Partager un objet" />} />
             <Route path="/requests" element={<Requests />} />
-            <Route path="/profile" element={<Placeholder title="Mon profil" />} />
+            <Route path="/profile" element={<Profile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Route>
