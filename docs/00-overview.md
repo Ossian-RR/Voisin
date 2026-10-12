@@ -1,6 +1,6 @@
 # Common Shed: Overview
 
-Common Shed is a non-profit mobile app that helps neighbors on the same residential street share rarely used household items and small food basics. Nobody buys or sells here. The app exists so a pressure washer sitting in one garage can save a trip to the shop next door.
+Common Shed is a non-profit mobile app that helps neighbors on the same residential street share rarely used household items. Nobody buys or sells here. The app exists so a pressure washer sitting in one garage can save a trip to the shop next door.
 
 ## Mission
 
@@ -12,7 +12,7 @@ Common Shed is a non-profit mobile app that helps neighbors on the same resident
 
 - **Neighbors** who own occasional-use items (drills, ladders, pressure cleaners, party tables).
 - **Neighbors** who need something once and would rather not buy it.
-- **Neighbors** who run short of a basic food item (an egg, a little butter) and want to ask someone close by.
+- **Neighbors** looking for something nobody has posted yet, who want to say so to the residence.
 
 The first version targets one residential area. Expanding beyond that is out of scope.
 
@@ -22,7 +22,7 @@ The first version targets one residential area. Expanding beyond that is out of 
 2. **Item detail.** Tapping a photo or title opens photos, description, condition, and the owner's first name.
 3. **Ask to borrow.** A neighbor sends a borrow request for an available item.
 4. **Share an item.** An owner posts an item with a photo and title, and can remove it later.
-5. **Food corner.** Any signed-in neighbor can post or answer a request for basic food. Free, open to the area.
+5. **Recherche.** A neighbor writes freely what they are looking for ("Madame Martin recherche…") and when they need it. The food corner was removed.
 
 ## Item statuses
 
@@ -36,7 +36,6 @@ The first version targets one residential area. Expanding beyond that is out of 
 
 - **Owner / lender:** the neighbor who posts an item.
 - **Borrower:** the neighbor who asks to borrow an item.
-- **Food corner:** the area of the app for basic food requests.
 - **Safe area:** the part of the phone screen not covered by the notch, the status bar, or the home indicator. The app keeps its header and tab bar clear of these areas.
 - **Mock data:** sample items in `shared/mock.ts` used until the database is connected.
 - **Placeholder page:** a page that exists so no link is broken, but says it is not built yet.

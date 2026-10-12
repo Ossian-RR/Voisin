@@ -45,19 +45,31 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 - AC3: The owner can delete an item. Deleting sets its status to `removed` and removes it from every list.
 - AC4: Deleting asks for confirmation first.
 
-## 5. Food corner
+## 5. Recherche (wanted items)
 
-**Story:** As a neighbor, I want to ask for a few basic food items, like an egg or some butter, and get them from someone nearby.
+**Story:** As a neighbor, I want to tell the residence what I am looking for, even if nobody has posted it yet.
 
-- AC1: The home page shows the Food corner strip with the three most recent requests.
-- AC2: "See all food requests" opens the Food page.
-- AC3: Each request shows what is needed, a note, when it is needed, the requester's first name, and distance.
-- AC4: Food is free. No prices or payment fields appear anywhere.
-- AC5: A request can be marked fulfilled by the person who gave the food.
+- AC1: The second tab, "Recherche", opens a form headed with the neighbor's civility and family name followed by "recherche" (e.g. "Madame Martin recherche"). Civility and name come from the Profil page.
+- AC2: The text field is free: no filter, no placeholder or pre-filled text, no autocomplete, autocorrect or spellcheck. The text is saved exactly as typed (only surrounding spaces are trimmed).
+- AC3: Below it, an optional date field labelled "pour la date du" (past dates cannot be picked), then an optional time field labelled "à l’heure suivante :". Cards show both, e.g. "Pour le mardi 20 octobre à 14h30".
+- AC4: "Publier ma recherche" is disabled while the text is empty. Publishing confirms with a toast and opens the home page, scrolled to the new search.
+- AC5: Published searches appear at the bottom of the home page under "Vos voisins recherchent", newest first. Each card shows who is looking ("Madame Martin recherche"), the text and the wished date. Only the author sees "Retirer". The Recherche tab has no list of its own. (Kept in local storage until the data phase, so only visible in the same browser for now.)
+
+## 7. Profil
+
+**Story:** As a neighbor, I want to say who I am and where I live in the residence, so neighbors know who is asking.
+
+- AC1: The Profil tab shows the neighbor's name ("Madame Martin"), flat reference with its spelled-out form ("B-2c · Bâtiment B, 2e étage, porte c") and the residence line.
+- AC2: "Mes informations" lets the neighbor pick a civility (Monsieur, Madame, Famille), and edit the family name and flat reference.
+- AC3: The flat reference is tidied on save ("a 1B" → "A-1b"). An invalid one shows "Format attendu : bâtiment-étage-porte, par exemple A-3a." and is not saved. An empty name is refused.
+- AC4: "Enregistrer" is disabled until something changes. Saving confirms with a toast.
+- AC5: The saved civility and name are used on the Recherche tab ("Famille Durand recherche") and on new searches. Searches already published keep the name they were published with.
+- AC6: "Mon activité" links to the borrow requests and to the neighbor's searches on the home page, with counts.
+- AC7: Kept in local storage until accounts exist. The default profile is Madame Martin, B-2c.
 
 ## 6. Shared navigation
 
-- AC1: There is no header, to leave room for content. The tab bar (Objets, Frigo, +, Demandes, Profil) appears on every page.
+- AC1: The home page starts with a one-line header: "Résidence" (always), the residence name when there is one, and the address (`shared/residence.ts`; today: "Résidence · 333 rue des Pyrénées"). Other pages have no header. The tab bar (Objets, Recherche, +, Demandes, Profil) appears on every page.
 - AC2: The active tab is highlighted.
 - AC3: Every link leads to a built page or to a placeholder page. No link returns a 404.
 

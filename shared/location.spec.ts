@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { describeLocation, isValidLocation, parseLocation } from "./location";
-import { foodRequests, items } from "./mock";
+import { items } from "./mock";
 
 describe("parseLocation", () => {
   it("reads part, floor and door", () => {
@@ -24,7 +24,7 @@ describe("describeLocation", () => {
 
 describe("mock data", () => {
   it("uses valid flat references everywhere", () => {
-    for (const entry of [...items, ...foodRequests]) {
+    for (const entry of items) {
       expect(isValidLocation(entry.location)).toBe(true);
     }
   });

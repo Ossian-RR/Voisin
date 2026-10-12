@@ -1,9 +1,13 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, DoorOpen, Egg, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { MapPin, Search } from "lucide-react";
 import { ItemCard } from "@/components/items/ItemCard";
+import { WantedCard } from "@/components/wanted/WantedCard";
+import { useWantedRequests } from "@/lib/wanted-requests";
+import { sortRequests } from "@shared/borrow";
 import { cn } from "@/lib/utils";
-import { CATEGORIES, CATEGORY_LABELS, foodRequests, items, visibleItems } from "@shared/mock";
+import { CATEGORIES, CATEGORY_LABELS, items, visibleItems } from "@shared/mock";
+import { RESIDENCE, residenceTitle } from "@shared/residence";
 
 /** Lowercase and strip accents so "echelle" finds "échelle". */
 const normalize = (text: string) =>
@@ -12,6 +16,16 @@ const normalize = (text: string) =>
 export default function Index() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("All");
+  const wanted = sortRequests(useWantedRequests());
+  const location = useLocation();
+  const justPublished = (location.state as { showWanted?: string } | null)?.showWanted;
+
+  useEffect(() => {
+    if (!justPublished) return;
+    document
+      .getElementById(`wanted-${justPublished}`)
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [justPublished]);
 
   const filteredItems = useMemo(() => {
     const needle = normalize(query.trim());
@@ -27,7 +41,19 @@ export default function Index() {
 
   return (
     <div className="flex flex-col">
-      <section className="px-5 pt-5">
+      <header className="px-5 pt-5">
+        <h1 className="flex flex-wrap items-baseline gap-x-2">
+          <span className="font-display text-xl font-extrabold tracking-tight">
+            {residenceTitle(RESIDENCE)}
+          </span>
+          <span className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground">
+            <MapPin className="size-3.5 shrink-0 self-center text-apricot" aria-hidden />
+            {RESIDENCE.address}
+          </span>
+        </h1>
+      </header>
+
+      <section className="px-5 pt-3">
         <label className="block">
           <span className="sr-only">Rechercher un objet</span>
           <span className="relative block">
@@ -86,53 +112,27 @@ export default function Index() {
         )}
       </section>
 
-      <section aria-labelledby="food-heading" className="mt-10 px-5">
-        <div className="rounded-3xl bg-accent p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-xs font-bold tracking-wider text-accent-foreground uppercase">
-                Toujours gratuit
-              </p>
-              <h2 id="food-heading" className="font-display mt-1 text-xl font-extrabold">
-                Frigo solidaire
-              </h2>
-              <p className="mt-1 text-sm text-foreground/70">
-                Demandez quelques produits de base à vos voisins. Rien ne se vend ici.
-              </p>
-            </div>
-            <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-apricot text-apricot-foreground">
-              <Egg className="size-5" />
-            </span>
-          </div>
-
-          <ul className="mt-4 divide-y divide-accent-foreground/10">
-            {foodRequests.map((request) => (
-              <li key={request.id} className="flex items-center gap-3 py-3">
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{request.title}</p>
-                  <p className="line-clamp-2 text-xs text-muted-foreground">{request.note}</p>
-                </div>
-                <div className="shrink-0 text-right text-xs">
-                  <p className="font-bold text-accent-foreground">{request.neededBy}</p>
-                  <p className="inline-flex items-center gap-1 text-muted-foreground">
-                    {request.requesterFirstName} ·
-                    <DoorOpen className="size-3.5" aria-hidden />
-                    {request.location}
-                  </p>
-                </div>
+      {wanted.length > 0 && (
+        <section aria-labelledby="wanted-heading" className="mt-8 px-5">
+          <h2 id="wanted-heading" className="font-display text-lg font-extrabold">
+            Vos voisins recherchent
+          </h2>
+          <ul className="mt-3 space-y-3">
+            {wanted.map((request) => (
+              <li
+                key={request.id}
+                id={`wanted-${request.id}`}
+                className={cn(
+                  "scroll-mb-28 rounded-2xl",
+                  request.id === justPublished && "ring-2 ring-primary/40",
+                )}
+              >
+                <WantedCard request={request} />
               </li>
             ))}
           </ul>
-
-          <Link
-            to="/food"
-            className="mt-2 inline-flex items-center gap-1.5 text-sm font-bold text-accent-foreground"
-          >
-            Voir toutes les demandes
-            <ArrowRight className="size-4" />
-          </Link>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }
