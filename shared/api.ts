@@ -34,14 +34,21 @@ export interface Item {
   photos: ItemPhoto[];
 }
 
-export interface FoodRequest {
+export type Civility = "Monsieur" | "Madame" | "Famille";
+
+export interface NeighborProfile {
+  civility: Civility;
+  lastName: string;
+}
+
+/** Something a neighbor is looking for, typed freely. */
+export interface WantedRequest {
   id: string;
-  title: string;
-  note: string;
-  neededBy: string;
-  requesterFirstName: string;
-  /** Requester's flat, written X-Nn (see Item.location). */
-  location: string;
+  authorId: string;
+  text: string;
+  /** Wished borrowing date, yyyy-mm-dd. Optional. */
+  wantedOn?: string;
+  createdAt: string;
 }
 
 export type BorrowRequestStatus = "pending" | "approved" | "declined" | "returned";

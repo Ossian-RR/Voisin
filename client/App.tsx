@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import ItemDetail from "./pages/ItemDetail";
 import Placeholder from "./pages/Placeholder";
 import Requests from "./pages/Requests";
+import Wanted from "./pages/Wanted";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,7 +26,7 @@ const App = () => (
           <Route element={<AppLayout />}>
             <Route path="/" element={<Index />} />
             <Route path="/items/:id" element={<ItemDetail />} />
-            <Route path="/food" element={<Placeholder title="Frigo solidaire" />} />
+            <Route path="/search" element={<Wanted />} />
             <Route path="/add" element={<Placeholder title="Partager un objet" />} />
             <Route path="/requests" element={<Requests />} />
             <Route path="/profile" element={<Placeholder title="Mon profil" />} />

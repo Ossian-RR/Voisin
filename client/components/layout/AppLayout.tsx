@@ -1,10 +1,10 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { Egg, Inbox, LayoutGrid, Plus, UserRound } from "lucide-react";
+import { Inbox, LayoutGrid, Plus, Search, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const leftTabs = [
   { to: "/", label: "Objets", icon: LayoutGrid, end: true },
-  { to: "/food", label: "Frigo", icon: Egg, end: false },
+  { to: "/search", label: "Recherche", icon: Search, end: false },
 ];
 
 const rightTabs = [

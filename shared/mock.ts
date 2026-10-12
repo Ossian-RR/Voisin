@@ -1,4 +1,4 @@
-import type { FoodRequest, Item, ItemCategory, ItemPhoto } from "./api";
+import type { Item, ItemCategory, ItemPhoto, NeighborProfile } from "./api";
 
 export const CATEGORIES: ("All" | ItemCategory)[] = [
   "All",
@@ -144,32 +144,11 @@ export const items: Item[] = [
   },
 ];
 
-export const foodRequests: FoodRequest[] = [
-  {
-    id: "eggs",
-    title: "Œufs, une demi-douzaine",
-    note: "Je prépare des gâteaux pour la kermesse de l’école. Je vous en rends une douzaine la semaine prochaine.",
-    neededBy: "Aujourd’hui, 18 h",
-    requesterFirstName: "Yusuf",
-    location: "A-4b",
-  },
-  {
-    id: "butter",
-    title: "Beurre, 100 g",
-    note: "J’en ai besoin d’un tout petit peu pour des crêpes.",
-    neededBy: "Demain matin",
-    requesterFirstName: "Nadia",
-    location: "B-2d",
-  },
-  {
-    id: "oat-milk",
-    title: "Lait d’avoine, une brique",
-    note: "Plus rien avant l’ouverture du magasin.",
-    neededBy: "Aujourd’hui",
-    requesterFirstName: "Ben",
-    location: "C-3a",
-  },
-];
+/** The neighbor using the app, until accounts exist. */
+export const currentNeighbor: NeighborProfile = {
+  civility: "Madame",
+  lastName: "Martin",
+};
 
 export function visibleItems(all: Item[]): Item[] {
   return all.filter((item) => item.status !== "removed");

@@ -45,19 +45,19 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 - AC3: The owner can delete an item. Deleting sets its status to `removed` and removes it from every list.
 - AC4: Deleting asks for confirmation first.
 
-## 5. Food corner
+## 5. Recherche (wanted items)
 
-**Story:** As a neighbor, I want to ask for a few basic food items, like an egg or some butter, and get them from someone nearby.
+**Story:** As a neighbor, I want to tell the residence what I am looking for, even if nobody has posted it yet.
 
-- AC1: The home page shows the Food corner strip with the three most recent requests.
-- AC2: "See all food requests" opens the Food page.
-- AC3: Each request shows what is needed, a note, when it is needed, the requester's first name, and distance.
-- AC4: Food is free. No prices or payment fields appear anywhere.
-- AC5: A request can be marked fulfilled by the person who gave the food.
+- AC1: The second tab, "Recherche", opens a form headed with the neighbor's civility and family name followed by "recherche" (e.g. "Madame Martin recherche"). Civility is Monsieur, Madame or Famille, taken from the profile.
+- AC2: The text field is free: no filter, no placeholder or pre-filled text, no autocomplete, autocorrect or spellcheck. The text is saved exactly as typed (only surrounding spaces are trimmed).
+- AC3: Below it, an optional date field sets the wished borrowing date. Past dates cannot be picked.
+- AC4: "Publier ma recherche" is disabled while the text is empty. Publishing confirms with a toast and empties the form.
+- AC5: "Mes recherches" lists the neighbor's published searches, newest first, with the wished date. Each can be removed. (Kept in local storage until the data phase.)
 
 ## 6. Shared navigation
 
-- AC1: There is no header, to leave room for content. The tab bar (Objets, Frigo, +, Demandes, Profil) appears on every page.
+- AC1: The home page starts with a one-line header: "Résidence" (always), the residence name when there is one, and the address (`shared/residence.ts`; today: "Résidence · 333 rue des Pyrénées"). Other pages have no header. The tab bar (Objets, Recherche, +, Demandes, Profil) appears on every page.
 - AC2: The active tab is highlighted.
 - AC3: Every link leads to a built page or to a placeholder page. No link returns a 404.
 
