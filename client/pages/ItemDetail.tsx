@@ -3,7 +3,10 @@ import { Link, useParams } from "react-router-dom";
 import { ChevronLeft, CircleCheck, Clock, Handshake, MapPin } from "lucide-react";
 import { ItemImage } from "@/components/items/ItemImage";
 import { StatusBadge } from "@/components/items/StatusBadge";
+import { toast } from "sonner";
+import { CURRENT_USER_ID, sendBorrowRequest, useBorrowRequests } from "@/lib/borrow-requests";
 import { cn } from "@/lib/utils";
+import { canRequest, findOpenRequest } from "@shared/borrow";
 import { findItem, items } from "@shared/mock";
 
 export default function ItemDetail() {
@@ -34,8 +37,17 @@ export default function ItemDetail() {
 function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findItem>> }) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activePhoto, setActivePhoto] = useState(0);
-  const [requestNoted, setRequestNoted] = useState(false);
+  const requests = useBorrowRequests();
   const isAvailable = item.status === "available";
+  const requestSent = Boolean(findOpenRequest(requests, item.id, CURRENT_USER_ID));
+
+  const handleAskToBorrow = () => {
+    if (!canRequest(item, requests, CURRENT_USER_ID)) return;
+    sendBorrowRequest(item);
+    toast.success(`Demande envoyée à ${item.ownerFirstName}`, {
+      description: "Vous la retrouvez dans vos demandes.",
+    });
+  };
 
   const handleCarouselScroll = () => {
     const el = carouselRef.current;
@@ -166,22 +178,34 @@ function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findI
       <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 mt-8 bg-background/95 px-5 pt-3 pb-2 backdrop-blur-md">
         <button
           type="button"
-          disabled={!isAvailable}
-          onClick={() => setRequestNoted(true)}
+          disabled={!isAvailable || requestSent}
+          onClick={handleAskToBorrow}
           className={cn(
-            "flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold transition-colors",
-            isAvailable
+            "flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold transition-colors duration-300",
+            isAvailable && !requestSent
               ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 active:scale-[0.99]"
               : "cursor-not-allowed bg-muted text-muted-foreground",
           )}
         >
-          {requestNoted && isAvailable ? (
+          {requestSent ? (
             <CircleCheck className="size-5" />
           ) : (
             <Handshake className="size-5" />
           )}
-          {requestNoted && isAvailable ? "Request noted" : "Ask to borrow"}
+          {requestSent
+            ? "Demande envoyée"
+            : isAvailable
+              ? "Demander à emprunter"
+              : "Indisponible pour le moment"}
         </button>
+        {requestSent && (
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            {item.ownerFirstName} va vous répondre.{" "}
+            <Link to="/requests" className="font-semibold text-primary underline-offset-2 hover:underline">
+              Voir mes demandes
+            </Link>
+          </p>
+        )}
       </div>
     </article>
   );
