@@ -10,12 +10,13 @@ import { publishWantedRequest } from "@/lib/wanted-requests";
 export default function Wanted() {
   const [text, setText] = useState("");
   const [wantedOn, setWantedOn] = useState("");
+  const [wantedAt, setWantedAt] = useState("");
   const navigate = useNavigate();
   const canPublish = text.trim().length > 0;
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    const request = publishWantedRequest({ text, wantedOn });
+    const request = publishWantedRequest({ text, wantedOn, wantedAt });
     if (!request) return;
     toast.success("Recherche publiée", {
       description: "Elle est visible par vos voisins sur l’accueil.",
@@ -57,6 +58,17 @@ export default function Wanted() {
           value={wantedOn}
           min={todayIso(new Date())}
           onChange={(event) => setWantedOn(event.target.value)}
+          className="mt-2 h-12 w-full rounded-2xl border border-border bg-background px-4 text-base focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+        />
+
+        <label htmlFor="wanted-time" className="mt-4 block text-sm font-bold">
+          à l’heure suivante :
+        </label>
+        <input
+          id="wanted-time"
+          type="time"
+          value={wantedAt}
+          onChange={(event) => setWantedAt(event.target.value)}
           className="mt-2 h-12 w-full rounded-2xl border border-border bg-background px-4 text-base focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
         />
 

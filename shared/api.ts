@@ -50,6 +50,8 @@ export interface WantedRequest {
   text: string;
   /** Wished borrowing date, yyyy-mm-dd. Optional. */
   wantedOn?: string;
+  /** Wished time, HH:mm. Optional. */
+  wantedAt?: string;
   createdAt: string;
 }
 

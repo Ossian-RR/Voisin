@@ -12,6 +12,7 @@ export const useWantedRequests = store.useList;
 export function publishWantedRequest(input: {
   text: string;
   wantedOn?: string;
+  wantedAt?: string;
 }) {
   const request = createWantedRequest(
     input,

@@ -1,3 +1,5 @@
+import { format, parseISO } from "date-fns";
+import { fr } from "date-fns/locale";
 import type { Civility, NeighborProfile, WantedRequest } from "./api";
 
 export const CIVILITIES: Civility[] = ["Monsieur", "Madame", "Famille"];
@@ -12,7 +14,7 @@ export function displayName(profile: NeighborProfile): string {
  * Only surrounding spaces are trimmed; an empty text is refused.
  */
 export function createWantedRequest(
-  input: { text: string; wantedOn?: string },
+  input: { text: string; wantedOn?: string; wantedAt?: string },
   author: { id: string; profile: NeighborProfile },
   now: Date,
   id: string,
@@ -25,6 +27,7 @@ export function createWantedRequest(
     authorName: displayName(author.profile),
     text,
     wantedOn: input.wantedOn || undefined,
+    wantedAt: input.wantedAt || undefined,
     createdAt: now.toISOString(),
   };
 }
@@ -33,4 +36,24 @@ export function createWantedRequest(
 export function todayIso(now: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
+/** "14:30" → "14h30", "09:05" → "9h05". */
+function frenchTime(time: string): string {
+  const [hours, minutes] = time.split(":");
+  return `${Number(hours)}h${minutes}`;
+}
+
+/** "Pour le mardi 20 octobre à 14h30", "À 14h30" or "Pas de date précise". */
+export function wantedWhenLabel(
+  request: Pick<WantedRequest, "wantedOn" | "wantedAt">,
+): string {
+  const day = request.wantedOn
+    ? `Pour le ${format(parseISO(request.wantedOn), "EEEE d MMMM", { locale: fr })}`
+    : "";
+  const time = request.wantedAt ? frenchTime(request.wantedAt) : "";
+  if (day && time) return `${day} à ${time}`;
+  if (day) return day;
+  if (time) return `À ${time}`;
+  return "Pas de date précise";
 }

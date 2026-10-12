@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { residenceTitle } from "./residence";
-import { createWantedRequest, displayName, todayIso } from "./wanted";
+import {
+  createWantedRequest,
+  displayName,
+  todayIso,
+  wantedWhenLabel,
+} from "./wanted";
 
 const now = new Date("2026-10-12T09:00:00.000Z");
 const author = {
@@ -71,5 +76,31 @@ describe("residenceTitle", () => {
     expect(residenceTitle({ name: "Les Tilleuls", address: "x" })).toBe(
       "Résidence Les Tilleuls",
     );
+  });
+});
+
+describe("wantedWhenLabel", () => {
+  it("joins the date and the time", () => {
+    expect(wantedWhenLabel({ wantedOn: "2026-10-20", wantedAt: "14:30" })).toBe(
+      "Pour le mardi 20 octobre à 14h30",
+    );
+  });
+
+  it("works with only a date, only a time, or nothing", () => {
+    expect(wantedWhenLabel({ wantedOn: "2026-10-20" })).toBe(
+      "Pour le mardi 20 octobre",
+    );
+    expect(wantedWhenLabel({ wantedAt: "09:05" })).toBe("À 9h05");
+    expect(wantedWhenLabel({})).toBe("Pas de date précise");
+  });
+
+  it("keeps the time when publishing", () => {
+    const request = createWantedRequest(
+      { text: "scie", wantedAt: "18:00" },
+      author,
+      now,
+      "w1",
+    );
+    expect(request?.wantedAt).toBe("18:00");
   });
 });

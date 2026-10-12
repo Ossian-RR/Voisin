@@ -1,8 +1,7 @@
-import { format, parseISO } from "date-fns";
-import { fr } from "date-fns/locale";
 import { CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import type { WantedRequest } from "@shared/api";
+import { wantedWhenLabel } from "@shared/wanted";
 import { CURRENT_USER_ID } from "@/lib/borrow-requests";
 import { removeWantedRequest } from "@/lib/wanted-requests";
 
@@ -25,9 +24,7 @@ export function WantedCard({ request }: { request: WantedRequest }) {
       <div className="mt-3 flex items-center justify-between gap-3">
         <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
           <CalendarDays className="size-3.5 shrink-0" aria-hidden />
-          {request.wantedOn
-            ? `Pour le ${format(parseISO(request.wantedOn), "EEEE d MMMM", { locale: fr })}`
-            : "Pas de date précise"}
+          {wantedWhenLabel(request)}
         </p>
         {isMine && (
           <button
