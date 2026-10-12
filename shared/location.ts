@@ -17,6 +17,14 @@ export function parseLocation(ref: string): FlatLocation | undefined {
   return { part: match[1], floor: Number(match[2]), door: match[3] };
 }
 
+/** Tidies what a neighbor types: "a - 3A" → "A-3a". The result may still be invalid. */
+export function normalizeLocation(input: string): string {
+  const compact = input.replace(/\s+/g, "");
+  const match = /^([a-zA-Z])-?(\d+)([a-zA-Z])$/.exec(compact);
+  if (!match) return compact;
+  return `${match[1].toUpperCase()}-${Number(match[2])}${match[3].toLowerCase()}`;
+}
+
 export function isValidLocation(ref: string): boolean {
   return parseLocation(ref) !== undefined;
 }

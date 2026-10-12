@@ -2,9 +2,9 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
-import { currentNeighbor } from "@shared/mock";
 import { displayName, todayIso } from "@shared/wanted";
 import { cn } from "@/lib/utils";
+import { useProfile } from "@/lib/profile";
 import { publishWantedRequest } from "@/lib/wanted-requests";
 
 export default function Wanted() {
@@ -12,6 +12,7 @@ export default function Wanted() {
   const [wantedOn, setWantedOn] = useState("");
   const [wantedAt, setWantedAt] = useState("");
   const navigate = useNavigate();
+  const profile = useProfile();
   const canPublish = text.trim().length > 0;
 
   const handleSubmit = (event: FormEvent) => {
@@ -32,9 +33,7 @@ export default function Wanted() {
         className="rounded-3xl border border-border bg-card p-4 shadow-sm"
       >
         <h1 className="font-display text-xl leading-tight font-extrabold tracking-tight">
-          <label htmlFor="wanted-text">
-            {displayName(currentNeighbor)} recherche
-          </label>
+          <label htmlFor="wanted-text">{displayName(profile)} recherche</label>
         </h1>
         <textarea
           id="wanted-text"
