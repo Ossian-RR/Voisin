@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Inbox, MapPin } from "lucide-react";
+import { DoorOpen, Inbox } from "lucide-react";
 import { toast } from "sonner";
 import type { BorrowRequest, BorrowRequestStatus } from "@shared/api";
 import { sortRequests } from "@shared/borrow";
@@ -102,8 +102,8 @@ function RequestCard({ request }: { request: BorrowRequest }) {
 
         {item && (
           <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-            <MapPin className="size-3.5 shrink-0" />
-            Prêté par {item.ownerFirstName} · {item.distance}
+            <DoorOpen className="size-3.5 shrink-0" aria-hidden />
+            Prêté par {item.ownerFirstName} · {item.location}
           </p>
         )}
 

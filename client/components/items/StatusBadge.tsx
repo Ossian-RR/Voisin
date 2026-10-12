@@ -3,17 +3,17 @@ import { cn } from "@/lib/utils";
 
 const statusStyles: Record<ItemStatus, { label: string; className: string; dot: string }> = {
   available: {
-    label: "Available",
+    label: "Disponible",
     className: "bg-success-soft text-success",
     dot: "bg-success",
   },
   unavailable: {
-    label: "Unavailable",
+    label: "Indisponible",
     className: "bg-warning-soft text-warning",
     dot: "bg-warning",
   },
   removed: {
-    label: "Removed",
+    label: "Retiré",
     className: "bg-muted text-muted-foreground",
     dot: "bg-muted-foreground",
   },

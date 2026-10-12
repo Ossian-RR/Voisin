@@ -9,13 +9,13 @@ export default function Placeholder({ title }: { title: string }) {
       </span>
       <h1 className="font-display mt-5 text-2xl font-extrabold">{title}</h1>
       <p className="mt-2 max-w-[18rem] text-sm leading-relaxed text-muted-foreground">
-        This page is not built yet. Ask Fusion to fill in this page to continue.
+        Cette page n’est pas encore prête. Elle arrive bientôt.
       </p>
       <Link
         to="/"
         className="mt-6 inline-flex h-11 items-center rounded-xl border border-border bg-card px-5 text-sm font-bold"
       >
-        Back to items
+        Retour aux objets
       </Link>
     </section>
   );

@@ -1,17 +1,19 @@
 # Features
 
+All user-facing text is in French. Flat references follow `X-Nn`: X = building part or tower (capital letter), N = floor number, n = door letter (see `shared/location.ts`).
+
 Each feature lists user stories and acceptance criteria (AC). A feature is done only when every AC passes at 360, 375, and 430 widths.
 
 ## 1. Item listings (home)
 
 **Story:** As a neighbor, I want to see items shared nearby so I can find what I need.
 
-- AC1: The home page shows a grid of two columns with item photo, title, status badge, distance, and owner's first name.
+- AC1: The home page opens straight on search, category chips and a two-column grid (no header, hero or section title). Each card shows the item photo, title, status badge, the owner's flat reference (`X-Nn`, e.g. `A-3a`) and first name.
 - AC2: Items with status `removed` never appear.
 - AC3: Typing in search filters items by title or description, without a page reload.
-- AC4: Category chips (All, Tools, Garden, Cleaning, Kitchen, Outdoor) filter the grid. The active chip is clearly marked with `aria-pressed`.
+- AC4: Category chips (Tous, Outils, Jardin, Ménage, Cuisine, Extérieur) filter the grid. They wrap onto several lines so every chip is visible, with no horizontal scroll. The active chip is marked with `aria-pressed`.
 - AC5: When nothing matches, the page shows a friendly empty message, not a blank area.
-- AC6: The item count updates as filters change.
+- AC6: The item count is announced to screen readers as filters change.
 
 ## 2. Item detail
 
@@ -19,7 +21,7 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 
 - AC1: Tapping a card photo or title opens `/items/:id`.
 - AC2: The page shows a photo carousel with a counter (for example `1 / 3`) and dots. Swiping changes the photo.
-- AC3: The page shows status, title, distance, owner's first name, description, and condition.
+- AC3: The page shows status, title, the owner's flat reference and first name, description, and condition. The owner block spells the flat out ("Bâtiment A, 3e étage, porte a").
 - AC4: An unknown or removed item id shows "Item not found" with a link back to the list. No blank screen.
 - AC5: The "Ask to borrow" button stays reachable above the tab bar while scrolling.
 - AC6: When the item is `unavailable`, the button is disabled and the status panel explains when it will be available again.
@@ -55,7 +57,7 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 
 ## 6. Shared navigation
 
-- AC1: The header (brand and location chip) and tab bar (Items, Food, Add, Requests, Profile) appear on every page.
+- AC1: There is no header, to leave room for content. The tab bar (Objets, Frigo, +, Demandes, Profil) appears on every page.
 - AC2: The active tab is highlighted.
 - AC3: Every link leads to a built page or to a placeholder page. No link returns a 404.
 

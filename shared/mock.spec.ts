@@ -11,7 +11,7 @@ describe("visibleItems", () => {
 
 describe("findItem", () => {
   it("returns the item for a known id", () => {
-    expect(findItem(items, "cordless-drill")?.title).toBe("Cordless drill with bit set");
+    expect(findItem(items, "cordless-drill")?.title).toBe("Perceuse sans fil avec coffret d’embouts");
   });
 
   it("returns undefined for an unknown id", () => {
