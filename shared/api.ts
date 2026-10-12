@@ -45,6 +45,8 @@ export interface NeighborProfile {
 export interface WantedRequest {
   id: string;
   authorId: string;
+  /** Shown to neighbors, e.g. "Madame Martin". */
+  authorName: string;
   text: string;
   /** Wished borrowing date, yyyy-mm-dd. Optional. */
   wantedOn?: string;

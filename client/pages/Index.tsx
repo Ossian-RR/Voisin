@@ -1,6 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { MapPin, Search } from "lucide-react";
 import { ItemCard } from "@/components/items/ItemCard";
+import { WantedCard } from "@/components/wanted/WantedCard";
+import { useWantedRequests } from "@/lib/wanted-requests";
+import { sortRequests } from "@shared/borrow";
 import { cn } from "@/lib/utils";
 import { CATEGORIES, CATEGORY_LABELS, items, visibleItems } from "@shared/mock";
 import { RESIDENCE, residenceTitle } from "@shared/residence";
@@ -12,6 +16,16 @@ const normalize = (text: string) =>
 export default function Index() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("All");
+  const wanted = sortRequests(useWantedRequests());
+  const location = useLocation();
+  const justPublished = (location.state as { showWanted?: string } | null)?.showWanted;
+
+  useEffect(() => {
+    if (!justPublished) return;
+    document
+      .getElementById(`wanted-${justPublished}`)
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [justPublished]);
 
   const filteredItems = useMemo(() => {
     const needle = normalize(query.trim());
@@ -97,6 +111,28 @@ export default function Index() {
           </div>
         )}
       </section>
+
+      {wanted.length > 0 && (
+        <section aria-labelledby="wanted-heading" className="mt-8 px-5">
+          <h2 id="wanted-heading" className="font-display text-lg font-extrabold">
+            Vos voisins recherchent
+          </h2>
+          <ul className="mt-3 space-y-3">
+            {wanted.map((request) => (
+              <li
+                key={request.id}
+                id={`wanted-${request.id}`}
+                className={cn(
+                  "scroll-mb-28 rounded-2xl",
+                  request.id === justPublished && "ring-2 ring-primary/40",
+                )}
+              >
+                <WantedCard request={request} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

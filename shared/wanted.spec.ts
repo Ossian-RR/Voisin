@@ -3,6 +3,10 @@ import { residenceTitle } from "./residence";
 import { createWantedRequest, displayName, todayIso } from "./wanted";
 
 const now = new Date("2026-10-12T09:00:00.000Z");
+const author = {
+  id: "me",
+  profile: { civility: "Madame" as const, lastName: "Martin" },
+};
 
 describe("displayName", () => {
   it("puts the civility before the family name", () => {
@@ -16,16 +20,21 @@ describe("createWantedRequest", () => {
   it("keeps the text as typed, typos included", () => {
     const request = createWantedRequest(
       { text: "  une scie sauteuse ou un égoïne  " },
-      "me",
+      author,
       now,
       "w1",
     );
     expect(request?.text).toBe("une scie sauteuse ou un égoïne");
   });
 
+  it("records who is looking, for the neighbors", () => {
+    const request = createWantedRequest({ text: "scie" }, author, now, "w1");
+    expect(request?.authorName).toBe("Madame Martin");
+  });
+
   it("refuses an empty text", () => {
     expect(
-      createWantedRequest({ text: "   " }, "me", now, "w1"),
+      createWantedRequest({ text: "   " }, author, now, "w1"),
     ).toBeUndefined();
   });
 
@@ -33,13 +42,13 @@ describe("createWantedRequest", () => {
     expect(
       createWantedRequest(
         { text: "scie", wantedOn: "2026-10-20" },
-        "me",
+        author,
         now,
         "w1",
       )?.wantedOn,
     ).toBe("2026-10-20");
     expect(
-      createWantedRequest({ text: "scie", wantedOn: "" }, "me", now, "w1")
+      createWantedRequest({ text: "scie", wantedOn: "" }, author, now, "w1")
         ?.wantedOn,
     ).toBeUndefined();
   });

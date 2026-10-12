@@ -1,5 +1,6 @@
 import type { WantedRequest } from "@shared/api";
 import { createWantedRequest } from "@shared/wanted";
+import { currentNeighbor } from "@shared/mock";
 import { CURRENT_USER_ID } from "./borrow-requests";
 import { createLocalList, newId } from "./local-store";
 
@@ -14,7 +15,7 @@ export function publishWantedRequest(input: {
 }) {
   const request = createWantedRequest(
     input,
-    CURRENT_USER_ID,
+    { id: CURRENT_USER_ID, profile: currentNeighbor },
     new Date(),
     newId(),
   );

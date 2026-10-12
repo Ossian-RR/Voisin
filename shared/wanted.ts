@@ -13,7 +13,7 @@ export function displayName(profile: NeighborProfile): string {
  */
 export function createWantedRequest(
   input: { text: string; wantedOn?: string },
-  authorId: string,
+  author: { id: string; profile: NeighborProfile },
   now: Date,
   id: string,
 ): WantedRequest | undefined {
@@ -21,7 +21,8 @@ export function createWantedRequest(
   if (!text) return undefined;
   return {
     id,
-    authorId,
+    authorId: author.id,
+    authorName: displayName(author.profile),
     text,
     wantedOn: input.wantedOn || undefined,
     createdAt: now.toISOString(),

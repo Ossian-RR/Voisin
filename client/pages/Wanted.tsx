@@ -1,38 +1,27 @@
 import { useState, type FormEvent } from "react";
-import { format, parseISO } from "date-fns";
-import { fr } from "date-fns/locale";
-import { CalendarDays, Send } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Send } from "lucide-react";
 import { toast } from "sonner";
-import type { WantedRequest } from "@shared/api";
-import { sortRequests } from "@shared/borrow";
 import { currentNeighbor } from "@shared/mock";
 import { displayName, todayIso } from "@shared/wanted";
-import { CURRENT_USER_ID } from "@/lib/borrow-requests";
 import { cn } from "@/lib/utils";
-import {
-  publishWantedRequest,
-  removeWantedRequest,
-  useWantedRequests,
-} from "@/lib/wanted-requests";
+import { publishWantedRequest } from "@/lib/wanted-requests";
 
 export default function Wanted() {
   const [text, setText] = useState("");
   const [wantedOn, setWantedOn] = useState("");
-  const mine = sortRequests(
-    useWantedRequests().filter(
-      (request) => request.authorId === CURRENT_USER_ID,
-    ),
-  );
+  const navigate = useNavigate();
   const canPublish = text.trim().length > 0;
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    if (!publishWantedRequest({ text, wantedOn })) return;
-    setText("");
-    setWantedOn("");
+    const request = publishWantedRequest({ text, wantedOn });
+    if (!request) return;
     toast.success("Recherche publiée", {
-      description: "Vos voisins peuvent maintenant vous proposer un objet.",
+      description: "Elle est visible par vos voisins sur l’accueil.",
     });
+    // Show it where the neighbors see it: at the bottom of the home page.
+    navigate("/", { state: { showWanted: request.id } });
   };
 
   return (
@@ -60,7 +49,7 @@ export default function Wanted() {
         />
 
         <label htmlFor="wanted-date" className="mt-4 block text-sm font-bold">
-          Date souhaitée pour l’emprunt
+          pour la date du
         </label>
         <input
           id="wanted-date"
@@ -85,51 +74,6 @@ export default function Wanted() {
           Publier ma recherche
         </button>
       </form>
-
-      {mine.length > 0 && (
-        <section aria-labelledby="mine-heading" className="mt-6">
-          <h2 id="mine-heading" className="font-display text-lg font-extrabold">
-            Mes recherches
-          </h2>
-          <ul className="mt-3 space-y-3">
-            {mine.map((request) => (
-              <li key={request.id}>
-                <WantedCard request={request} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
     </div>
-  );
-}
-
-function WantedCard({ request }: { request: WantedRequest }) {
-  const handleRemove = () => {
-    removeWantedRequest(request.id);
-    toast("Recherche retirée");
-  };
-
-  return (
-    <article className="rounded-2xl border border-border bg-card p-4">
-      <p className="text-[15px] leading-relaxed break-words whitespace-pre-wrap">
-        {request.text}
-      </p>
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
-          <CalendarDays className="size-3.5 shrink-0" aria-hidden />
-          {request.wantedOn
-            ? `Pour le ${format(parseISO(request.wantedOn), "EEEE d MMMM", { locale: fr })}`
-            : "Pas de date précise"}
-        </p>
-        <button
-          type="button"
-          onClick={handleRemove}
-          className="shrink-0 text-xs font-bold text-destructive underline-offset-2 hover:underline"
-        >
-          Retirer
-        </button>
-      </div>
-    </article>
   );
 }
