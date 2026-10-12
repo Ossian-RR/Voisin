@@ -29,7 +29,8 @@ export interface Item {
   condition: string;
   ownerId: string;
   ownerFirstName: string;
-  distance: string;
+  /** Owner's flat, written X-Nn: building part, floor number, door letter (e.g. "A-3a"). */
+  location: string;
   photos: ItemPhoto[];
 }
 
@@ -39,7 +40,8 @@ export interface FoodRequest {
   note: string;
   neededBy: string;
   requesterFirstName: string;
-  distance: string;
+  /** Requester's flat, written X-Nn (see Item.location). */
+  location: string;
 }
 
 export type BorrowRequestStatus = "pending" | "approved" | "declined" | "returned";

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { DoorOpen } from "lucide-react";
 import type { Item } from "@shared/api";
 import { cn } from "@/lib/utils";
 import { ItemImage } from "./ItemImage";
@@ -31,9 +31,9 @@ export function ItemCard({ item }: { item: Item }) {
           {item.title}
         </h3>
         <p className="flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin className="size-3.5 shrink-0" />
+          <DoorOpen className="size-3.5 shrink-0" aria-hidden />
           <span className="truncate">
-            {item.distance} · {item.ownerFirstName}
+            {item.location} · {item.ownerFirstName}
           </span>
         </p>
       </div>

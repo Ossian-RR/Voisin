@@ -1,13 +1,14 @@
 import { useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ChevronLeft, CircleCheck, Clock, Handshake, MapPin } from "lucide-react";
+import { ChevronLeft, CircleCheck, Clock, DoorOpen, Handshake } from "lucide-react";
 import { ItemImage } from "@/components/items/ItemImage";
 import { StatusBadge } from "@/components/items/StatusBadge";
 import { toast } from "sonner";
 import { CURRENT_USER_ID, sendBorrowRequest, useBorrowRequests } from "@/lib/borrow-requests";
 import { cn } from "@/lib/utils";
 import { canRequest, findOpenRequest } from "@shared/borrow";
-import { findItem, items } from "@shared/mock";
+import { describeLocation } from "@shared/location";
+import { CATEGORY_LABELS, findItem, items } from "@shared/mock";
 
 export default function ItemDetail() {
   const { id } = useParams();
@@ -16,16 +17,16 @@ export default function ItemDetail() {
   if (!item) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center px-5 py-16 text-center">
-        <p className="font-display text-2xl font-extrabold">Item not found</p>
+        <p className="font-display text-2xl font-extrabold">Objet introuvable</p>
         <p className="mt-2 text-sm text-muted-foreground">
-          It may have been removed by its owner.
+          Son propriétaire l’a peut-être retiré.
         </p>
         <Link
           to="/"
           className="mt-6 inline-flex h-11 items-center gap-1.5 rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground"
         >
           <ChevronLeft className="size-4" />
-          Back to items
+          Retour aux objets
         </Link>
       </div>
     );
@@ -69,7 +70,7 @@ function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findI
           className="inline-flex items-center gap-1 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
           <ChevronLeft className="size-4" />
-          All items
+          Tous les objets
         </Link>
       </div>
 
@@ -103,7 +104,7 @@ function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findI
             <button
               key={photo.label}
               type="button"
-              aria-label={`Show photo ${index + 1}`}
+              aria-label={`Voir la photo ${index + 1}`}
               aria-current={index === activePhoto}
               onClick={() => goToPhoto(index)}
               className={cn(
@@ -119,20 +120,25 @@ function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findI
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge status={item.status} />
           <span className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-secondary-foreground">
-            {item.category}
+            {CATEGORY_LABELS[item.category]}
           </span>
         </div>
         <h1 className="font-display mt-3 text-[28px] leading-[1.1] font-extrabold tracking-tight">
           {item.title}
         </h1>
         <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
-          <MapPin className="size-4 shrink-0" />
-          {item.distance} from you · Shared by {item.ownerFirstName}
+          <DoorOpen className="size-4 shrink-0" aria-hidden />
+          <span>
+            <abbr title={describeLocation(item.location)} className="no-underline">
+              {item.location}
+            </abbr>{" "}
+            · Prêté par {item.ownerFirstName}
+          </span>
         </p>
       </section>
 
       <section
-        aria-label="Availability"
+        aria-label="Disponibilité"
         className={cn(
           "mx-5 mt-5 flex gap-3 rounded-2xl p-4",
           isAvailable ? "bg-success-soft text-success" : "bg-warning-soft text-warning",
@@ -145,23 +151,23 @@ function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findI
         )}
         <div className="min-w-0">
           <p className="font-bold">
-            {isAvailable ? "Ready to lend" : "Lent out for now"}
+            {isAvailable ? "Disponible au prêt" : "Prêté pour le moment"}
           </p>
           <p className="mt-0.5 text-sm text-foreground/75">
             {isAvailable
-              ? `Ask ${item.ownerFirstName} to arrange a pickup that suits you.`
-              : "It will show as available again once it is returned."}
+              ? `Demandez à ${item.ownerFirstName} un moment qui vous arrange pour le récupérer.`
+              : "Il redeviendra disponible dès qu’il sera rendu."}
           </p>
         </div>
       </section>
 
       <section className="mt-6 space-y-5 px-5">
         <div>
-          <h2 className="font-display text-lg font-extrabold">About this item</h2>
+          <h2 className="font-display text-lg font-extrabold">À propos de cet objet</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-foreground/80">{item.description}</p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase">Condition</p>
+          <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase">État</p>
           <p className="mt-1 text-[15px]">{item.condition}</p>
         </div>
         <div className="flex items-center gap-3">
@@ -170,7 +176,7 @@ function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findI
           </span>
           <div className="min-w-0">
             <p className="font-semibold">{item.ownerFirstName}</p>
-            <p className="text-sm text-muted-foreground">Neighbor on Lindenwood</p>
+            <p className="text-sm text-muted-foreground">{describeLocation(item.location)}</p>
           </div>
         </div>
       </section>
