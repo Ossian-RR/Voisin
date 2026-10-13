@@ -5,6 +5,8 @@ import { createServer } from "./server";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // GitHub Pages serves the site under /Voisin/: build with BASE_PATH=/Voisin/.
+  base: process.env.BASE_PATH ?? "/",
   server: {
     host: "::",
     port: 8080,

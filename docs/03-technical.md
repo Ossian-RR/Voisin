@@ -154,6 +154,7 @@ pnpm dev         # Start the dev server on port 8080
 pnpm typecheck   # TypeScript checks
 pnpm test        # Vitest unit tests
 pnpm build       # Production build
+pnpm build:pages # Static build for GitHub Pages (served under /Voisin/)
 ```
 
 ## Claude on GitHub (review and log analysis)
