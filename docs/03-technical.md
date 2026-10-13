@@ -154,4 +154,14 @@ pnpm dev         # Start the dev server on port 8080
 pnpm typecheck   # TypeScript checks
 pnpm test        # Vitest unit tests
 pnpm build       # Production build
+pnpm build:pages # Static build for GitHub Pages (served under /Voisin/)
 ```
+
+## Online mock-up (GitHub Pages)
+
+- Address: https://ossian-rr.github.io/Voisin/
+- `.github/workflows/pages.yml` runs on every push to `main` (so every merged pull request): typecheck, tests, `pnpm build:pages`, then it replaces the `gh-pages` branch with the build. GitHub Pages serves that branch. The site updates about a minute after the merge.
+- On pull requests the same workflow runs without publishing, as a check.
+- It can also be started by hand: Actions › "Publier la maquette" › Run workflow.
+- `404.html` is a copy of `index.html`, so links like `/Voisin/items/…` open the app directly.
+- The mock-up has no server: data typed by visitors stays in their own browser.
