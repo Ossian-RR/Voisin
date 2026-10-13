@@ -23,20 +23,20 @@ export default function AppLayout() {
         className="safe-bottom fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card"
       >
         <ul className="grid grid-cols-4 items-end px-2 pt-2 pb-2">
-          {leftTabs.map((tab) => (
-            <li key={tab.to}>
-              <TabLink {...tab} />
-            </li>
-          ))}
           <li className="flex justify-center">
             <Link
               to="/add"
-              aria-label="Ajouter un objet"
+              aria-label="Mettre un objet à disposition"
               className="-mt-7 grid size-14 place-items-center rounded-2xl bg-apricot text-apricot-foreground shadow-lg shadow-apricot/30 transition-transform active:scale-95"
             >
               <Plus className="size-7" strokeWidth={2.5} />
             </Link>
           </li>
+          {leftTabs.map((tab) => (
+            <li key={tab.to}>
+              <TabLink {...tab} />
+            </li>
+          ))}
           {rightTabs.map((tab) => (
             <li key={tab.to}>
               <TabLink {...tab} />

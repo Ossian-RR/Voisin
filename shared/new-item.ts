@@ -3,7 +3,7 @@ import { displayName } from "./wanted";
 
 export const MIN_PHOTOS = 2;
 export const MAX_PHOTOS = 5;
-export const CONDITION_CHOICES: ItemConditionChoice[] = ["Neuf", "Bon état"];
+export const CONDITION_CHOICES: ItemConditionChoice[] = ["Bon état", "Neuf"];
 
 export interface NewItemDraft {
   isGift: boolean;

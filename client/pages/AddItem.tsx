@@ -106,50 +106,55 @@ export default function AddItem() {
 
   return (
     <div className="flex flex-col">
-      <PageHeader title="Ajouter un objet" />
+      <PageHeader title="Pour mes voisins, je mets à disposition…" />
 
       <form
         onSubmit={handleSubmit}
         noValidate
         className="mx-5 mt-3 rounded-3xl border border-border bg-card p-4 shadow-sm"
       >
-        <label
-          htmlFor="item-gift"
-          className={cn(
-            "flex cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-colors",
-            draft.isGift
-              ? "border-apricot/50 bg-accent"
-              : "border-border bg-background",
-          )}
-        >
-          <span
-            className={cn(
-              "grid size-10 shrink-0 place-items-center rounded-xl transition-colors",
-              draft.isGift
-                ? "bg-apricot text-apricot-foreground"
-                : "bg-secondary text-secondary-foreground",
-            )}
-          >
-            <Gift className="size-5" aria-hidden />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block font-bold">Je donne</span>
-            <span className="block text-xs text-muted-foreground">
-              {draft.isGift
-                ? "Vous le donnez : il ne vous sera pas rendu."
-                : "Désactivé : vous le prêtez et il vous sera rendu."}
-            </span>
-          </span>
-          <Switch
-            id="item-gift"
-            aria-label="Je donne"
-            checked={draft.isGift}
-            onCheckedChange={(isGift) => update({ isGift })}
-            className="data-[state=checked]:bg-apricot"
-          />
+        <label htmlFor="item-title" className="block text-sm font-bold">
+          Titre
         </label>
+        <input
+          id="item-title"
+          value={draft.title}
+          onChange={(event) => update({ title: event.target.value })}
+          maxLength={80}
+          aria-invalid={Boolean(errors.title)}
+          className={cn(
+            fieldClass,
+            "h-12",
+            errors.title
+              ? "border-destructive"
+              : "border-border focus:border-primary",
+          )}
+        />
+        {errors.title && <FieldError>{errors.title}</FieldError>}
 
-        <fieldset className="mt-5" aria-describedby="item-photos-hint">
+        <label
+          htmlFor="item-description"
+          className="mt-4 block text-sm font-bold"
+        >
+          Description
+        </label>
+        <textarea
+          id="item-description"
+          value={draft.description}
+          onChange={(event) => update({ description: event.target.value })}
+          rows={4}
+          aria-invalid={Boolean(errors.description)}
+          className={cn(
+            fieldClass,
+            "block resize-none py-3 leading-relaxed",
+            errors.description
+              ? "border-destructive"
+              : "border-border focus:border-primary",
+          )}
+        />
+        {errors.description && <FieldError>{errors.description}</FieldError>}
+
+        <fieldset className="mt-4" aria-describedby="item-photos-hint">
           <legend className="text-sm font-bold">Photos</legend>
           <p id="item-photos-hint" className="text-xs text-muted-foreground">
             {MIN_PHOTOS} minimum, {MAX_PHOTOS} maximum · {photoCount}/
@@ -209,47 +214,6 @@ export default function AddItem() {
           {errors.photos && <FieldError>{errors.photos}</FieldError>}
         </fieldset>
 
-        <label htmlFor="item-title" className="mt-5 block text-sm font-bold">
-          Titre
-        </label>
-        <input
-          id="item-title"
-          value={draft.title}
-          onChange={(event) => update({ title: event.target.value })}
-          maxLength={80}
-          aria-invalid={Boolean(errors.title)}
-          className={cn(
-            fieldClass,
-            "h-12",
-            errors.title
-              ? "border-destructive"
-              : "border-border focus:border-primary",
-          )}
-        />
-        {errors.title && <FieldError>{errors.title}</FieldError>}
-
-        <label
-          htmlFor="item-description"
-          className="mt-4 block text-sm font-bold"
-        >
-          Description
-        </label>
-        <textarea
-          id="item-description"
-          value={draft.description}
-          onChange={(event) => update({ description: event.target.value })}
-          rows={4}
-          aria-invalid={Boolean(errors.description)}
-          className={cn(
-            fieldClass,
-            "block resize-none py-3 leading-relaxed",
-            errors.description
-              ? "border-destructive"
-              : "border-border focus:border-primary",
-          )}
-        />
-        {errors.description && <FieldError>{errors.description}</FieldError>}
-
         <fieldset className="mt-4">
           <legend className="text-sm font-bold">État</legend>
           <div role="radiogroup" className="mt-2 grid grid-cols-2 gap-2">
@@ -278,6 +242,42 @@ export default function AddItem() {
           </div>
           {errors.condition && <FieldError>{errors.condition}</FieldError>}
         </fieldset>
+
+        <label
+          htmlFor="item-gift"
+          className={cn(
+            "mt-5 flex cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-colors",
+            draft.isGift
+              ? "border-apricot/50 bg-accent"
+              : "border-border bg-background",
+          )}
+        >
+          <span
+            className={cn(
+              "grid size-10 shrink-0 place-items-center rounded-xl transition-colors",
+              draft.isGift
+                ? "bg-apricot text-apricot-foreground"
+                : "bg-secondary text-secondary-foreground",
+            )}
+          >
+            <Gift className="size-5" aria-hidden />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-bold">Je donne</span>
+            <span className="block text-xs text-muted-foreground">
+              {draft.isGift
+                ? "Vous le donnez : il ne vous sera pas rendu."
+                : "Désactivé : vous le prêtez et il vous sera rendu."}
+            </span>
+          </span>
+          <Switch
+            id="item-gift"
+            aria-label="Je donne"
+            checked={draft.isGift}
+            onCheckedChange={(isGift) => update({ isGift })}
+            className="data-[state=checked]:bg-apricot"
+          />
+        </label>
 
         <button
           type="submit"

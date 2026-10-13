@@ -164,13 +164,7 @@ export default function Profile() {
             Mes informations
           </h2>
 
-          <label
-            htmlFor="profile-last-name"
-            className="mt-4 block text-sm font-bold"
-          >
-            Nom
-          </label>
-          <div className="mt-2 flex gap-2">
+          <div className="mt-4 flex items-end gap-2">
             <div className="relative shrink-0">
               <select
                 aria-label="Civilité"
@@ -193,23 +187,31 @@ export default function Profile() {
                 aria-hidden
               />
             </div>
-            <input
-              id="profile-last-name"
-              value={draft.lastName}
-              onChange={(event) => update({ lastName: event.target.value })}
-              autoComplete="family-name"
-              aria-invalid={Boolean(errors.lastName)}
-              aria-describedby={
-                errors.lastName ? "profile-last-name-error" : undefined
-              }
-              className={cn(
-                fieldClass,
-                "mt-0 min-w-0 flex-1",
-                errors.lastName
-                  ? "border-destructive"
-                  : "border-border focus:border-primary",
-              )}
-            />
+            <div className="min-w-0 flex-1">
+              <label
+                htmlFor="profile-last-name"
+                className="block text-sm font-bold"
+              >
+                Nom
+              </label>
+              <input
+                id="profile-last-name"
+                value={draft.lastName}
+                onChange={(event) => update({ lastName: event.target.value })}
+                autoComplete="family-name"
+                aria-invalid={Boolean(errors.lastName)}
+                aria-describedby={
+                  errors.lastName ? "profile-last-name-error" : undefined
+                }
+                className={cn(
+                  fieldClass,
+                  "w-full",
+                  errors.lastName
+                    ? "border-destructive"
+                    : "border-border focus:border-primary",
+                )}
+              />
+            </div>
           </div>
           {errors.lastName && (
             <p
