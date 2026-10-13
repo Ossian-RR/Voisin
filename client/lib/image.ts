@@ -33,3 +33,33 @@ function loadImage(src: string): Promise<HTMLImageElement> {
     image.src = src;
   });
 }
+
+/**
+ * Shrinks an item photo so its longest side is at most `maxSide` px,
+ * keeping its proportions. A few of these must fit in browser storage.
+ */
+export async function toItemPhotoDataUrl(
+  file: File,
+  maxSide = 720,
+): Promise<string> {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("not-an-image");
+  }
+  const url = URL.createObjectURL(file);
+  try {
+    const image = await loadImage(url);
+    const scale = Math.min(
+      1,
+      maxSide / Math.max(image.naturalWidth, image.naturalHeight),
+    );
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(image.naturalWidth * scale);
+    canvas.height = Math.round(image.naturalHeight * scale);
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("no-canvas");
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/jpeg", 0.75);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
