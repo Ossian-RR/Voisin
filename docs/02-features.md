@@ -36,20 +36,23 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 - AC3: When the owner approves, the item becomes `unavailable` for everyone else.
 - AC4: When the item is returned, the owner marks it returned and it becomes `available` again.
 
-## 4. Share an item (owner view)
+## 4. Ajouter un objet (+ tab)
 
-**Story:** As an owner, I want to post an item with a photo and title so neighbors can borrow it.
+**Story:** As a neighbor, I want to post an item to lend, or to give away for good.
 
-- AC1: The Add tab opens a form with photo, title, category, description, and condition.
-- AC2: A posted item appears on the owner's profile with photo and title.
-- AC3: The owner can delete an item. Deleting sets its status to `removed` and removes it from every list.
-- AC4: Deleting asks for confirmation first.
+- AC1: The "+" tab opens "Ajouter un objet" with: a "Je donne" toggle, photos, title, description and condition (Neuf or Bon état).
+- AC2: "Je donne" off = a loan (returned to the owner). On = a gift; the card turns orange and the button reads "Publier le don".
+- AC3: Photos come from the phone's library, at least 2 and at most 5. Each is shrunk (longest side 720 px, JPEG) and can be removed before publishing.
+- AC4: Publishing with missing fields shows one message per field ("Ajoutez au moins 2 photos.", "Ajoutez encore 1 photo.", …).
+- AC5: Once published, the item appears first on the home page. Gifts are set apart from loans by an orange "À donner" badge with a gift icon and an orange card border. Their page reads "Donné par …" and the button "Je le veux".
+- AC6: On their own item, the owner sees "Retirer cet objet" instead of the request button. Removing asks for confirmation.
+- AC7: Items have no category in the form, so they only show under "Tous". Kept in local storage until the data phase; if the browser is out of space, publishing fails with a message instead of losing the item.
 
 ## 5. Recherche (wanted items)
 
 **Story:** As a neighbor, I want to tell the residence what I am looking for, even if nobody has posted it yet.
 
-- AC1: The second tab, "Recherche", opens a form headed with the neighbor's civility and family name followed by "recherche" (e.g. "Madame Martin recherche"). Civility and name come from the Profil page.
+- AC1: The second tab, "Je cherche", opens a form headed with the neighbor's civility and family name followed by "recherche" (e.g. "Madame Martin recherche"). Civility and name come from the Profil page.
 - AC2: The text field is free: no filter, no placeholder or pre-filled text, no autocomplete, autocorrect or spellcheck. The text is saved exactly as typed (only surrounding spaces are trimmed).
 - AC3: Below it, an optional date field labelled "pour la date du" (past dates cannot be picked), then an optional time labelled "à l’heure suivante :", picked with two dropdowns: hour (00h–23h) and minutes (00, 15, 30 or 45 only). Cards show both, e.g. "Pour le mardi 20 octobre à 14h30".
 - AC4: "Publier ma recherche" is disabled while the text is empty. Publishing confirms with a toast and opens the home page, scrolled to the new search.
@@ -70,7 +73,7 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 
 ## 6. Shared navigation
 
-- AC1: The home page starts with a one-line header: "Résidence" (always), the residence name when there is one, and the address (`shared/residence.ts`; today: "Résidence · 333 rue des Pyrénées"). Other pages have no header. The tab bar (Objets, Recherche, +, Demandes, Profil) appears on every page.
+- AC1: The home page starts with a one-line header: "Résidence" (always), the residence name when there is one, and the address (`shared/residence.ts`; today: "Résidence · 333 rue des Pyrénées"). The tab bar (Objets, Je cherche, +, Profil) appears on every page. Every other page starts with a one-line title matching its tab ("Je cherche", "Ajouter un objet", "Profil"), also used as the browser tab title. "Mes demandes" has no tab any more; it is reached from Profil › Mon activité.
 - AC2: The active tab is highlighted.
 - AC3: Every link leads to a built page or to a placeholder page. No link returns a 404.
 

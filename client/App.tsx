@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
+import AddItem from "./pages/AddItem";
 import Index from "./pages/Index";
 import ItemDetail from "./pages/ItemDetail";
 import Placeholder from "./pages/Placeholder";
@@ -28,7 +29,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/items/:id" element={<ItemDetail />} />
             <Route path="/search" element={<Wanted />} />
-            <Route path="/add" element={<Placeholder title="Partager un objet" />} />
+            <Route path="/add" element={<AddItem />} />
             <Route path="/requests" element={<Requests />} />
             <Route path="/profile" element={<Profile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

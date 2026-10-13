@@ -25,14 +25,18 @@ export function createLocalValue<T>(
     return cache;
   }
 
-  function write(next: T) {
+  /** Returns false when the browser could not keep it (blocked or full storage). */
+  function write(next: T): boolean {
     cache = next;
+    let persisted = true;
     try {
       localStorage.setItem(storageKey, JSON.stringify(next));
     } catch {
-      // Storage blocked: keep the value in memory for this visit.
+      // Storage blocked or full: keep the value in memory for this visit.
+      persisted = false;
     }
     listeners.forEach((listener) => listener());
+    return persisted;
   }
 
   function subscribe(listener: () => void) {

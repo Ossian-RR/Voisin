@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronDown, Send } from "lucide-react";
 import { toast } from "sonner";
 import { HOURS, QUARTER_MINUTES, displayName, todayIso } from "@shared/wanted";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/lib/profile";
 import { publishWantedRequest } from "@/lib/wanted-requests";
@@ -29,14 +30,15 @@ export default function Wanted() {
   };
 
   return (
-    <div className="flex flex-col px-5 pt-5">
+    <div className="flex flex-col">
+      <PageHeader title="Je cherche" />
       <form
         onSubmit={handleSubmit}
-        className="rounded-3xl border border-border bg-card p-4 shadow-sm"
+        className="mx-5 mt-3 rounded-3xl border border-border bg-card p-4 shadow-sm"
       >
-        <h1 className="font-display text-xl leading-tight font-extrabold tracking-tight">
+        <h2 className="font-display text-lg leading-tight font-extrabold tracking-tight">
           <label htmlFor="wanted-text">{displayName(profile)} recherche</label>
-        </h1>
+        </h2>
         <textarea
           id="wanted-text"
           value={text}

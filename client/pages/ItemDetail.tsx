@@ -1,23 +1,51 @@
 import { useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { ChevronLeft, CircleCheck, Clock, DoorOpen, Handshake } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  ChevronLeft,
+  CircleCheck,
+  Clock,
+  DoorOpen,
+  Gift,
+  Handshake,
+  Trash2,
+} from "lucide-react";
 import { ItemImage } from "@/components/items/ItemImage";
 import { StatusBadge } from "@/components/items/StatusBadge";
 import { toast } from "sonner";
-import { CURRENT_USER_ID, sendBorrowRequest, useBorrowRequests } from "@/lib/borrow-requests";
+import {
+  CURRENT_USER_ID,
+  sendBorrowRequest,
+  useBorrowRequests,
+} from "@/lib/borrow-requests";
+import { useDocumentTitle } from "@/components/layout/PageHeader";
+import { isMine, removeMyItem, useAllItems } from "@/lib/items";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { canRequest, findOpenRequest } from "@shared/borrow";
 import { describeLocation } from "@shared/location";
-import { CATEGORY_LABELS, findItem, items } from "@shared/mock";
+import { CATEGORY_LABELS, findItem } from "@shared/mock";
+import { isGift } from "@shared/new-item";
 
 export default function ItemDetail() {
   const { id } = useParams();
-  const item = findItem(items, id);
+  const item = findItem(useAllItems(), id);
 
   if (!item) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center px-5 py-16 text-center">
-        <p className="font-display text-2xl font-extrabold">Objet introuvable</p>
+        <p className="font-display text-2xl font-extrabold">
+          Objet introuvable
+        </p>
         <p className="mt-2 text-sm text-muted-foreground">
           Son propriétaire l’a peut-être retiré.
         </p>
@@ -35,18 +63,36 @@ export default function ItemDetail() {
   return <ItemDetailContent item={item} />;
 }
 
-function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findItem>> }) {
+function ItemDetailContent({
+  item,
+}: {
+  item: NonNullable<ReturnType<typeof findItem>>;
+}) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activePhoto, setActivePhoto] = useState(0);
   const requests = useBorrowRequests();
   const isAvailable = item.status === "available";
-  const requestSent = Boolean(findOpenRequest(requests, item.id, CURRENT_USER_ID));
+  const requestSent = Boolean(
+    findOpenRequest(requests, item.id, CURRENT_USER_ID),
+  );
+  const gift = isGift(item);
+  const mine = isMine(item);
+  const navigate = useNavigate();
+  useDocumentTitle(item.title);
+
+  const handleRemove = () => {
+    removeMyItem(item.id);
+    toast("Objet retiré", {
+      description: "Il n’apparaît plus chez vos voisins.",
+    });
+    navigate("/");
+  };
 
   const handleAskToBorrow = () => {
     if (!canRequest(item, requests, CURRENT_USER_ID)) return;
     sendBorrowRequest(item);
     toast.success(`Demande envoyée à ${item.ownerFirstName}`, {
-      description: "Vous la retrouvez dans vos demandes.",
+      description: "Suivez-la depuis votre profil, dans « Mes demandes ».",
     });
   };
 
@@ -86,6 +132,7 @@ function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findI
                 key={photo.label}
                 category={item.category}
                 hue={photo.hue}
+                src={photo.src}
                 label={`${item.title}, ${photo.label}`}
                 className="aspect-[4/3] w-full shrink-0 snap-start"
               />
@@ -118,10 +165,12 @@ function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findI
 
       <section className="px-5 pt-5">
         <div className="flex flex-wrap items-center gap-2">
-          <StatusBadge status={item.status} />
-          <span className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-secondary-foreground">
-            {CATEGORY_LABELS[item.category]}
-          </span>
+          <StatusBadge status={item.status} kind={item.kind} />
+          {item.category && (
+            <span className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-secondary-foreground">
+              {CATEGORY_LABELS[item.category]}
+            </span>
+          )}
         </div>
         <h1 className="font-display mt-3 text-[28px] leading-[1.1] font-extrabold tracking-tight">
           {item.title}
@@ -129,10 +178,13 @@ function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findI
         <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
           <DoorOpen className="size-4 shrink-0" aria-hidden />
           <span>
-            <abbr title={describeLocation(item.location)} className="no-underline">
+            <abbr
+              title={describeLocation(item.location)}
+              className="no-underline"
+            >
               {item.location}
             </abbr>{" "}
-            · Prêté par {item.ownerFirstName}
+            · {gift ? "Donné par" : "Prêté par"} {item.ownerFirstName}
           </span>
         </p>
       </section>
@@ -141,33 +193,55 @@ function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findI
         aria-label="Disponibilité"
         className={cn(
           "mx-5 mt-5 flex gap-3 rounded-2xl p-4",
-          isAvailable ? "bg-success-soft text-success" : "bg-warning-soft text-warning",
+          !isAvailable
+            ? "bg-warning-soft text-warning"
+            : gift
+              ? "bg-accent text-accent-foreground"
+              : "bg-success-soft text-success",
         )}
       >
-        {isAvailable ? (
-          <CircleCheck className="mt-0.5 size-5 shrink-0" />
-        ) : (
+        {!isAvailable ? (
           <Clock className="mt-0.5 size-5 shrink-0" />
+        ) : gift ? (
+          <Gift className="mt-0.5 size-5 shrink-0" />
+        ) : (
+          <CircleCheck className="mt-0.5 size-5 shrink-0" />
         )}
         <div className="min-w-0">
           <p className="font-bold">
-            {isAvailable ? "Disponible au prêt" : "Prêté pour le moment"}
+            {!isAvailable
+              ? "Prêté pour le moment"
+              : gift
+                ? "À donner"
+                : "Disponible au prêt"}
           </p>
           <p className="mt-0.5 text-sm text-foreground/75">
-            {isAvailable
-              ? `Demandez à ${item.ownerFirstName} un moment qui vous arrange pour le récupérer.`
-              : "Il redeviendra disponible dès qu’il sera rendu."}
+            {!isAvailable
+              ? "Il redeviendra disponible dès qu’il sera rendu."
+              : mine
+                ? gift
+                  ? "Vous donnez cet objet à vos voisins."
+                  : "Vous prêtez cet objet à vos voisins."
+                : gift
+                  ? `${item.ownerFirstName} le donne gratuitement. Demandez-le pour qu’on vous le réserve.`
+                  : `Demandez à ${item.ownerFirstName} un moment qui vous arrange pour le récupérer.`}
           </p>
         </div>
       </section>
 
       <section className="mt-6 space-y-5 px-5">
         <div>
-          <h2 className="font-display text-lg font-extrabold">À propos de cet objet</h2>
-          <p className="mt-2 text-[15px] leading-relaxed text-foreground/80">{item.description}</p>
+          <h2 className="font-display text-lg font-extrabold">
+            À propos de cet objet
+          </h2>
+          <p className="mt-2 text-[15px] leading-relaxed text-foreground/80">
+            {item.description}
+          </p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase">État</p>
+          <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
+            État
+          </p>
           <p className="mt-1 text-[15px]">{item.condition}</p>
         </div>
         <div className="flex items-center gap-3">
@@ -176,43 +250,91 @@ function ItemDetailContent({ item }: { item: NonNullable<ReturnType<typeof findI
           </span>
           <div className="min-w-0">
             <p className="font-semibold">{item.ownerFirstName}</p>
-            <p className="text-sm text-muted-foreground">{describeLocation(item.location)}</p>
+            <p className="text-sm text-muted-foreground">
+              {describeLocation(item.location)}
+            </p>
           </div>
         </div>
       </section>
 
-      <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 mt-8 bg-background/95 px-5 pt-3 pb-2 backdrop-blur-md">
-        <button
-          type="button"
-          disabled={!isAvailable || requestSent}
-          onClick={handleAskToBorrow}
-          className={cn(
-            "flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold transition-colors duration-300",
-            isAvailable && !requestSent
-              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 active:scale-[0.99]"
-              : "cursor-not-allowed bg-muted text-muted-foreground",
-          )}
-        >
-          {requestSent ? (
-            <CircleCheck className="size-5" />
-          ) : (
-            <Handshake className="size-5" />
-          )}
-          {requestSent
-            ? "Demande envoyée"
-            : isAvailable
-              ? "Demander à emprunter"
-              : "Indisponible pour le moment"}
-        </button>
-        {requestSent && (
-          <p className="mt-2 text-center text-xs text-muted-foreground">
-            {item.ownerFirstName} va vous répondre.{" "}
-            <Link to="/requests" className="font-semibold text-primary underline-offset-2 hover:underline">
-              Voir mes demandes
-            </Link>
-          </p>
-        )}
-      </div>
+      {mine ? (
+        <>
+          <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 mt-8 bg-background/95 px-5 pt-3 pb-2 backdrop-blur-md">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  type="button"
+                  className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-destructive/40 bg-card text-base font-bold text-destructive transition-colors hover:bg-destructive/5"
+                >
+                  <Trash2 className="size-5" />
+                  Retirer cet objet
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="max-w-[calc(100vw-2rem)] rounded-3xl sm:max-w-sm">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Retirer « {item.title} » ?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Vos voisins ne le verront plus. Cette action est définitive.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleRemove}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Retirer
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 mt-8 bg-background/95 px-5 pt-3 pb-2 backdrop-blur-md">
+            <button
+              type="button"
+              disabled={!isAvailable || requestSent}
+              onClick={handleAskToBorrow}
+              className={cn(
+                "flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold transition-colors duration-300",
+                isAvailable && !requestSent
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 active:scale-[0.99]"
+                  : "cursor-not-allowed bg-muted text-muted-foreground",
+              )}
+            >
+              {requestSent ? (
+                <CircleCheck className="size-5" />
+              ) : gift ? (
+                <Gift className="size-5" />
+              ) : (
+                <Handshake className="size-5" />
+              )}
+              {requestSent
+                ? "Demande envoyée"
+                : isAvailable
+                  ? gift
+                    ? "Je le veux"
+                    : "Demander à emprunter"
+                  : "Indisponible pour le moment"}
+            </button>
+            {requestSent && (
+              <p className="mt-2 text-center text-xs text-muted-foreground">
+                {item.ownerFirstName} va vous répondre.{" "}
+                <Link
+                  to="/requests"
+                  className="font-semibold text-primary underline-offset-2 hover:underline"
+                >
+                  Voir mes demandes
+                </Link>
+              </p>
+            )}
+          </div>
+        </>
+      )}
     </article>
   );
 }

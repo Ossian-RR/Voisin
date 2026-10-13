@@ -18,12 +18,22 @@ export type ItemCategory = "Tools" | "Garden" | "Cleaning" | "Kitchen" | "Outdoo
 export interface ItemPhoto {
   label: string;
   hue: number;
+  /** Real photo as a JPEG data URL. Sample items only have a colored placeholder. */
+  src?: string;
 }
+
+/** "loan": lent and returned. "gift": given away for good. */
+export type ItemKind = "loan" | "gift";
+
+export type ItemConditionChoice = "Neuf" | "Bon état";
 
 export interface Item {
   id: string;
   title: string;
-  category: ItemCategory;
+  /** Missing for items posted from the app (the form has no category). */
+  category?: ItemCategory;
+  /** Defaults to "loan" when missing. */
+  kind?: ItemKind;
   status: ItemStatus;
   description: string;
   condition: string;
@@ -32,6 +42,8 @@ export interface Item {
   /** Owner's flat, written X-Nn: building part, floor number, door letter (e.g. "A-3a"). */
   location: string;
   photos: ItemPhoto[];
+  /** ISO date-time, for items posted from the app. */
+  createdAt?: string;
 }
 
 export type Civility = "Monsieur" | "Madame" | "Famille";
