@@ -35,7 +35,7 @@ export function hasFieldChanges(
 export function validateProfile(profile: NeighborProfile): ProfileErrors {
   const clean = cleanProfile(profile);
   const errors: ProfileErrors = {};
-  if (!clean.lastName) errors.lastName = "Indiquez votre nom de famille.";
+  if (!clean.lastName) errors.lastName = "Indiquez votre nom.";
   if (!clean.location) {
     errors.location = "Indiquez votre logement.";
   } else if (!isValidLocation(clean.location)) {

@@ -27,9 +27,28 @@ export function createWantedRequest(
     authorName: displayName(author.profile),
     text,
     wantedOn: input.wantedOn || undefined,
-    wantedAt: input.wantedAt || undefined,
+    wantedAt:
+      input.wantedAt && isQuarterTime(input.wantedAt)
+        ? input.wantedAt
+        : undefined,
     createdAt: now.toISOString(),
   };
+}
+
+/** Searches can only be set to the quarter hour. */
+export const QUARTER_MINUTES = ["00", "15", "30", "45"] as const;
+export const HOURS = Array.from({ length: 24 }, (_, hour) =>
+  String(hour).padStart(2, "0"),
+);
+
+/** "14:30" passes, "14:20" or "7:5" does not. */
+export function isQuarterTime(time: string): boolean {
+  const match = /^(\d{2}):(\d{2})$/.exec(time);
+  return (
+    !!match &&
+    HOURS.includes(match[1]) &&
+    (QUARTER_MINUTES as readonly string[]).includes(match[2])
+  );
 }
 
 /** Today as yyyy-mm-dd in local time, for the date input's `min`. */

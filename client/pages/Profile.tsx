@@ -165,7 +165,7 @@ export default function Profile() {
           htmlFor="profile-last-name"
           className="mt-4 block text-sm font-bold"
         >
-          Nom de famille
+          Nom
         </label>
         <div className="mt-2 flex gap-2">
           <div className="relative shrink-0">

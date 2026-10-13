@@ -3,6 +3,7 @@ import { residenceTitle } from "./residence";
 import {
   createWantedRequest,
   displayName,
+  isQuarterTime,
   todayIso,
   wantedWhenLabel,
 } from "./wanted";
@@ -110,5 +111,24 @@ describe("wantedWhenLabel", () => {
       "w1",
     );
     expect(request?.wantedAt).toBe("18:00");
+  });
+});
+
+describe("isQuarterTime", () => {
+  it("only accepts 00, 15, 30 and 45 minutes", () => {
+    for (const ok of ["00:00", "09:15", "14:30", "23:45"])
+      expect(isQuarterTime(ok)).toBe(true);
+    for (const ko of ["14:20", "14:05", "24:00", "7:15", ""])
+      expect(isQuarterTime(ko)).toBe(false);
+  });
+
+  it("drops a time that is not on the quarter hour", () => {
+    const request = createWantedRequest(
+      { text: "scie", wantedAt: "14:20" },
+      author,
+      now,
+      "w1",
+    );
+    expect(request?.wantedAt).toBeUndefined();
   });
 });
