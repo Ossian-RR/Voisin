@@ -131,6 +131,20 @@ export const items: Item[] = [
     photos: photosFor(15),
   },
   {
+    id: "moving-boxes",
+    title: "Cartons de déménagement (x10)",
+    kind: "gift",
+    category: "Outdoor",
+    status: "available",
+    description:
+      "Dix cartons solides, déjà pliés, après notre emménagement. À récupérer quand vous voulez.",
+    condition: "Bon état",
+    ownerId: "ines",
+    ownerFirstName: "Inès",
+    location: "A-0b",
+    photos: photosFor(40),
+  },
+  {
     id: "old-bike-pump",
     title: "Pompe à vélo",
     category: "Outdoor",

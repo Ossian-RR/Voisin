@@ -1,4 +1,12 @@
-import { Hammer, Sprout, SprayCan, ChefHat, Tent, type LucideIcon } from "lucide-react";
+import {
+  Hammer,
+  Package,
+  Sprout,
+  SprayCan,
+  ChefHat,
+  Tent,
+  type LucideIcon,
+} from "lucide-react";
 import type { ItemCategory } from "@shared/api";
 import { cn } from "@/lib/utils";
 
@@ -11,19 +19,40 @@ const categoryIcon: Record<ItemCategory, LucideIcon> = {
 };
 
 interface ItemImageProps {
-  category: ItemCategory;
+  category?: ItemCategory;
   hue: number;
+  /** A real photo; otherwise a colored placeholder with the category icon. */
+  src?: string;
   label: string;
   className?: string;
 }
 
-export function ItemImage({ category, hue, label, className }: ItemImageProps) {
-  const Icon = categoryIcon[category];
+export function ItemImage({
+  category,
+  hue,
+  src,
+  label,
+  className,
+}: ItemImageProps) {
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt={label}
+        className={cn("bg-muted object-cover", className)}
+        draggable={false}
+      />
+    );
+  }
+  const Icon = category ? categoryIcon[category] : Package;
   return (
     <div
       role="img"
       aria-label={label}
-      className={cn("relative grid place-items-center overflow-hidden", className)}
+      className={cn(
+        "relative grid place-items-center overflow-hidden",
+        className,
+      )}
       style={{
         backgroundImage: `linear-gradient(150deg, hsl(${hue} 55% 88%) 0%, hsl(${hue} 42% 66%) 100%)`,
       }}

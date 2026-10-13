@@ -13,6 +13,12 @@ const store = createLocalValue<NeighborProfile>(
 export const useProfile = store.useValue;
 export const readProfile = store.read;
 
-export function saveProfile(profile: NeighborProfile) {
-  store.write(cleanProfile(profile));
+/** Saves the form fields and keeps the current photo. */
+export function saveProfile(fields: Omit<NeighborProfile, "photo">) {
+  store.write(cleanProfile({ ...fields, photo: store.read().photo }));
+}
+
+/** Saves or removes the photo right away, without touching the other fields. */
+export function saveProfilePhoto(photo: string | undefined) {
+  store.write(cleanProfile({ ...store.read(), photo }));
 }
