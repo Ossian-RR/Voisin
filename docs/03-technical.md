@@ -155,3 +155,26 @@ pnpm typecheck   # TypeScript checks
 pnpm test        # Vitest unit tests
 pnpm build       # Production build
 ```
+
+## Claude on GitHub (review and log analysis)
+
+Three workflows use the official [Claude Code GitHub Action](https://github.com/anthropics/claude-code-action) (`anthropics/claude-code-action@v1`):
+
+| Workflow | When | What Claude does |
+| --- | --- | --- |
+| `claude-review.yml` "Relecture Claude" | Every pull request (not drafts, not forks) | Runs the official **code-review** skill (plugin `code-review@claude-code-plugins` from github.com/anthropics/claude-code) and comments bugs on the PR lines. |
+| `claude-ci-failure.yml` "Analyse des échecs par Claude" | "Publier la maquette" fails | Reads the failed run's log and opens an issue: failing step, likely cause, fix. |
+| `claude.yml` "Claude (@claude)" | A comment containing `@claude` | Answers in the thread (question, bug, log to explain). Only people with write access can trigger it. |
+
+Project rules for the reviewer live in `CLAUDE.md` (French UI text, `X-Nn` flats, local storage, mobile width, tests in `shared/`).
+
+**One-time setup (repo owner):**
+
+1. Install the Claude GitHub App on this repo only: https://github.com/apps/claude → Install → "Only select repositories" → Voisin.
+2. Create **one** key:
+   - API key (pay per use): https://console.anthropic.com → API Keys → Create Key. Secret name: `ANTHROPIC_API_KEY`.
+   - Or a Claude Pro/Max subscription token: install Claude Code CLI, run `claude setup-token`. Secret name: `CLAUDE_CODE_OAUTH_TOKEN`.
+3. Add it to the repo: Settings → Secrets and variables → Actions → New repository secret (or `gh secret set ANTHROPIC_API_KEY` and paste when asked). Never commit the key.
+4. Test: open a pull request (review starts by itself) or comment `@claude explique ce que fait ce fichier` on a PR.
+
+Costs: each run uses tokens from the key or the subscription, plus GitHub Actions minutes (free on public repos). Runs time out after 15–20 minutes.
