@@ -7,6 +7,7 @@
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build",
     "build:server": "vite build --config vite.config.server.ts",
+    "build:pages": "BASE_PATH=/Voisin/ vite build --outDir dist/pages && cp dist/pages/index.html dist/pages/404.html && touch dist/pages/.nojekyll",
     "start": "node dist/server/node-build.mjs",
     "test": "vitest --run",
     "format.fix": "prettier --write .",
