@@ -10,7 +10,26 @@ export function cleanProfile(profile: NeighborProfile): NeighborProfile {
     civility: profile.civility,
     lastName: profile.lastName.trim().replace(/\s+/g, " "),
     location: normalizeLocation(profile.location),
+    ...(isPhoto(profile.photo) ? { photo: profile.photo } : {}),
   };
+}
+
+export function isPhoto(value: unknown): value is string {
+  return typeof value === "string" && value.startsWith("data:image/");
+}
+
+/** True when the fields typed in the form differ (the photo is saved on its own). */
+export function hasFieldChanges(
+  draft: NeighborProfile,
+  saved: NeighborProfile,
+): boolean {
+  const a = cleanProfile(draft);
+  const b = cleanProfile(saved);
+  return (
+    a.civility !== b.civility ||
+    a.lastName !== b.lastName ||
+    a.location !== b.location
+  );
 }
 
 export function validateProfile(profile: NeighborProfile): ProfileErrors {
@@ -33,6 +52,7 @@ export function isNeighborProfile(value: unknown): value is NeighborProfile {
   return (
     CIVILITIES.includes(profile.civility as NeighborProfile["civility"]) &&
     typeof profile.lastName === "string" &&
-    typeof profile.location === "string"
+    typeof profile.location === "string" &&
+    (profile.photo === undefined || isPhoto(profile.photo))
   );
 }

@@ -41,6 +41,8 @@ export interface NeighborProfile {
   lastName: string;
   /** Flat reference X-Nn, e.g. "A-3a". */
   location: string;
+  /** Profile photo as a small JPEG data URL. Optional. */
+  photo?: string;
 }
 
 /** Something a neighbor is looking for, typed freely. */
