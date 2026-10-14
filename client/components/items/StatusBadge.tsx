@@ -12,7 +12,7 @@ const statusStyles: Record<
     dot: "bg-success",
   },
   unavailable: {
-    label: "Indisponible",
+    label: "Emprunté",
     className: "bg-warning-soft text-warning",
     dot: "bg-warning",
   },

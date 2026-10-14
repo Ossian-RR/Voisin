@@ -141,9 +141,6 @@ function ItemDetailContent({
           <span className="absolute top-3 right-3 rounded-full bg-foreground/70 px-2.5 py-1 text-xs font-bold text-background">
             {activePhoto + 1} / {item.photos.length}
           </span>
-          <span className="absolute bottom-3 left-3 rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold">
-            {item.photos[activePhoto]?.label}
-          </span>
         </div>
 
         <div className="mt-3 flex justify-center gap-1.5">
@@ -210,7 +207,7 @@ function ItemDetailContent({
         <div className="min-w-0">
           <p className="font-bold">
             {!isAvailable
-              ? "Prêté pour le moment"
+              ? "Emprunté en ce moment"
               : gift
                 ? "À donner"
                 : "Disponible au prêt"}
@@ -319,7 +316,7 @@ function ItemDetailContent({
                   ? gift
                     ? "Je le veux"
                     : "Demander à emprunter"
-                  : "Indisponible pour le moment"}
+                  : "Emprunté en ce moment"}
             </button>
             {requestSent && (
               <p className="mt-2 text-center text-xs text-muted-foreground">

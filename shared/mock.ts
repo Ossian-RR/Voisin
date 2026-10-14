@@ -32,8 +32,8 @@ export const items: Item[] = [
     category: "Cleaning",
     status: "available",
     description:
-      "Idéal pour les allées, le mobilier de jardin et les abris vélo. Fourni avec un tuyau de 5 m, une buse turbo et une lance à mousse. Merci de le rendre rincé et sec.",
-    condition: "Très bon état. Révisé au printemps.",
+      "Idéal pour les allées, le mobilier de jardin et les abris vélo. Fourni avec un tuyau de 5 m, une buse turbo et une lance à mousse. Merci de le rendre rincé et sec. Révisé au printemps.",
+    condition: "Bon état",
     ownerId: "anna",
     ownerFirstName: "Anna",
     location: "A-3a",
@@ -45,8 +45,8 @@ export const items: Item[] = [
     category: "Tools",
     status: "available",
     description:
-      "Perceuse-visseuse 18 V avec une batterie de rechange et un coffret de 60 embouts pour le bois, le métal et la maçonnerie.",
-    condition: "Bon état. Chargeur fourni.",
+      "Perceuse-visseuse 18 V avec une batterie de rechange et un coffret de 60 embouts pour le bois, le métal et la maçonnerie. Chargeur fourni.",
+    condition: "Bon état",
     ownerId: "marc",
     ownerFirstName: "Marc",
     location: "A-1c",
@@ -58,8 +58,8 @@ export const items: Item[] = [
     category: "Tools",
     status: "unavailable",
     description:
-      "Escabeau en aluminium, charge maximale 150 kg. Actuellement prêté à un voisin pour le week-end.",
-    condition: "Bon état. Patins antidérapants.",
+      "Escabeau en aluminium, charge maximale 150 kg. Actuellement prêté à un voisin pour le week-end. Patins antidérapants.",
+    condition: "Bon état",
     ownerId: "sofia",
     ownerFirstName: "Sofia",
     location: "B-4b",
@@ -71,8 +71,8 @@ export const items: Item[] = [
     category: "Garden",
     status: "available",
     description:
-      "Aérateur à pointes pour les pelouses tassées. À utiliser une ou deux fois par an, après la pluie.",
-    condition: "Bon état. Poignées resserrées.",
+      "Aérateur à pointes pour les pelouses tassées. À utiliser une ou deux fois par an, après la pluie. Poignées resserrées.",
+    condition: "Bon état",
     ownerId: "tom",
     ownerFirstName: "Tom",
     location: "B-0a",
@@ -84,8 +84,8 @@ export const items: Item[] = [
     category: "Kitchen",
     status: "available",
     description:
-      "Robot pâtissier de cinq litres avec crochet pétrisseur, fouet et batteur plat. Parfait pour le pain et les grandes quantités de pâte à gâteau.",
-    condition: "Très bon état. Bol et tous les accessoires inclus.",
+      "Robot pâtissier de cinq litres avec crochet pétrisseur, fouet et batteur plat. Parfait pour le pain et les grandes quantités de pâte à gâteau. Bol et tous les accessoires inclus.",
+    condition: "Bon état",
     ownerId: "priya",
     ownerFirstName: "Priya",
     location: "A-2d",
@@ -97,8 +97,8 @@ export const items: Item[] = [
     category: "Cleaning",
     status: "available",
     description:
-      "Aspirateur d’atelier de vingt litres pour le garage, les liquides renversés et les feuilles. Suceur plat inclus.",
-    condition: "Bon état. Filtre changé récemment.",
+      "Aspirateur d’atelier de vingt litres pour le garage, les liquides renversés et les feuilles. Suceur plat inclus. Filtre changé récemment.",
+    condition: "Bon état",
     ownerId: "leo",
     ownerFirstName: "Leo",
     location: "C-5b",
@@ -110,8 +110,8 @@ export const items: Item[] = [
     category: "Garden",
     status: "unavailable",
     description:
-      "Taille-haie léger de 600 mm avec interrupteur de sécurité. Prêté jusqu’à la fin du mois.",
-    condition: "Bon état. Lame fraîchement aiguisée.",
+      "Taille-haie léger de 600 mm avec interrupteur de sécurité. Prêté jusqu’à la fin du mois. Lame fraîchement aiguisée.",
+    condition: "Bon état",
     ownerId: "hannah",
     ownerFirstName: "Hannah",
     location: "C-2a",
@@ -123,8 +123,8 @@ export const items: Item[] = [
     category: "Outdoor",
     status: "available",
     description:
-      "Deux tables pliantes de 1,80 m pour les fêtes de quartier, les pique-niques et les trocs de graines.",
-    condition: "Bon état. Les pieds se verrouillent bien.",
+      "Deux tables pliantes de 1,80 m pour les fêtes de quartier, les pique-niques et les trocs de graines. Les pieds se verrouillent bien.",
+    condition: "Bon état",
     ownerId: "omar",
     ownerFirstName: "Omar",
     location: "B-1c",
@@ -150,7 +150,7 @@ export const items: Item[] = [
     category: "Outdoor",
     status: "removed",
     description: "Retiré par son propriétaire.",
-    condition: "Bon état.",
+    condition: "Bon état",
     ownerId: "leo",
     ownerFirstName: "Leo",
     location: "C-5b",
@@ -169,6 +169,9 @@ export function visibleItems(all: Item[]): Item[] {
   return all.filter((item) => item.status !== "removed");
 }
 
-export function findItem(all: Item[], id: string | undefined): Item | undefined {
+export function findItem(
+  all: Item[],
+  id: string | undefined,
+): Item | undefined {
   return all.find((item) => item.id === id && item.status !== "removed");
 }

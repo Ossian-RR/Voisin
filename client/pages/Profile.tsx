@@ -10,7 +10,8 @@ import {
   Search,
 } from "lucide-react";
 import { toast } from "sonner";
-import type { NeighborProfile } from "@shared/api";
+import type { Item, NeighborProfile } from "@shared/api";
+import { isGift } from "@shared/new-item";
 import { sortRequests } from "@shared/borrow";
 import { describeLocation, isValidLocation } from "@shared/location";
 import {
@@ -21,7 +22,10 @@ import {
 } from "@shared/profile";
 import { RESIDENCE, residenceTitle } from "@shared/residence";
 import { CIVILITIES, displayName } from "@shared/wanted";
-import { CURRENT_USER_ID, useBorrowRequests } from "@/lib/borrow-requests";
+import { CURRENT_USER_ID } from "@/lib/borrow-requests";
+import { isMine, useAllItems } from "@/lib/items";
+import { ItemImage } from "@/components/items/ItemImage";
+import { StatusBadge } from "@/components/items/StatusBadge";
 import { toAvatarDataUrl } from "@/lib/image";
 import { saveProfile, saveProfilePhoto, useProfile } from "@/lib/profile";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -36,9 +40,7 @@ export default function Profile() {
   const [draft, setDraft] = useState<NeighborProfile>(profile);
   const [errors, setErrors] = useState<ProfileErrors>({});
 
-  const borrowRequests = useBorrowRequests().filter(
-    (request) => request.borrowerId === CURRENT_USER_ID,
-  );
+  const myItems = useAllItems().filter(isMine);
   const searches = sortRequests(
     useWantedRequests().filter(
       (request) => request.authorId === CURRENT_USER_ID,
@@ -284,15 +286,34 @@ export default function Profile() {
           >
             Mon activité
           </h2>
-          <ul className="mt-3 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
-            <li>
-              <ActivityLink
-                to="/requests"
-                icon={Inbox}
-                label="Mes demandes"
-                count={borrowRequests.length}
-              />
-            </li>
+          <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-card">
+            <h3 className="flex items-center justify-between px-4 pt-3.5 pb-2 font-semibold">
+              Mes objets
+              <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground">
+                {myItems.length}
+              </span>
+            </h3>
+            {myItems.length > 0 ? (
+              <ul className="divide-y divide-border">
+                {myItems.map((item) => (
+                  <li key={item.id}>
+                    <MyItemRow item={item} />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="px-4 pb-4 text-sm text-muted-foreground">
+                Vous ne mettez encore aucun objet à disposition.{" "}
+                <Link
+                  to="/add"
+                  className="font-semibold text-primary underline-offset-2 hover:underline"
+                >
+                  Ajouter un objet
+                </Link>
+              </div>
+            )}
+          </div>
+          <ul className="mt-3 overflow-hidden rounded-2xl border border-border bg-card">
             <li>
               <ActivityLink
                 to={searches.length > 0 ? "/" : "/search"}
@@ -339,6 +360,35 @@ function ActivityLink({
       <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-bold text-muted-foreground">
         {count}
       </span>
+      <ChevronRight
+        className="size-4 shrink-0 text-muted-foreground"
+        aria-hidden
+      />
+    </Link>
+  );
+}
+
+function MyItemRow({ item }: { item: Item }) {
+  const cover = item.photos[0];
+  return (
+    <Link
+      to={`/items/${item.id}`}
+      className="flex items-center gap-3 px-4 py-3 hover:bg-secondary/60"
+    >
+      <ItemImage
+        category={item.category}
+        hue={cover?.hue ?? 160}
+        src={cover?.src}
+        label={item.title}
+        className="size-12 shrink-0 rounded-xl [&>span:last-child]:size-8 [&>span:last-child>svg]:size-4"
+      />
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-semibold">{item.title}</span>
+        <span className="block text-xs text-muted-foreground">
+          {isGift(item) ? "Don" : "Prêt"} · {item.condition}
+        </span>
+      </span>
+      <StatusBadge status={item.status} kind={item.kind} className="shrink-0" />
       <ChevronRight
         className="size-4 shrink-0 text-muted-foreground"
         aria-hidden

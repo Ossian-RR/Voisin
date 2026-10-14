@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { CONDITION_CHOICES } from "./new-item";
 import { findItem, items, visibleItems } from "./mock";
 
 describe("visibleItems", () => {
@@ -24,5 +25,13 @@ describe("findItem", () => {
 
   it("returns undefined when no id is given", () => {
     expect(findItem(items, undefined)).toBeUndefined();
+  });
+});
+
+describe("item conditions", () => {
+  it("only uses “Bon état” or “Neuf”", () => {
+    for (const item of items) {
+      expect(CONDITION_CHOICES).toContain(item.condition);
+    }
   });
 });

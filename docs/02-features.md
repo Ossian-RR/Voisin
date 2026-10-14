@@ -20,11 +20,12 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 **Story:** As a neighbor, I want to open an item and see more photos and details before I ask to borrow it.
 
 - AC1: Tapping a card photo or title opens `/items/:id`.
-- AC2: The page shows a photo carousel with a counter (for example `1 / 3`) and dots. Swiping changes the photo.
+- AC2: The page shows a photo carousel with a counter (for example `1 / 3`) and dots, with no caption on the photo. Swiping changes the photo.
 - AC3: The page shows status, title, the owner's flat reference and first name, description, and condition. The owner block spells the flat out ("Bâtiment A, 3e étage, porte a").
 - AC4: An unknown or removed item id shows "Item not found" with a link back to the list. No blank screen.
 - AC5: The "Ask to borrow" button stays reachable above the tab bar while scrolling.
-- AC6: When the item is `unavailable`, the button is disabled and the status panel explains when it will be available again.
+- AC6: When the item is `unavailable`, it reads **"Emprunté"** (badge) and "Emprunté en ce moment" (panel and disabled button).
+- AC7: The condition is always one of two values: "Bon état" or "Neuf".
 
 ## 3. Ask to borrow (borrower view)
 
@@ -68,7 +69,7 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 - AC3: The flat reference is tidied on save ("a 1B" → "A-1b"). An invalid one shows "Format attendu : bâtiment-étage-porte, par exemple A-3a." and is not saved. An empty name is refused.
 - AC4: "Enregistrer" is disabled until something changes. Saving confirms with a toast.
 - AC5: The saved civility and name are used on the Recherche tab ("Famille Durand recherche") and on new searches. Searches already published keep the name they were published with.
-- AC6: "Mon activité" links to the borrow requests and to the neighbor's searches on the home page, with counts.
+- AC6: "Mon activité" lists **"Mes objets"**: every item the neighbor makes available (photo, title, Prêt/Don, condition, status badge), each opening its page; when empty, a link to "+". Below it, "Mes recherches" links to the neighbor's searches on the home page. ("Mes demandes" is still reached from an item page after a request.)
 - AC7: Kept in local storage until accounts exist. The default profile is Madame Martin, B-2c.
 
 ## 6. Shared navigation

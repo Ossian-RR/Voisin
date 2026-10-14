@@ -59,7 +59,7 @@ export function createUserItem(
     kind: draft.isGift ? "gift" : "loan",
     status: "available",
     description: draft.description.trim(),
-    condition: draft.condition,
+    condition: draft.condition as ItemConditionChoice,
     ownerId: owner.id,
     ownerFirstName: displayName(owner.profile),
     location: owner.profile.location,

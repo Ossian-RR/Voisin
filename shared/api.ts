@@ -13,7 +13,8 @@ export interface DemoResponse {
 
 export type ItemStatus = "available" | "unavailable" | "removed";
 
-export type ItemCategory = "Tools" | "Garden" | "Cleaning" | "Kitchen" | "Outdoor";
+export type ItemCategory =
+  "Tools" | "Garden" | "Cleaning" | "Kitchen" | "Outdoor";
 
 export interface ItemPhoto {
   label: string;
@@ -36,7 +37,8 @@ export interface Item {
   kind?: ItemKind;
   status: ItemStatus;
   description: string;
-  condition: string;
+  /** Only two values: "Bon état" or "Neuf". */
+  condition: ItemConditionChoice;
   ownerId: string;
   ownerFirstName: string;
   /** Owner's flat, written X-Nn: building part, floor number, door letter (e.g. "A-3a"). */
@@ -71,7 +73,8 @@ export interface WantedRequest {
   createdAt: string;
 }
 
-export type BorrowRequestStatus = "pending" | "approved" | "declined" | "returned";
+export type BorrowRequestStatus =
+  "pending" | "approved" | "declined" | "returned";
 
 export interface BorrowRequest {
   id: string;
