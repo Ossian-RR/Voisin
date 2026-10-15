@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { helpMailto, residenceTitle } from "./residence";
+import { helpMailto, isValidEmail, residenceTitle } from "./residence";
 import {
   createWantedRequest,
   displayName,
@@ -175,5 +175,35 @@ describe("helpMailto without a manager address", () => {
       { address: "333 rue des Pyrénées" },
     );
     expect(link.startsWith("mailto:?subject=")).toBe(true);
+  });
+});
+
+describe("reply address", () => {
+  it("accepts a normal address and rejects incomplete ones", () => {
+    expect(isValidEmail(" marie.martin@exemple.fr ")).toBe(true);
+    for (const ko of [
+      "",
+      "marie",
+      "marie@",
+      "marie@exemple",
+      "marie @exemple.fr",
+    ])
+      expect(isValidEmail(ko)).toBe(false);
+  });
+
+  it("adds it to the message so the manager can reply", () => {
+    const link = helpMailto(
+      "",
+      "Autre question",
+      "Bonjour",
+      {
+        name: "Madame Martin",
+        location: "B-2c",
+        email: "marie.martin@exemple.fr",
+      },
+      { address: "333 rue des Pyrénées" },
+    );
+    const body = new URLSearchParams(link.split("?")[1]).get("body");
+    expect(body).toContain("Me répondre à : marie.martin@exemple.fr");
   });
 });

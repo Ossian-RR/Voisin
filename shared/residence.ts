@@ -35,12 +35,17 @@ export const HELP_TOPICS = [
 
 export type HelpTopic = (typeof HELP_TOPICS)[number];
 
+/** Simple check for the reply address typed in the Aide form. */
+export function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
+}
+
 /** Builds the mailto: link for the Aide form. */
 export function helpMailto(
   to: string,
   topic: HelpTopic,
   message: string,
-  from: { name: string; location: string },
+  from: { name: string; location: string; email?: string },
   residence: Residence,
 ): string {
   const subject = `[${residenceTitle(residence)} · ${residence.address}] ${topic}`;
@@ -50,6 +55,7 @@ export function helpMailto(
     "—",
     `${from.name}, logement ${from.location}`,
     `${residenceTitle(residence)}, ${residence.address}`,
+    ...(from.email?.trim() ? [`Me répondre à : ${from.email.trim()}`] : []),
   ].join("\n");
   return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }

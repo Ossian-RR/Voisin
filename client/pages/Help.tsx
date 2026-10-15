@@ -6,6 +6,7 @@ import {
   MIN_MESSAGE_LENGTH,
   RESIDENCE,
   helpMailto,
+  isValidEmail,
   residenceTitle,
   type HelpTopic,
 } from "@shared/residence";
@@ -18,9 +19,12 @@ export default function Help() {
   const profile = useProfile();
   const [topic, setTopic] = useState<HelpTopic>(HELP_TOPICS[0]);
   const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
   useDocumentTitle("Aide");
   const length = message.trim().length;
-  const canSend = length >= MIN_MESSAGE_LENGTH;
+  const emailOk = isValidEmail(email);
+  const canSend = length >= MIN_MESSAGE_LENGTH && emailOk;
+  const showEmailError = email.trim() !== "" && !emailOk;
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -29,7 +33,7 @@ export default function Help() {
       APP_MANAGER.email,
       topic,
       message,
-      { name: displayName(profile), location: profile.location },
+      { name: displayName(profile), location: profile.location, email },
       RESIDENCE,
     );
   };
@@ -81,6 +85,41 @@ export default function Help() {
           {residenceTitle(RESIDENCE)} · {RESIDENCE.address}.
         </p>
 
+        <label htmlFor="help-email" className="mt-4 block text-sm font-bold">
+          Votre adresse e-mail
+        </label>
+        <input
+          id="help-email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          autoCapitalize="off"
+          spellCheck={false}
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          aria-invalid={showEmailError}
+          aria-describedby="help-email-hint"
+          className={cn(
+            "mt-2 h-12 w-full rounded-2xl border bg-background px-4 text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+            showEmailError
+              ? "border-destructive"
+              : "border-border focus:border-primary",
+          )}
+        />
+        <p
+          id="help-email-hint"
+          className={cn(
+            "mt-1.5 text-xs",
+            showEmailError
+              ? "font-semibold text-destructive"
+              : "text-muted-foreground",
+          )}
+        >
+          {showEmailError
+            ? "Vérifiez l’adresse, par exemple prenom@exemple.fr."
+            : "Le responsable vous répondra à cette adresse."}
+        </p>
+
         <button
           type="submit"
           disabled={!canSend}
@@ -99,7 +138,9 @@ export default function Help() {
         >
           {canSend
             ? "Votre application e-mail s’ouvre avec le message prêt à envoyer."
-            : `${MIN_MESSAGE_LENGTH} caractères minimum · ${length}/${MIN_MESSAGE_LENGTH}`}
+            : length < MIN_MESSAGE_LENGTH
+              ? `${MIN_MESSAGE_LENGTH} caractères minimum · ${length}/${MIN_MESSAGE_LENGTH}`
+              : "Indiquez votre adresse e-mail."}
         </p>
       </form>
     </div>
