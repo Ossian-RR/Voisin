@@ -7,7 +7,7 @@ import { WantedCard } from "@/components/wanted/WantedCard";
 import { useWantedRequests } from "@/lib/wanted-requests";
 import { sortRequests } from "@shared/borrow";
 import { cn } from "@/lib/utils";
-import { CATEGORIES, CATEGORY_LABELS, visibleItems } from "@shared/mock";
+import { visibleItems } from "@shared/mock";
 import { useAllItems } from "@/lib/items";
 import { RESIDENCE, residenceTitle } from "@shared/residence";
 
@@ -20,7 +20,6 @@ const normalize = (text: string) =>
 
 export default function Index() {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("All");
   const wanted = sortRequests(useWantedRequests());
   const allItems = useAllItems();
   useDocumentTitle("J’emprunte");
@@ -38,14 +37,13 @@ export default function Index() {
   const filteredItems = useMemo(() => {
     const needle = normalize(query.trim());
     return visibleItems(allItems).filter((item) => {
-      const matchesCategory = category === "All" || item.category === category;
       const matchesQuery =
         needle === "" ||
         normalize(item.title).includes(needle) ||
         normalize(item.description).includes(needle);
-      return matchesCategory && matchesQuery;
+      return matchesQuery;
     });
-  }, [allItems, query, category]);
+  }, [allItems, query]);
 
   return (
     <div className="flex flex-col">
@@ -78,32 +76,6 @@ export default function Index() {
             />
           </span>
         </label>
-
-        <div
-          className="mt-3 flex flex-wrap gap-2"
-          role="group"
-          aria-label="Catégories"
-        >
-          {CATEGORIES.map((name) => {
-            const isActive = name === category;
-            return (
-              <button
-                key={name}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => setCategory(name)}
-                className={cn(
-                  "h-9 rounded-full border px-4 text-sm font-semibold transition-colors",
-                  isActive
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-foreground hover:bg-secondary",
-                )}
-              >
-                {CATEGORY_LABELS[name]}
-              </button>
-            );
-          })}
-        </div>
       </section>
 
       <section aria-label="Objets partagés" className="mt-4 px-5">
@@ -122,7 +94,7 @@ export default function Index() {
           <div className="rounded-2xl border border-dashed border-border bg-card p-6 text-center">
             <p className="font-semibold">Aucun objet ne correspond</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Essayez un autre mot ou une autre catégorie.
+              Essayez un autre mot.
             </p>
           </div>
         )}

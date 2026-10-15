@@ -11,7 +11,7 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 - AC1: The home page opens straight on search, category chips and a two-column grid (no header, hero or section title). Each card shows the item photo, title, status badge, the owner's flat reference (`X-Nn`, e.g. `A-3a`) and first name.
 - AC2: Items with status `removed` never appear.
 - AC3: Typing in search filters items by title or description, without a page reload.
-- AC4: Category chips (Tous, Outils, Jardin, Ménage, Cuisine, Extérieur) filter the grid. They wrap onto several lines so every chip is visible, with no horizontal scroll. The active chip is marked with `aria-pressed`.
+- AC4: There are no category chips: the search field is the only filter.
 - AC5: When nothing matches, the page shows a friendly empty message, not a blank area.
 - AC6: The item count is announced to screen readers as filters change.
 
@@ -72,9 +72,24 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 - AC6: "Mon activité" lists **"Mes objets"**: every item the neighbor makes available (photo, title, Prêt/Don, condition, status badge), each opening its page; when empty, a link to "+". Below it, "Mes recherches" links to the neighbor's searches on the home page. ("Mes demandes" is still reached from an item page after a request.)
 - AC7: Kept in local storage until accounts exist. The default profile is Madame Martin, B-2c.
 
+## 8. Aide
+
+**Story:** As a neighbor, I want to contact the person who runs the app, so they set up our residence.
+
+- AC1: The last tab, "Aide", has no page title and no list of steps; it opens directly on the form. The app manager creates the residence, its buildings and floors, adds each neighbor to their flat, and designates an administrator among the neighbors.
+- AC2: "Écrire au responsable": a topic (Créer notre résidence, Ajouter des voisins ou des étages, Désigner un administrateur, Autre question) and a free message.
+- AC2b: Under the message, "Votre adresse e-mail" (required, checked as an address): it is added to the message ("Me répondre à : …") so the manager can reply.
+- AC3: "Envoyer" (no icon) becomes clickable once the message has at least 50 characters and the e-mail address is valid; below it a counter shows "50 caractères minimum · 37/50". It opens the neighbor's e-mail app with the message ready, signed with their name, flat and residence. The recipient is `APP_MANAGER.email` in `shared/residence.ts`; while it is empty, the e-mail opens without a recipient.
+
+## 9. Opening screen
+
+- AC1: When the app opens, a green screen shows logo A "Le toit" (orange roof over a white V), the name "Voisin" and "Prêter, emprunter, donner entre voisins", with three orange dots.
+- AC2: It is part of `index.html`, so it shows before the app has loaded, and fades out about 2 s after the page starts (0.6 s with reduced motion).
+- AC3: The same logo is the browser tab icon (`public/favicon.svg`).
+
 ## 6. Shared navigation
 
-- AC1: The home page starts with a one-line header: "Résidence" (always), the residence name when there is one, and the address (`shared/residence.ts`; today: "Résidence · 333 rue des Pyrénées"). The tab bar (+ "Je prête", "J’emprunte", "Je cherche", "Profil") appears on every page. Every other page starts with a one-line title matching its tab ("Je cherche", "Pour mes voisins, je mets à disposition…", "Profil"), also used as the browser tab title. "Mes demandes" has no tab any more; it is reached from Profil › Mon activité.
+- AC1: The home page starts with a one-line header: "Résidence" (always), the residence name when there is one, and the address (`shared/residence.ts`; today: "Résidence · 333 rue des Pyrénées"). The tab bar ("J’emprunte", "Je cherche", + "Je prête" in the middle, "Profil", "Aide") appears on every page. Every other page starts with a one-line title matching its tab ("Je cherche", "Pour mes voisins, je mets à disposition…", "Profil"), also used as the browser tab title. "Mes demandes" has no tab any more; it is reached from Profil › Mon activité.
 - AC2: The active tab is highlighted.
 - AC3: Every link leads to a built page or to a placeholder page. No link returns a 404.
 

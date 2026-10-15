@@ -1,9 +1,9 @@
 import { useEffect, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-const APP_NAME = "Common Shed";
+const APP_NAME = "Voisin";
 
-/** Sets the browser tab title, e.g. "Je cherche · Common Shed". */
+/** Sets the browser tab title, e.g. "Je cherche · Voisin". */
 export function useDocumentTitle(title: string) {
   useEffect(() => {
     document.title = `${title} · ${APP_NAME}`;

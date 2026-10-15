@@ -4,7 +4,7 @@
 
 ## Le projet
 
-Common Shed / Voisin : appli mobile de prêt et de don d'objets entre voisins d'une même résidence. React 18 + Vite + TypeScript + Tailwind, pnpm. Voir `AGENTS.md` (structure) et `docs/` (fonctionnalités, règles).
+Voisin : appli mobile de prêt et de don d'objets entre voisins d'une même résidence. React 18 + Vite + TypeScript + Tailwind, pnpm. Voir `AGENTS.md` (structure) et `docs/` (fonctionnalités, règles).
 
 ## Ce qu'il faut vérifier en priorité
 

@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { LayoutGrid, Plus, Search, UserRound } from "lucide-react";
+import { CircleHelp, LayoutGrid, Plus, Search, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const leftTabs = [
@@ -9,6 +9,7 @@ const leftTabs = [
 
 const rightTabs = [
   { to: "/profile", label: "Profil", icon: UserRound, end: false },
+  { to: "/help", label: "Aide", icon: CircleHelp, end: false },
 ];
 
 export default function AppLayout() {
@@ -22,7 +23,12 @@ export default function AppLayout() {
         aria-label="Navigation principale"
         className="safe-bottom fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card"
       >
-        <ul className="grid grid-cols-4 items-end px-2 pt-2 pb-2">
+        <ul className="grid grid-cols-5 items-end px-2 pt-2 pb-2">
+          {leftTabs.map((tab) => (
+            <li key={tab.to}>
+              <TabLink {...tab} />
+            </li>
+          ))}
           <li className="flex justify-center">
             <NavLink
               to="/add"
@@ -39,11 +45,6 @@ export default function AppLayout() {
               Je prête
             </NavLink>
           </li>
-          {leftTabs.map((tab) => (
-            <li key={tab.to}>
-              <TabLink {...tab} />
-            </li>
-          ))}
           {rightTabs.map((tab) => (
             <li key={tab.to}>
               <TabLink {...tab} />

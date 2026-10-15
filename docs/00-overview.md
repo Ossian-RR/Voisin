@@ -1,6 +1,6 @@
-# Common Shed: Overview
+# Voisin: Overview
 
-Common Shed is a non-profit mobile app that helps neighbors on the same residential street share rarely used household items. Nobody buys or sells here. The app exists so a pressure washer sitting in one garage can save a trip to the shop next door.
+Voisin is a non-profit mobile app that helps neighbors on the same residential street share rarely used household items. Nobody buys or sells here. The app exists so a pressure washer sitting in one garage can save a trip to the shop next door.
 
 ## Mission
 
