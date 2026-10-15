@@ -28,13 +28,13 @@ export default function AppLayout() {
               to="/add"
               className={({ isActive }) =>
                 cn(
-                  "flex flex-col items-center gap-1 pb-1.5 text-[11px] font-semibold transition-colors",
+                  "flex w-full flex-col items-center gap-1 rounded-xl py-1.5 text-[11px] font-semibold transition-colors",
                   isActive ? "text-primary" : "text-muted-foreground",
                 )
               }
             >
-              <span className="-mt-7 grid size-14 place-items-center rounded-2xl bg-apricot text-apricot-foreground shadow-lg shadow-apricot/30 transition-transform active:scale-95">
-                <Plus className="size-7" strokeWidth={2.5} aria-hidden />
+              <span className="grid h-7 w-12 place-items-center rounded-full bg-apricot text-apricot-foreground transition-transform active:scale-95">
+                <Plus className="size-5" strokeWidth={2.5} aria-hidden />
               </span>
               Je prête
             </NavLink>
