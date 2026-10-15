@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ChevronLeft,
   CircleCheck,
-  Clock,
   DoorOpen,
   Gift,
   Handshake,
@@ -33,7 +32,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { canRequest, findOpenRequest } from "@shared/borrow";
 import { describeLocation } from "@shared/location";
-import { CATEGORY_LABELS, findItem } from "@shared/mock";
+import { findItem } from "@shared/mock";
 import { isGift } from "@shared/new-item";
 
 export default function ItemDetail() {
@@ -163,11 +162,6 @@ function ItemDetailContent({
       <section className="px-5 pt-5">
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge status={item.status} kind={item.kind} />
-          {item.category && (
-            <span className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-secondary-foreground">
-              {CATEGORY_LABELS[item.category]}
-            </span>
-          )}
         </div>
         <h1 className="font-display mt-3 text-[28px] leading-[1.1] font-extrabold tracking-tight">
           {item.title}
@@ -186,61 +180,13 @@ function ItemDetailContent({
         </p>
       </section>
 
-      <section
-        aria-label="Disponibilité"
-        className={cn(
-          "mx-5 mt-5 flex gap-3 rounded-2xl p-4",
-          !isAvailable
-            ? "bg-warning-soft text-warning"
-            : gift
-              ? "bg-accent text-accent-foreground"
-              : "bg-success-soft text-success",
-        )}
-      >
-        {!isAvailable ? (
-          <Clock className="mt-0.5 size-5 shrink-0" />
-        ) : gift ? (
-          <Gift className="mt-0.5 size-5 shrink-0" />
-        ) : (
-          <CircleCheck className="mt-0.5 size-5 shrink-0" />
-        )}
-        <div className="min-w-0">
-          <p className="font-bold">
-            {!isAvailable
-              ? "Emprunté en ce moment"
-              : gift
-                ? "À donner"
-                : "Disponible au prêt"}
-          </p>
-          <p className="mt-0.5 text-sm text-foreground/75">
-            {!isAvailable
-              ? "Il redeviendra disponible dès qu’il sera rendu."
-              : mine
-                ? gift
-                  ? "Vous donnez cet objet à vos voisins."
-                  : "Vous prêtez cet objet à vos voisins."
-                : gift
-                  ? `${item.ownerFirstName} le donne gratuitement. Demandez-le pour qu’on vous le réserve.`
-                  : `Demandez à ${item.ownerFirstName} un moment qui vous arrange pour le récupérer.`}
-          </p>
-        </div>
-      </section>
-
-      <section className="mt-6 space-y-5 px-5">
-        <div>
-          <h2 className="font-display text-lg font-extrabold">
-            À propos de cet objet
-          </h2>
-          <p className="mt-2 text-[15px] leading-relaxed text-foreground/80">
-            {item.description}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
-            État
-          </p>
-          <p className="mt-1 text-[15px]">{item.condition}</p>
-        </div>
+      <section className="mt-5 space-y-5 px-5">
+        <p className="text-[15px] leading-relaxed text-foreground/80">
+          {item.description}{" "}
+          <span className="font-semibold text-foreground">
+            État : {item.condition}.
+          </span>
+        </p>
         <div className="flex items-center gap-3">
           <span className="grid size-11 shrink-0 place-items-center rounded-full bg-secondary font-display text-lg font-bold text-secondary-foreground">
             {item.ownerFirstName.charAt(0)}
