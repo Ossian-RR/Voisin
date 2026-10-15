@@ -3,7 +3,7 @@ import { LayoutGrid, Plus, Search, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const leftTabs = [
-  { to: "/", label: "Objets", icon: LayoutGrid, end: true },
+  { to: "/", label: "J’emprunte", icon: LayoutGrid, end: true },
   { to: "/search", label: "Je cherche", icon: Search, end: false },
 ];
 
@@ -24,13 +24,20 @@ export default function AppLayout() {
       >
         <ul className="grid grid-cols-4 items-end px-2 pt-2 pb-2">
           <li className="flex justify-center">
-            <Link
+            <NavLink
               to="/add"
-              aria-label="Mettre un objet à disposition"
-              className="-mt-7 grid size-14 place-items-center rounded-2xl bg-apricot text-apricot-foreground shadow-lg shadow-apricot/30 transition-transform active:scale-95"
+              className={({ isActive }) =>
+                cn(
+                  "flex flex-col items-center gap-1 pb-1.5 text-[11px] font-semibold transition-colors",
+                  isActive ? "text-primary" : "text-muted-foreground",
+                )
+              }
             >
-              <Plus className="size-7" strokeWidth={2.5} />
-            </Link>
+              <span className="-mt-7 grid size-14 place-items-center rounded-2xl bg-apricot text-apricot-foreground shadow-lg shadow-apricot/30 transition-transform active:scale-95">
+                <Plus className="size-7" strokeWidth={2.5} aria-hidden />
+              </span>
+              Je prête
+            </NavLink>
           </li>
           {leftTabs.map((tab) => (
             <li key={tab.to}>

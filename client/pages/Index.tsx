@@ -23,7 +23,7 @@ export default function Index() {
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("All");
   const wanted = sortRequests(useWantedRequests());
   const allItems = useAllItems();
-  useDocumentTitle("Objets");
+  useDocumentTitle("J’emprunte");
   const location = useLocation();
   const justPublished = (location.state as { showWanted?: string } | null)
     ?.showWanted;

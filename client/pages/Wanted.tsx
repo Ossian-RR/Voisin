@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, Send } from "lucide-react";
 import { toast } from "sonner";
-import { HOURS, QUARTER_MINUTES, displayName, todayIso } from "@shared/wanted";
+import { HOURS, displayName, minutesFor, todayIso } from "@shared/wanted";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/lib/profile";
@@ -72,8 +72,9 @@ export default function Wanted() {
               value={hour}
               onChange={(value) => {
                 setHour(value);
-                if (value && !minute) setMinute("00");
                 if (!value) setMinute("");
+                else if (!minute || !minutesFor(value).includes(minute))
+                  setMinute("00");
               }}
               options={HOURS}
               suffix="h"
@@ -82,7 +83,7 @@ export default function Wanted() {
               label="Minutes"
               value={minute}
               onChange={setMinute}
-              options={QUARTER_MINUTES}
+              options={minutesFor(hour)}
             />
           </div>
         </fieldset>
