@@ -3,7 +3,9 @@ import { residenceTitle } from "./residence";
 import {
   createWantedRequest,
   displayName,
-  isQuarterTime,
+  DEFAULT_HOUR,
+  DEFAULT_MINUTE,
+  isAllowedTime,
   todayIso,
   wantedWhenLabel,
 } from "./wanted";
@@ -114,21 +116,30 @@ describe("wantedWhenLabel", () => {
   });
 });
 
-describe("isQuarterTime", () => {
-  it("only accepts 00, 15, 30 and 45 minutes", () => {
-    for (const ok of ["00:00", "09:15", "14:30", "23:45"])
-      expect(isQuarterTime(ok)).toBe(true);
-    for (const ko of ["14:20", "14:05", "24:00", "7:15", ""])
-      expect(isQuarterTime(ko)).toBe(false);
+describe("isAllowedTime", () => {
+  it("only accepts quarter hours from 7:00 to 22:00", () => {
+    for (const ok of ["07:00", "09:15", "14:30", "21:45", "22:00"])
+      expect(isAllowedTime(ok)).toBe(true);
+    for (const ko of ["06:45", "22:15", "23:00", "00:00", "14:20", "7:15", ""])
+      expect(isAllowedTime(ko)).toBe(false);
   });
 
-  it("drops a time that is not on the quarter hour", () => {
-    const request = createWantedRequest(
-      { text: "scie", wantedAt: "14:20" },
-      author,
-      now,
-      "w1",
-    );
-    expect(request?.wantedAt).toBeUndefined();
+  it("drops a time outside the allowed slots", () => {
+    for (const wantedAt of ["14:20", "06:30", "22:30"]) {
+      const request = createWantedRequest(
+        { text: "scie", wantedAt },
+        author,
+        now,
+        "w1",
+      );
+      expect(request?.wantedAt).toBeUndefined();
+    }
+  });
+});
+
+describe("default time", () => {
+  it("is 12:00, an allowed slot", () => {
+    expect(`${DEFAULT_HOUR}:${DEFAULT_MINUTE}`).toBe("12:00");
+    expect(isAllowedTime(`${DEFAULT_HOUR}:${DEFAULT_MINUTE}`)).toBe(true);
   });
 });

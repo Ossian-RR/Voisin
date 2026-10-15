@@ -28,26 +28,38 @@ export function createWantedRequest(
     text,
     wantedOn: input.wantedOn || undefined,
     wantedAt:
-      input.wantedAt && isQuarterTime(input.wantedAt)
+      input.wantedAt && isAllowedTime(input.wantedAt)
         ? input.wantedAt
         : undefined,
     createdAt: now.toISOString(),
   };
 }
 
-/** Searches can only be set to the quarter hour. */
+/** Searches are set to the quarter hour, between 7:00 and 22:00. */
 export const QUARTER_MINUTES = ["00", "15", "30", "45"] as const;
-export const HOURS = Array.from({ length: 24 }, (_, hour) =>
-  String(hour).padStart(2, "0"),
+export const FIRST_HOUR = 7;
+export const LAST_HOUR = 22;
+export const HOURS = Array.from(
+  { length: LAST_HOUR - FIRST_HOUR + 1 },
+  (_, i) => String(FIRST_HOUR + i).padStart(2, "0"),
 );
 
-/** "14:30" passes, "14:20" or "7:5" does not. */
-export function isQuarterTime(time: string): boolean {
+/** "à l’heure suivante :" starts at 12:00; the neighbor can change or clear it. */
+export const DEFAULT_HOUR = "12";
+export const DEFAULT_MINUTE = "00";
+
+/** 22h only allows 22:00, so the time never goes past 22:00. */
+export function minutesFor(hour: string): readonly string[] {
+  return Number(hour) === LAST_HOUR ? ["00"] : QUARTER_MINUTES;
+}
+
+/** "14:30" and "22:00" pass; "14:20", "06:45", "22:15" or "7:15" do not. */
+export function isAllowedTime(time: string): boolean {
   const match = /^(\d{2}):(\d{2})$/.exec(time);
   return (
     !!match &&
     HOURS.includes(match[1]) &&
-    (QUARTER_MINUTES as readonly string[]).includes(match[2])
+    minutesFor(match[1]).includes(match[2])
   );
 }
 

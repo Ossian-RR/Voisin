@@ -243,41 +243,30 @@ export default function AddItem() {
           {errors.condition && <FieldError>{errors.condition}</FieldError>}
         </fieldset>
 
-        <label
-          htmlFor="item-gift"
-          className={cn(
-            "mt-5 flex cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-colors",
-            draft.isGift
-              ? "border-apricot/50 bg-accent"
-              : "border-border bg-background",
-          )}
-        >
-          <span
+        <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
+          <label
+            htmlFor="item-gift"
             className={cn(
-              "grid size-10 shrink-0 place-items-center rounded-xl transition-colors",
+              "inline-flex cursor-pointer items-center gap-3 rounded-full border py-1.5 pr-1.5 pl-4 font-bold transition-colors",
               draft.isGift
-                ? "bg-apricot text-apricot-foreground"
-                : "bg-secondary text-secondary-foreground",
+                ? "border-apricot/50 bg-accent text-accent-foreground"
+                : "border-border bg-background",
             )}
           >
-            <Gift className="size-5" aria-hidden />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block font-bold">Je donne</span>
-            <span className="block text-xs text-muted-foreground">
-              {draft.isGift
-                ? "Vous le donnez : il ne vous sera pas rendu."
-                : "Désactivé : vous le prêtez et il vous sera rendu."}
+            Je donne
+            <Switch
+              id="item-gift"
+              checked={draft.isGift}
+              onCheckedChange={(isGift) => update({ isGift })}
+              className="data-[state=checked]:bg-apricot"
+            />
+          </label>
+          {draft.isGift && (
+            <span className="text-xs font-semibold text-accent-foreground">
+              Il ne vous sera pas rendu.
             </span>
-          </span>
-          <Switch
-            id="item-gift"
-            aria-label="Je donne"
-            checked={draft.isGift}
-            onCheckedChange={(isGift) => update({ isGift })}
-            className="data-[state=checked]:bg-apricot"
-          />
-        </label>
+          )}
+        </div>
 
         <button
           type="submit"
