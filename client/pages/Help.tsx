@@ -14,13 +14,6 @@ import { useDocumentTitle } from "@/components/layout/PageHeader";
 import { useProfile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
-const STEPS = [
-  "Vous contactez le responsable de l’app.",
-  "Il crée votre résidence, ses bâtiments et leurs étages.",
-  "Il ajoute chaque voisin à son logement (par exemple A-3a).",
-  "Il désigne un administrateur parmi les voisins.",
-];
-
 export default function Help() {
   const profile = useProfile();
   const [topic, setTopic] = useState<HelpTopic>(HELP_TOPICS[0]);
@@ -43,22 +36,9 @@ export default function Help() {
 
   return (
     <div className="flex flex-col">
-      <section aria-label="Comment ça marche" className="mx-5 mt-5">
-        <ol className="space-y-2.5">
-          {STEPS.map((step, index) => (
-            <li key={step} className="flex items-start gap-3">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-secondary text-sm font-bold text-secondary-foreground">
-                {index + 1}
-              </span>
-              <span className="pt-0.5 text-[15px] leading-snug">{step}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
       <form
         onSubmit={handleSubmit}
-        className="mx-5 mt-6 rounded-3xl border border-border bg-card p-4 shadow-sm"
+        className="mx-5 mt-5 rounded-3xl border border-border bg-card p-4 shadow-sm"
       >
         <h2 className="font-display text-lg font-extrabold">
           Écrire au responsable

@@ -9,7 +9,7 @@
 
 ## Brand direction
 
-- **Name:** Common Shed. A shared garden shed is the picture of what the app does.
+- **Name:** Voisin (French for "neighbor"). Logo: an orange roof over a white V on green (logo A "Le toit").
 - **Mark:** a rounded forest-green tile with a shed icon.
 - **Accent:** apricot, used for the Add button, location chip, and Food corner. Warm and friendly, never used for errors.
 - **Tone:** short sentences. "Ready to lend." "Lent out for now." Avoid jargon.

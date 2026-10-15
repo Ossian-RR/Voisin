@@ -76,9 +76,9 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 
 **Story:** As a neighbor, I want to contact the person who runs the app, so they set up our residence.
 
-- AC1: The last tab, "Aide", has no page title; it opens directly on the numbered steps: contact the app manager, who creates the residence, its buildings and floors, adds each neighbor to their flat, and designates an administrator among the neighbors.
+- AC1: The last tab, "Aide", has no page title and no list of steps; it opens directly on the form. The app manager creates the residence, its buildings and floors, adds each neighbor to their flat, and designates an administrator among the neighbors.
 - AC2: "Écrire au responsable": a topic (Créer notre résidence, Ajouter des voisins ou des étages, Désigner un administrateur, Autre question) and a free message.
-- AC3: "Envoyer" (no icon) becomes clickable once the message has at least 100 characters; below it a counter shows "100 caractères minimum · 37/100". It opens the neighbor's e-mail app with the message ready, signed with their name, flat and residence. The recipient is `APP_MANAGER.email` in `shared/residence.ts`; while it is empty, the e-mail opens without a recipient.
+- AC3: "Envoyer" (no icon) becomes clickable once the message has at least 50 characters; below it a counter shows "50 caractères minimum · 37/50". It opens the neighbor's e-mail app with the message ready, signed with their name, flat and residence. The recipient is `APP_MANAGER.email` in `shared/residence.ts`; while it is empty, the e-mail opens without a recipient.
 
 ## 9. Opening screen
 

@@ -24,7 +24,7 @@ export const APP_MANAGER = {
 };
 
 /** The "Envoyer" button of the Aide form turns active from this many characters. */
-export const MIN_MESSAGE_LENGTH = 100;
+export const MIN_MESSAGE_LENGTH = 50;
 
 export const HELP_TOPICS = [
   "Créer notre résidence",

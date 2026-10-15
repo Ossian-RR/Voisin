@@ -5,7 +5,7 @@
 
 @layer base {
   /**
-   * Common Shed theme
+   * Voisin theme
    * tailwind.config.ts expects every color variable to be an HSL channel triplet
    * (for example "163 45% 26%"), wrapped as hsl(var(--name)) there.
    */

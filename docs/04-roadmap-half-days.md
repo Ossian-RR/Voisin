@@ -26,7 +26,7 @@ Status markers: **[done]** means the first pass is already in the codebase.
 
 ### 1.1 Brand and palette [done in first pass]
 - **Goal:** Lock the name, colors, and fonts.
-- **Tasks:** Confirm the name "Common Shed" with the neighbors who will use it. Check each color pair in `01-design.md` with a contrast checker. Change HSL values in `client/global.css` only.
+- **Tasks:** Confirm the name "Voisin" with the neighbors who will use it. Check each color pair in `01-design.md` with a contrast checker. Change HSL values in `client/global.css` only.
 - **Tools:** WebAIM contrast checker, Google Fonts.
 - **Done when:** Body text and button text both pass WCAG AA contrast.
 
