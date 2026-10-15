@@ -44,6 +44,10 @@ export const HOURS = Array.from(
   (_, i) => String(FIRST_HOUR + i).padStart(2, "0"),
 );
 
+/** "à l’heure suivante :" starts at 12:00; the neighbor can change or clear it. */
+export const DEFAULT_HOUR = "12";
+export const DEFAULT_MINUTE = "00";
+
 /** 22h only allows 22:00, so the time never goes past 22:00. */
 export function minutesFor(hour: string): readonly string[] {
   return Number(hour) === LAST_HOUR ? ["00"] : QUARTER_MINUTES;

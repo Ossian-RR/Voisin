@@ -2,7 +2,14 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, Send } from "lucide-react";
 import { toast } from "sonner";
-import { HOURS, displayName, minutesFor, todayIso } from "@shared/wanted";
+import {
+  DEFAULT_HOUR,
+  DEFAULT_MINUTE,
+  HOURS,
+  displayName,
+  minutesFor,
+  todayIso,
+} from "@shared/wanted";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/lib/profile";
@@ -11,8 +18,8 @@ import { publishWantedRequest } from "@/lib/wanted-requests";
 export default function Wanted() {
   const [text, setText] = useState("");
   const [wantedOn, setWantedOn] = useState("");
-  const [hour, setHour] = useState("");
-  const [minute, setMinute] = useState("");
+  const [hour, setHour] = useState<string>(DEFAULT_HOUR);
+  const [minute, setMinute] = useState<string>(DEFAULT_MINUTE);
   const wantedAt = hour && minute ? `${hour}:${minute}` : "";
   const navigate = useNavigate();
   const profile = useProfile();

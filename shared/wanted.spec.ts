@@ -3,6 +3,8 @@ import { residenceTitle } from "./residence";
 import {
   createWantedRequest,
   displayName,
+  DEFAULT_HOUR,
+  DEFAULT_MINUTE,
   isAllowedTime,
   todayIso,
   wantedWhenLabel,
@@ -132,5 +134,12 @@ describe("isAllowedTime", () => {
       );
       expect(request?.wantedAt).toBeUndefined();
     }
+  });
+});
+
+describe("default time", () => {
+  it("is 12:00, an allowed slot", () => {
+    expect(`${DEFAULT_HOUR}:${DEFAULT_MINUTE}`).toBe("12:00");
+    expect(isAllowedTime(`${DEFAULT_HOUR}:${DEFAULT_MINUTE}`)).toBe(true);
   });
 });

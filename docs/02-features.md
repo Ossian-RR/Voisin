@@ -55,7 +55,7 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 
 - AC1: The second tab, "Je cherche", opens a form headed with the neighbor's civility and family name followed by "recherche" (e.g. "Madame Martin recherche"). Civility and name come from the Profil page.
 - AC2: The text field is free: no filter, no placeholder or pre-filled text, no autocomplete, autocorrect or spellcheck. The text is saved exactly as typed (only surrounding spaces are trimmed).
-- AC3: Below it, an optional date field labelled "pour la date du" (past dates cannot be picked), then an optional time labelled "à l’heure suivante :", picked with two dropdowns: hour (07h–22h) and minutes (00, 15, 30 or 45; only 00 at 22h, so nothing after 22:00). Cards show both, e.g. "Pour le mardi 20 octobre à 14h30".
+- AC3: Below it, an optional date field labelled "pour la date du" (past dates cannot be picked), then an optional time labelled "à l’heure suivante :", picked with two dropdowns: hour (07h–22h) and minutes (00, 15, 30 or 45; only 00 at 22h, so nothing after 22:00). It starts at **12h00** by default; choosing "Heure" (empty) removes the time. Cards show both, e.g. "Pour le mardi 20 octobre à 14h30".
 - AC4: "Publier ma recherche" is disabled while the text is empty. Publishing confirms with a toast and opens the home page, scrolled to the new search.
 - AC5: Published searches appear at the bottom of the home page under "Vos voisins recherchent", newest first. Each card shows who is looking ("Madame Martin recherche"), the text and the wished date. Only the author sees "Retirer". The Recherche tab has no list of its own. (Kept in local storage until the data phase, so only visible in the same browser for now.)
 
