@@ -21,7 +21,7 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 
 - AC1: Tapping a card photo or title opens `/items/:id`.
 - AC2: The page shows a photo carousel with a counter (for example `1 / 3`) and dots, with no caption on the photo. Swiping changes the photo.
-- AC3: The page shows status, title, the owner's flat reference and first name, description, and condition. The owner block spells the flat out ("Bâtiment A, 3e étage, porte a").
+- AC3: The page shows the status badge (no category chip), title, the owner's flat reference and first name, then the description with the condition at its end ("… État : Bon état."), with no heading and no separate condition block. There is no availability panel; the badge and the button carry the status. The owner block spells the flat out ("Bâtiment A, 3e étage, porte a").
 - AC4: An unknown or removed item id shows "Item not found" with a link back to the list. No blank screen.
 - AC5: The "Ask to borrow" button stays reachable above the tab bar while scrolling.
 - AC6: When the item is `unavailable`, it reads **"Emprunté"** (badge) and "Emprunté en ce moment" (panel and disabled button).
@@ -42,7 +42,7 @@ Each feature lists user stories and acceptance criteria (AC). A feature is done 
 **Story:** As a neighbor, I want to post an item to lend, or to give away for good.
 
 - AC1: The "+" tab (far left of the tab bar) opens a page headed "Pour mes voisins, je mets à disposition…" with, in this order: title, description, photos, condition (Bon état or Neuf) and the "Je donne" toggle.
-- AC2: "Je donne" is a short pill toggle with no icon or explanation. Off = a loan (returned to the owner). On = a gift: the pill turns orange, "Il ne vous sera pas rendu." appears beside it and the button reads "Publier le don".
+- AC2: "Je donne" is a short pill toggle with no icon or explanation. Off = a loan (returned to the owner). On = a gift: the pill turns orange, "Il ne vous sera pas rendu." appears beside it and the button reads "Publier le don" (otherwise "Publier").
 - AC3: Photos come from the phone's library, at least 2 and at most 5. Each is shrunk (longest side 720 px, JPEG) and can be removed before publishing.
 - AC4: Publishing with missing fields shows one message per field ("Ajoutez au moins 2 photos.", "Ajoutez encore 1 photo.", …).
 - AC5: Once published, the item appears first on the home page. Gifts are set apart from loans by an orange "À donner" badge with a gift icon and an orange card border. Their page reads "Donné par …" and the button "Je le veux".

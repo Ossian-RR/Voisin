@@ -279,7 +279,7 @@ export default function AddItem() {
           )}
         >
           {draft.isGift && <Gift className="size-5" aria-hidden />}
-          {draft.isGift ? "Publier le don" : "Publier l’objet"}
+          {draft.isGift ? "Publier le don" : "Publier"}
         </button>
       </form>
     </div>
