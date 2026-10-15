@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import AddItem from "./pages/AddItem";
+import Help from "./pages/Help";
 import Index from "./pages/Index";
 import ItemDetail from "./pages/ItemDetail";
 import Placeholder from "./pages/Placeholder";
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/add" element={<AddItem />} />
             <Route path="/requests" element={<Requests />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/help" element={<Help />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Route>

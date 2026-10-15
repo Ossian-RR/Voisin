@@ -57,6 +57,8 @@ export interface NeighborProfile {
   location: string;
   /** Profile photo as a small JPEG data URL. Optional. */
   photo?: string;
+  /** Building administrator, designated by the app manager (see the Aide tab). */
+  isAdmin?: boolean;
 }
 
 /** Something a neighbor is looking for, typed freely. */

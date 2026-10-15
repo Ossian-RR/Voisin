@@ -102,3 +102,26 @@ describe("profile photo", () => {
     expect(hasFieldChanges({ ...base, civility: "Famille" }, base)).toBe(true);
   });
 });
+
+describe("administrator", () => {
+  const base = {
+    civility: "Madame" as const,
+    lastName: "Martin",
+    location: "B-2c",
+  };
+
+  it("keeps the administrator flag only when it is on", () => {
+    expect(cleanProfile({ ...base, isAdmin: true }).isAdmin).toBe(true);
+    expect("isAdmin" in cleanProfile({ ...base, isAdmin: false })).toBe(false);
+  });
+
+  it("counts ticking the box as a change to save", () => {
+    expect(hasFieldChanges({ ...base, isAdmin: true }, base)).toBe(true);
+    expect(hasFieldChanges({ ...base, isAdmin: false }, base)).toBe(false);
+  });
+
+  it("rejects a stored flag that is not a boolean", () => {
+    expect(isNeighborProfile({ ...base, isAdmin: "oui" })).toBe(false);
+    expect(isNeighborProfile({ ...base, isAdmin: true })).toBe(true);
+  });
+});

@@ -2,6 +2,7 @@ import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import {
   Camera,
+  ShieldCheck,
   ChevronDown,
   ChevronRight,
   DoorOpen,
@@ -29,6 +30,7 @@ import { StatusBadge } from "@/components/items/StatusBadge";
 import { toAvatarDataUrl } from "@/lib/image";
 import { saveProfile, saveProfilePhoto, useProfile } from "@/lib/profile";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { useWantedRequests } from "@/lib/wanted-requests";
 
@@ -79,8 +81,8 @@ export default function Profile() {
     const found = validateProfile(draft);
     setErrors(found);
     if (Object.keys(found).length > 0) return;
-    const { civility, lastName, location } = draft;
-    saveProfile({ civility, lastName, location });
+    const { civility, lastName, location, isAdmin } = draft;
+    saveProfile({ civility, lastName, location, isAdmin });
     setDraft(cleanProfile(draft));
     toast.success("Profil enregistré");
   };
@@ -128,6 +130,12 @@ export default function Profile() {
             <p className="font-display truncate text-2xl leading-tight font-extrabold tracking-tight">
               {displayName(profile)}
             </p>
+            {profile.isAdmin && (
+              <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-bold text-primary-foreground">
+                <ShieldCheck className="size-3" aria-hidden />
+                Administrateur
+              </span>
+            )}
             {isValidLocation(profile.location) && (
               <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground">
                 <DoorOpen className="size-4 shrink-0" aria-hidden />
@@ -264,6 +272,26 @@ export default function Profile() {
               {errors.location}
             </p>
           )}
+
+          <label
+            htmlFor="profile-admin"
+            className="mt-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-border bg-background p-3"
+          >
+            <Checkbox
+              id="profile-admin"
+              checked={Boolean(draft.isAdmin)}
+              onCheckedChange={(checked) =>
+                update({ isAdmin: checked === true })
+              }
+              className="mt-0.5"
+            />
+            <span className="min-w-0">
+              <span className="block text-sm font-bold">Administrateur</span>
+              <span className="block text-xs text-muted-foreground">
+                Désigné par le responsable de l’app pour gérer la résidence.
+              </span>
+            </span>
+          </label>
 
           <button
             type="submit"

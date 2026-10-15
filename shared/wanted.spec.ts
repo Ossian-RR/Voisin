@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { residenceTitle } from "./residence";
+import { helpMailto, residenceTitle } from "./residence";
 import {
   createWantedRequest,
   displayName,
@@ -141,5 +141,26 @@ describe("default time", () => {
   it("is 12:00, an allowed slot", () => {
     expect(`${DEFAULT_HOUR}:${DEFAULT_MINUTE}`).toBe("12:00");
     expect(isAllowedTime(`${DEFAULT_HOUR}:${DEFAULT_MINUTE}`)).toBe(true);
+  });
+});
+
+describe("helpMailto", () => {
+  it("addresses the app manager with the topic and who is writing", () => {
+    const link = helpMailto(
+      "responsable@example.org",
+      "Créer notre résidence",
+      "Bonjour, nous sommes 12 logements.",
+      { name: "Madame Martin", location: "B-2c" },
+      { address: "333 rue des Pyrénées" },
+    );
+    expect(link.startsWith("mailto:responsable%40example.org?subject=")).toBe(
+      true,
+    );
+    const params = new URLSearchParams(link.split("?")[1]);
+    expect(params.get("subject")).toBe(
+      "[Résidence · 333 rue des Pyrénées] Créer notre résidence",
+    );
+    expect(params.get("body")).toContain("Bonjour, nous sommes 12 logements.");
+    expect(params.get("body")).toContain("Madame Martin, logement B-2c");
   });
 });
