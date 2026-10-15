@@ -16,6 +16,7 @@ import Profile from "./pages/Profile";
 import Requests from "./pages/Requests";
 import Wanted from "./pages/Wanted";
 import NotFound from "./pages/NotFound";
+import { hideSplash } from "./lib/splash";
 
 const queryClient = new QueryClient();
 
@@ -44,3 +45,4 @@ const App = () => (
 );
 
 createRoot(document.getElementById("root")!).render(<App />);
+hideSplash();

@@ -11,7 +11,6 @@ export function cleanProfile(profile: NeighborProfile): NeighborProfile {
     lastName: profile.lastName.trim().replace(/\s+/g, " "),
     location: normalizeLocation(profile.location),
     ...(isPhoto(profile.photo) ? { photo: profile.photo } : {}),
-    ...(profile.isAdmin ? { isAdmin: true } : {}),
   };
 }
 
@@ -29,8 +28,7 @@ export function hasFieldChanges(
   return (
     a.civility !== b.civility ||
     a.lastName !== b.lastName ||
-    a.location !== b.location ||
-    Boolean(a.isAdmin) !== Boolean(b.isAdmin)
+    a.location !== b.location
   );
 }
 
@@ -55,7 +53,6 @@ export function isNeighborProfile(value: unknown): value is NeighborProfile {
     CIVILITIES.includes(profile.civility as NeighborProfile["civility"]) &&
     typeof profile.lastName === "string" &&
     typeof profile.location === "string" &&
-    (profile.photo === undefined || isPhoto(profile.photo)) &&
-    (profile.isAdmin === undefined || typeof profile.isAdmin === "boolean")
+    (profile.photo === undefined || isPhoto(profile.photo))
   );
 }

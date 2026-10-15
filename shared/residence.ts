@@ -17,11 +17,14 @@ export function residenceTitle(residence: Residence): string {
 /**
  * Person who runs the app: creates the residence, buildings, floors and
  * neighbors, and designates an administrator. Messages from the Aide tab go
- * to this address. Leave empty until it is known: the form then says so.
+ * to this address. While it is empty, the e-mail opens without a recipient.
  */
 export const APP_MANAGER = {
   email: "",
 };
+
+/** The "Envoyer" button of the Aide form turns active from this many characters. */
+export const MIN_MESSAGE_LENGTH = 100;
 
 export const HELP_TOPICS = [
   "Créer notre résidence",

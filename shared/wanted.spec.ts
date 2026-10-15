@@ -164,3 +164,16 @@ describe("helpMailto", () => {
     expect(params.get("body")).toContain("Madame Martin, logement B-2c");
   });
 });
+
+describe("helpMailto without a manager address", () => {
+  it("still opens a ready message, with no recipient", () => {
+    const link = helpMailto(
+      "",
+      "Autre question",
+      "Bonjour",
+      { name: "Madame Martin", location: "B-2c" },
+      { address: "333 rue des Pyrénées" },
+    );
+    expect(link.startsWith("mailto:?subject=")).toBe(true);
+  });
+});

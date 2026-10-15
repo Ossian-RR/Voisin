@@ -1,15 +1,16 @@
 import { useState, type FormEvent } from "react";
-import { ChevronDown, Mail } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   APP_MANAGER,
   HELP_TOPICS,
+  MIN_MESSAGE_LENGTH,
   RESIDENCE,
   helpMailto,
   residenceTitle,
   type HelpTopic,
 } from "@shared/residence";
 import { displayName } from "@shared/wanted";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { useDocumentTitle } from "@/components/layout/PageHeader";
 import { useProfile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
@@ -24,8 +25,9 @@ export default function Help() {
   const profile = useProfile();
   const [topic, setTopic] = useState<HelpTopic>(HELP_TOPICS[0]);
   const [message, setMessage] = useState("");
-  const hasManager = APP_MANAGER.email.trim() !== "";
-  const canSend = hasManager && message.trim() !== "";
+  useDocumentTitle("Aide");
+  const length = message.trim().length;
+  const canSend = length >= MIN_MESSAGE_LENGTH;
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -41,15 +43,8 @@ export default function Help() {
 
   return (
     <div className="flex flex-col">
-      <PageHeader title="Aide">
-        Contactez le responsable de l’app pour mettre en place votre résidence.
-      </PageHeader>
-
-      <section aria-labelledby="steps-heading" className="mx-5 mt-4">
-        <h2 id="steps-heading" className="font-display text-lg font-extrabold">
-          Comment ça marche
-        </h2>
-        <ol className="mt-3 space-y-2.5">
+      <section aria-label="Comment ça marche" className="mx-5 mt-5">
+        <ol className="space-y-2.5">
           {STEPS.map((step, index) => (
             <li key={step} className="flex items-start gap-3">
               <span className="grid size-7 shrink-0 place-items-center rounded-full bg-secondary text-sm font-bold text-secondary-foreground">
@@ -116,13 +111,15 @@ export default function Help() {
               : "cursor-not-allowed bg-muted text-muted-foreground",
           )}
         >
-          <Mail className="size-5" aria-hidden />
-          Envoyer au responsable
+          Envoyer
         </button>
-        <p className="mt-2 text-center text-xs text-muted-foreground">
-          {hasManager
+        <p
+          className="mt-2 text-center text-xs text-muted-foreground"
+          aria-live="polite"
+        >
+          {canSend
             ? "Votre application e-mail s’ouvre avec le message prêt à envoyer."
-            : "L’adresse du responsable n’est pas encore renseignée."}
+            : `${MIN_MESSAGE_LENGTH} caractères minimum · ${length}/${MIN_MESSAGE_LENGTH}`}
         </p>
       </form>
     </div>
