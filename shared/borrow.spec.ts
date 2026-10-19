@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import type { BorrowRequest } from "./api";
-import { canRequest, createBorrowRequest, findOpenRequest, sortRequests } from "./borrow";
+import {
+  canRequest,
+  createBorrowRequest,
+  findOpenRequest,
+  sortRequests,
+} from "./borrow";
 import { findItem, items } from "./mock";
 
 const drill = findItem(items, "cordless-drill")!;
@@ -35,7 +40,10 @@ describe("canRequest", () => {
   });
 
   it("allows a new request once the previous one was declined", () => {
-    const declined: BorrowRequest = { ...createBorrowRequest(drill, "me", now, "r1"), status: "declined" };
+    const declined: BorrowRequest = {
+      ...createBorrowRequest(drill, "me", now, "r1"),
+      status: "declined",
+    };
     expect(canRequest(drill, [declined], "me")).toBe(true);
   });
 
@@ -47,8 +55,21 @@ describe("canRequest", () => {
 
 describe("sortRequests", () => {
   it("puts the newest request first", () => {
-    const older = createBorrowRequest(drill, "me", new Date("2026-10-01T00:00:00Z"), "old");
-    const newer = createBorrowRequest(drill, "me", new Date("2026-10-09T00:00:00Z"), "new");
-    expect(sortRequests([older, newer]).map((r) => r.id)).toEqual(["new", "old"]);
+    const older = createBorrowRequest(
+      drill,
+      "me",
+      new Date("2026-10-01T00:00:00Z"),
+      "old",
+    );
+    const newer = createBorrowRequest(
+      drill,
+      "me",
+      new Date("2026-10-09T00:00:00Z"),
+      "new",
+    );
+    expect(sortRequests([older, newer]).map((r) => r.id)).toEqual([
+      "new",
+      "old",
+    ]);
   });
 });

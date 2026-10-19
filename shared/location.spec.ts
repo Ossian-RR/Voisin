@@ -18,7 +18,9 @@ describe("describeLocation", () => {
   it("spells the flat out in French", () => {
     expect(describeLocation("A-3a")).toBe("Bâtiment A, 3e étage, porte a");
     expect(describeLocation("C-1b")).toBe("Bâtiment C, 1er étage, porte b");
-    expect(describeLocation("B-0c")).toBe("Bâtiment B, rez-de-chaussée, porte c");
+    expect(describeLocation("B-0c")).toBe(
+      "Bâtiment B, rez-de-chaussée, porte c",
+    );
   });
 });
 

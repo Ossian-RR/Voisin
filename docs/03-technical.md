@@ -2,16 +2,16 @@
 
 ## Stack
 
-| Layer     | Choice                                       | Why                                              |
-| --------- | -------------------------------------------- | ------------------------------------------------ |
-| UI        | React 18, TypeScript                          | Already set up in this project                   |
-| Routing   | React Router 6 (SPA mode)                     | Nested routes let one layout wrap every page     |
-| Styling   | Tailwind CSS 3 config with HSL CSS variables  | Design tokens in one place                       |
-| Build     | Vite                                          | Fast dev server with hot reload                  |
-| Server    | Express, inside the Vite dev server           | Holds secrets and database access                |
-| Database  | Neon Postgres                                 | Serverless Postgres, free tier for small projects |
-| Tests     | Vitest                                        | Same tool as Vite, no extra config               |
-| Icons     | Lucide React                                  | Consistent stroke icons                          |
+| Layer    | Choice                                       | Why                                               |
+| -------- | -------------------------------------------- | ------------------------------------------------- |
+| UI       | React 18, TypeScript                         | Already set up in this project                    |
+| Routing  | React Router 6 (SPA mode)                    | Nested routes let one layout wrap every page      |
+| Styling  | Tailwind CSS 3 config with HSL CSS variables | Design tokens in one place                        |
+| Build    | Vite                                         | Fast dev server with hot reload                   |
+| Server   | Express, inside the Vite dev server          | Holds secrets and database access                 |
+| Database | Neon Postgres                                | Serverless Postgres, free tier for small projects |
+| Tests    | Vitest                                       | Same tool as Vite, no extra config                |
+| Icons    | Lucide React                                 | Consistent stroke icons                           |
 
 Keep to the current stack. Do not add a second UI library or state manager for the first version.
 
@@ -102,14 +102,14 @@ Rules:
 
 ## API (kept small)
 
-| Method | Path                              | Purpose                                        |
-| ------ | --------------------------------- | ---------------------------------------------- |
-| GET    | `/api/items`                      | Visible items (excludes `removed`)             |
-| GET    | `/api/items/:id`                  | One item with photos                           |
-| POST   | `/api/items`                      | Owner posts a new item                         |
-| DELETE | `/api/items/:id`                  | Owner removes an item (sets `removed`)         |
-| POST   | `/api/items/:id/borrow-requests`  | Borrower asks to borrow                        |
-| GET    | `/api/food-requests`              | Open food requests                             |
+| Method | Path                             | Purpose                                |
+| ------ | -------------------------------- | -------------------------------------- |
+| GET    | `/api/items`                     | Visible items (excludes `removed`)     |
+| GET    | `/api/items/:id`                 | One item with photos                   |
+| POST   | `/api/items`                     | Owner posts a new item                 |
+| DELETE | `/api/items/:id`                 | Owner removes an item (sets `removed`) |
+| POST   | `/api/items/:id/borrow-requests` | Borrower asks to borrow                |
+| GET    | `/api/food-requests`             | Open food requests                     |
 
 Add these only in phase 4. Until then the UI reads `shared/mock.ts`. Each route lives in `server/routes/` and is registered in `server/index.ts`.
 
@@ -161,11 +161,11 @@ pnpm build:pages # Static build for GitHub Pages (served under /Voisin/)
 
 Three workflows use the official [Claude Code GitHub Action](https://github.com/anthropics/claude-code-action) (`anthropics/claude-code-action@v1`):
 
-| Workflow | When | What Claude does |
-| --- | --- | --- |
-| `claude-review.yml` "Relecture Claude" | Every pull request (not drafts, not forks) | Runs the official **code-review** skill (plugin `code-review@claude-code-plugins` from github.com/anthropics/claude-code) and comments bugs on the PR lines. |
-| `claude-ci-failure.yml` "Analyse des échecs par Claude" | "Publier la maquette" fails | Reads the failed run's log and opens an issue: failing step, likely cause, fix. |
-| `claude.yml` "Claude (@claude)" | A comment containing `@claude` | Answers in the thread (question, bug, log to explain). Only people with write access can trigger it. |
+| Workflow                                                | When                                       | What Claude does                                                                                                                                             |
+| ------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `claude-review.yml` "Relecture Claude"                  | Every pull request (not drafts, not forks) | Runs the official **code-review** skill (plugin `code-review@claude-code-plugins` from github.com/anthropics/claude-code) and comments bugs on the PR lines. |
+| `claude-ci-failure.yml` "Analyse des échecs par Claude" | "Publier la maquette" fails                | Reads the failed run's log and opens an issue: failing step, likely cause, fix.                                                                              |
+| `claude.yml` "Claude (@claude)"                         | A comment containing `@claude`             | Answers in the thread (question, bug, log to explain). Only people with write access can trigger it.                                                         |
 
 Project rules for the reviewer live in `CLAUDE.md` (French UI text, `X-Nn` flats, local storage, mobile width, tests in `shared/`).
 

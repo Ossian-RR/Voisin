@@ -26,11 +26,11 @@ The first version targets one residential area. Expanding beyond that is out of 
 
 ## Item statuses
 
-| Status        | Meaning                                                  | Who sees it                                 |
-| ------------- | -------------------------------------------------------- | ------------------------------------------- |
-| `available`   | Ready to lend. The Ask to borrow button is active.       | Everyone                                    |
-| `unavailable` | Currently lent out. Shown as "Unavailable", CTA disabled. | Everyone                                   |
-| `removed`     | Deleted by the owner. Hidden from every list.            | Owner only, through their own history       |
+| Status        | Meaning                                                   | Who sees it                           |
+| ------------- | --------------------------------------------------------- | ------------------------------------- |
+| `available`   | Ready to lend. The Ask to borrow button is active.        | Everyone                              |
+| `unavailable` | Currently lent out. Shown as "Unavailable", CTA disabled. | Everyone                              |
+| `removed`     | Deleted by the owner. Hidden from every list.             | Owner only, through their own history |
 
 ## Glossary
 

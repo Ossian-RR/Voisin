@@ -18,19 +18,19 @@
 
 Colors are stored in `client/global.css` as HSL channel triplets (for example `163 45% 26%`). `tailwind.config.ts` wraps them as `hsl(var(--name))`, so you never write `hsl()` in components. Use Tailwind classes such as `bg-primary` or `text-muted-foreground`.
 
-| Token                    | Value             | Use                                   |
-| ------------------------ | ----------------- | ------------------------------------- |
-| `--background`           | `40 33% 97%`      | Page background (warm cream)          |
-| `--foreground`           | `165 25% 11%`     | Main text (ink green-black)           |
-| `--primary`              | `163 45% 26%`     | Buttons, active tab, logo tile        |
-| `--secondary`            | `36 38% 92%`      | Chips, active tab pill                |
-| `--muted-foreground`     | `160 7% 40%`      | Secondary text                        |
-| `--accent`               | `18 82% 94%`      | Food corner background                |
-| `--apricot`              | `16 80% 52%`      | Add button, location icon             |
-| `--success` / `-soft`    | `150 45% 30%` / `146 40% 91%` | Available status           |
-| `--warning` / `-soft`    | `32 85% 30%` / `40 90% 91%`   | Unavailable status         |
-| `--border`               | `36 20% 88%`      | Card and divider lines                |
-| `--radius`               | `1rem`            | Base corner radius (cards, buttons)   |
+| Token                 | Value                         | Use                                 |
+| --------------------- | ----------------------------- | ----------------------------------- |
+| `--background`        | `40 33% 97%`                  | Page background (warm cream)        |
+| `--foreground`        | `165 25% 11%`                 | Main text (ink green-black)         |
+| `--primary`           | `163 45% 26%`                 | Buttons, active tab, logo tile      |
+| `--secondary`         | `36 38% 92%`                  | Chips, active tab pill              |
+| `--muted-foreground`  | `160 7% 40%`                  | Secondary text                      |
+| `--accent`            | `18 82% 94%`                  | Food corner background              |
+| `--apricot`           | `16 80% 52%`                  | Add button, location icon           |
+| `--success` / `-soft` | `150 45% 30%` / `146 40% 91%` | Available status                    |
+| `--warning` / `-soft` | `32 85% 30%` / `40 90% 91%`   | Unavailable status                  |
+| `--border`            | `36 20% 88%`                  | Card and divider lines              |
+| `--radius`            | `1rem`                        | Base corner radius (cards, buttons) |
 
 Contrast: body text, primary buttons, warning text, and accent text pass WCAG AA (4.5:1 for text). Apricot is used only for icons and the Add button, which need 3:1. Check any new color pair with a contrast checker before shipping.
 
@@ -62,15 +62,15 @@ Contrast: body text, primary buttons, warning text, and accent text pass WCAG AA
 
 ## Component inventory
 
-| Component             | File                                      | Notes                                         |
-| --------------------- | ----------------------------------------- | --------------------------------------------- |
-| App layout            | `client/components/layout/AppLayout.tsx`  | Header, `Outlet`, bottom tab bar, shared by all routes |
-| Status badge          | `client/components/items/StatusBadge.tsx` | Dot and word for `available` and `unavailable` |
-| Item card             | `client/components/items/ItemCard.tsx`    | Photo, status, title, distance, owner first name |
-| Item photo            | `client/components/items/ItemImage.tsx`   | Placeholder until real photo upload exists    |
-| Home page             | `client/pages/Index.tsx`                  | Hero, search, category chips, grid, Food corner |
-| Item detail page      | `client/pages/ItemDetail.tsx`             | Carousel, status panel, details, sticky CTA   |
-| Placeholder page      | `client/pages/Placeholder.tsx`            | Reused for unbuilt routes                     |
+| Component        | File                                      | Notes                                                  |
+| ---------------- | ----------------------------------------- | ------------------------------------------------------ |
+| App layout       | `client/components/layout/AppLayout.tsx`  | Header, `Outlet`, bottom tab bar, shared by all routes |
+| Status badge     | `client/components/items/StatusBadge.tsx` | Dot and word for `available` and `unavailable`         |
+| Item card        | `client/components/items/ItemCard.tsx`    | Photo, status, title, distance, owner first name       |
+| Item photo       | `client/components/items/ItemImage.tsx`   | Placeholder until real photo upload exists             |
+| Home page        | `client/pages/Index.tsx`                  | Hero, search, category chips, grid, Food corner        |
+| Item detail page | `client/pages/ItemDetail.tsx`             | Carousel, status panel, details, sticky CTA            |
+| Placeholder page | `client/pages/Placeholder.tsx`            | Reused for unbuilt routes                              |
 
 ## Rules for new screens
 

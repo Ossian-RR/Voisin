@@ -20,11 +20,11 @@ Run `pnpm typecheck` before every commit. Types catch many mistakes that tests m
 
 Use browser devtools device mode. Test these widths:
 
-| Width    | Role                                          |
-| -------- | --------------------------------------------- |
-| 360 x 800 | Primary design frame. Check this first.      |
-| 375      | Common iPhone width. Check it second.         |
-| 430      | Large phone width. Check it third.            |
+| Width     | Role                                    |
+| --------- | --------------------------------------- |
+| 360 x 800 | Primary design frame. Check this first. |
+| 375       | Common iPhone width. Check it second.   |
+| 430       | Large phone width. Check it third.      |
 
 For each width, confirm:
 
