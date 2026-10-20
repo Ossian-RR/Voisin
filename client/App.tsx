@@ -17,7 +17,8 @@ import Profile from "./pages/Profile";
 import Requests from "./pages/Requests";
 import Wanted from "./pages/Wanted";
 import NotFound from "./pages/NotFound";
-import { hideSplash } from "./lib/splash";
+import { AuthGate } from "@/components/auth/AuthGate";
+import { AuthProvider } from "@/lib/auth";
 
 const queryClient = new QueryClient();
 
@@ -26,25 +27,28 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner position="top-center" />
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<Index />} />
-            <Route path="/items/:id" element={<ItemDetail />} />
-            <Route path="/search" element={<Wanted />} />
-            <Route path="/add" element={<AddItem />} />
-            <Route path="/requests" element={<Requests />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/help" element={<Help />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <AuthGate>
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
+            <Routes>
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<Index />} />
+                <Route path="/items/:id" element={<ItemDetail />} />
+                <Route path="/search" element={<Wanted />} />
+                <Route path="/add" element={<AddItem />} />
+                <Route path="/requests" element={<Requests />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/help" element={<Help />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </AuthGate>
+      </AuthProvider>
       <Analytics />
     </TooltipProvider>
   </QueryClientProvider>
 );
 
 createRoot(document.getElementById("root")!).render(<App />);
-hideSplash();
