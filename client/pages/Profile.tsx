@@ -6,6 +6,7 @@ import {
   ChevronRight,
   DoorOpen,
   Inbox,
+  LogOut,
   MapPin,
   Search,
 } from "lucide-react";
@@ -22,6 +23,7 @@ import {
 } from "@shared/profile";
 import { RESIDENCE, residenceTitle } from "@shared/residence";
 import { CIVILITIES, displayName } from "@shared/wanted";
+import { useAuth } from "@/lib/auth";
 import { CURRENT_USER_ID } from "@/lib/borrow-requests";
 import { isMine, useAllItems } from "@/lib/items";
 import { ItemImage } from "@/components/items/ItemImage";
@@ -37,6 +39,8 @@ const fieldClass =
 
 export default function Profile() {
   const profile = useProfile();
+  const { state, signOut } = useAuth();
+  const email = state.status === "ready" ? state.session.user.email : undefined;
   const [draft, setDraft] = useState<NeighborProfile>(profile);
   const [errors, setErrors] = useState<ProfileErrors>({});
 
@@ -328,6 +332,27 @@ export default function Profile() {
               />
             </li>
           </ul>
+        </section>
+
+        <section aria-labelledby="account-heading" className="mt-6">
+          <h2
+            id="account-heading"
+            className="font-display text-lg font-extrabold"
+          >
+            Mon compte
+          </h2>
+          <div className="mt-3 rounded-2xl border border-border bg-card px-4 py-3.5">
+            <p className="text-xs text-muted-foreground">Connecté avec</p>
+            <p className="truncate font-semibold">{email}</p>
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border text-sm font-bold text-destructive hover:bg-destructive/5"
+            >
+              <LogOut className="size-4" aria-hidden />
+              Se déconnecter
+            </button>
+          </div>
         </section>
       </div>
     </div>
