@@ -18,6 +18,7 @@ import Requests from "./pages/Requests";
 import Wanted from "./pages/Wanted";
 import NotFound from "./pages/NotFound";
 import { AuthGate } from "@/components/auth/AuthGate";
+import { LocalItemsImport } from "@/components/items/LocalItemsImport";
 import { AuthProvider } from "@/lib/auth";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
       <Sonner position="top-center" />
       <AuthProvider>
         <AuthGate>
+          <LocalItemsImport />
           <BrowserRouter basename={import.meta.env.BASE_URL}>
             <Routes>
               <Route element={<AppLayout />}>

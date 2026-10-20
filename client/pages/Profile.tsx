@@ -25,7 +25,7 @@ import { RESIDENCE, residenceTitle } from "@shared/residence";
 import { CIVILITIES, displayName } from "@shared/wanted";
 import { useAuth } from "@/lib/auth";
 import { CURRENT_USER_ID } from "@/lib/borrow-requests";
-import { isMine, useAllItems } from "@/lib/items";
+import { useAllItems, useIsMine } from "@/lib/items";
 import { ItemImage } from "@/components/items/ItemImage";
 import { StatusBadge } from "@/components/items/StatusBadge";
 import { toAvatarDataUrl } from "@/lib/image";
@@ -44,7 +44,10 @@ export default function Profile() {
   const [draft, setDraft] = useState<NeighborProfile>(profile);
   const [errors, setErrors] = useState<ProfileErrors>({});
 
-  const myItems = useAllItems().filter(isMine);
+  const isMine = useIsMine();
+  const myItems = useAllItems().filter(
+    (item) => isMine(item) && item.status !== "removed",
+  );
   const searches = sortRequests(
     useWantedRequests().filter(
       (request) => request.authorId === CURRENT_USER_ID,

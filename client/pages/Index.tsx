@@ -8,7 +8,7 @@ import { useWantedRequests } from "@/lib/wanted-requests";
 import { sortRequests } from "@shared/borrow";
 import { cn } from "@/lib/utils";
 import { visibleItems } from "@shared/mock";
-import { useAllItems } from "@/lib/items";
+import { useItems } from "@/lib/items";
 import { RESIDENCE, residenceTitle } from "@shared/residence";
 
 /** Lowercase and strip accents so "echelle" finds "échelle". */
@@ -21,7 +21,7 @@ const normalize = (text: string) =>
 export default function Index() {
   const [query, setQuery] = useState("");
   const wanted = sortRequests(useWantedRequests());
-  const allItems = useAllItems();
+  const { data: allItems = [], isPending, isError, refetch } = useItems();
   useDocumentTitle("J’emprunte");
   const location = useLocation();
   const justPublished = (location.state as { showWanted?: string } | null)
@@ -84,7 +84,27 @@ export default function Index() {
           {filteredItems.length === 1 ? "objet" : "objets"}
         </p>
 
-        {filteredItems.length > 0 ? (
+        {isPending ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            Chargement des objets…
+          </p>
+        ) : isError ? (
+          <div className="rounded-2xl border border-dashed border-border bg-card p-6 text-center">
+            <p className="font-semibold">
+              Les objets n’ont pas pu être chargés
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Vérifiez votre connexion internet.
+            </p>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="mt-4 inline-flex h-10 items-center rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground"
+            >
+              Réessayer
+            </button>
+          </div>
+        ) : filteredItems.length > 0 ? (
           <div className="grid grid-cols-2 gap-3">
             {filteredItems.map((item) => (
               <ItemCard key={item.id} item={item} />

@@ -19,8 +19,10 @@ export type ItemCategory =
 export interface ItemPhoto {
   label: string;
   hue: number;
-  /** Real photo as a JPEG data URL. Sample items only have a colored placeholder. */
+  /** Real photo: a data URL before publishing, then a short-lived link. Sample items only have a colored placeholder. */
   src?: string;
+  /** Where the photo is kept in the Supabase "photos" bucket. */
+  path?: string;
 }
 
 /** "loan": lent and returned. "gift": given away for good. */

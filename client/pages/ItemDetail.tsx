@@ -17,7 +17,7 @@ import {
   useBorrowRequests,
 } from "@/lib/borrow-requests";
 import { useDocumentTitle } from "@/components/layout/PageHeader";
-import { isMine, removeMyItem, useAllItems } from "@/lib/items";
+import { useIsMine, useItems, useMyItemActions } from "@/lib/items";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -37,7 +37,36 @@ import { isGift } from "@shared/new-item";
 
 export default function ItemDetail() {
   const { id } = useParams();
-  const item = findItem(useAllItems(), id);
+  const { data, isPending, isError, refetch } = useItems();
+  const item = findItem(data ?? [], id);
+
+  if (isPending) {
+    return (
+      <p className="px-5 py-16 text-center text-sm text-muted-foreground">
+        Chargement de l’objet…
+      </p>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center px-5 py-16 text-center">
+        <p className="font-display text-2xl font-extrabold">
+          Connexion impossible
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Vérifiez votre connexion internet.
+        </p>
+        <button
+          type="button"
+          onClick={() => void refetch()}
+          className="mt-6 inline-flex h-11 items-center rounded-xl bg-primary px-5 text-sm font-bold text-primary-foreground"
+        >
+          Réessayer
+        </button>
+      </div>
+    );
+  }
 
   if (!item) {
     return (
@@ -75,12 +104,18 @@ function ItemDetailContent({
     findOpenRequest(requests, item.id, CURRENT_USER_ID),
   );
   const gift = isGift(item);
-  const mine = isMine(item);
+  const mine = useIsMine()(item);
+  const { removeMyItem } = useMyItemActions();
   const navigate = useNavigate();
   useDocumentTitle(item.title);
 
-  const handleRemove = () => {
-    removeMyItem(item.id);
+  const handleRemove = async () => {
+    if (!(await removeMyItem(item))) {
+      toast.error("L’objet n’a pas pu être retiré", {
+        description: "Vérifiez votre connexion internet, puis réessayez.",
+      });
+      return;
+    }
     toast("Objet retiré", {
       description: "Il n’apparaît plus chez vos voisins.",
     });
