@@ -119,3 +119,12 @@ export function useAuth(): AuthContextValue {
   if (!value) throw new Error("useAuth must be used inside AuthProvider");
   return value;
 }
+
+/** The signed-in neighbor's login id and profile id. The app only renders once both exist. */
+export function useMe(): { userId: string; profileId: string } {
+  const { state } = useAuth();
+  if (state.status !== "ready") {
+    throw new Error("useMe must be used once the neighbor is signed in");
+  }
+  return { userId: state.session.user.id, profileId: state.profileId };
+}

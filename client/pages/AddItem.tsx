@@ -14,7 +14,7 @@ import {
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Switch } from "@/components/ui/switch";
 import { toItemPhotoDataUrl } from "@/lib/image";
-import { publishItem } from "@/lib/items";
+import { useMyItemActions } from "@/lib/items";
 import { cn } from "@/lib/utils";
 
 const fieldClass =
@@ -26,6 +26,8 @@ export default function AddItem() {
   const [draft, setDraft] = useState<NewItemDraft>(EMPTY_DRAFT);
   const [errors, setErrors] = useState<NewItemErrors>({});
   const [isReadingPhotos, setIsReadingPhotos] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const { publishItem } = useMyItemActions();
 
   const update = (patch: Partial<NewItemDraft>) => {
     setDraft((current) => ({ ...current, ...patch }));
@@ -82,16 +84,19 @@ export default function AddItem() {
     }));
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (isPublishing) return;
     const found = validateNewItem(draft);
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
-    const item = publishItem(draft);
-    if (!item) {
-      toast.error("Pas assez de place pour enregistrer", {
-        description: "Retirez une photo ou un ancien objet, puis réessayez.",
+    setIsPublishing(true);
+    const published = await publishItem(draft);
+    setIsPublishing(false);
+    if (!published) {
+      toast.error("L’objet n’a pas pu être publié", {
+        description: "Vérifiez votre connexion internet, puis réessayez.",
       });
       return;
     }
@@ -183,7 +188,7 @@ export default function AddItem() {
                 <button
                   type="button"
                   onClick={() => photoInput.current?.click()}
-                  disabled={isReadingPhotos}
+                  disabled={isReadingPhotos || isPublishing}
                   className={cn(
                     "flex aspect-square w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed text-xs font-semibold transition-colors",
                     errors.photos
@@ -270,7 +275,7 @@ export default function AddItem() {
 
         <button
           type="submit"
-          disabled={isReadingPhotos}
+          disabled={isReadingPhotos || isPublishing}
           className={cn(
             "mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold shadow-lg transition-colors active:scale-[0.99]",
             draft.isGift
@@ -278,8 +283,16 @@ export default function AddItem() {
               : "bg-primary text-primary-foreground shadow-primary/25",
           )}
         >
-          {draft.isGift && <Gift className="size-5" aria-hidden />}
-          {draft.isGift ? "Publier le don" : "Publier"}
+          {isPublishing ? (
+            <Loader2 className="size-5 animate-spin" aria-hidden />
+          ) : (
+            draft.isGift && <Gift className="size-5" aria-hidden />
+          )}
+          {isPublishing
+            ? "Publication…"
+            : draft.isGift
+              ? "Publier le don"
+              : "Publier"}
         </button>
       </form>
     </div>
