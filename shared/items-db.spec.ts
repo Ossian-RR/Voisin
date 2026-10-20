@@ -25,25 +25,13 @@ const row: ItemRowWithOwner = {
   owner_id: "profile-1",
   owner: {
     civility: "Madame",
-    first_name: null,
     last_name: "Martin",
     location: "B-2c",
   },
 };
 
 describe("ownerLabel", () => {
-  it("uses the first name when there is one", () => {
-    expect(
-      ownerLabel({
-        civility: "Famille",
-        first_name: "Anna",
-        last_name: "Démo",
-        location: "A-3a",
-      }),
-    ).toBe("Anna");
-  });
-
-  it("falls back to civility and last name", () => {
+  it("shows civility and last name", () => {
     expect(ownerLabel(row.owner)).toBe("Madame Martin");
   });
 

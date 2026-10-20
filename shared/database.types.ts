@@ -115,7 +115,6 @@ export type Database = {
           admitted_on: string;
           civility: string;
           created_at: string;
-          first_name: string | null;
           id: string;
           last_name: string;
           location: string;
@@ -126,7 +125,6 @@ export type Database = {
           admitted_on?: string;
           civility: string;
           created_at?: string;
-          first_name?: string | null;
           id?: string;
           last_name: string;
           location: string;
@@ -137,7 +135,6 @@ export type Database = {
           admitted_on?: string;
           civility?: string;
           created_at?: string;
-          first_name?: string | null;
           id?: string;
           last_name?: string;
           location?: string;
