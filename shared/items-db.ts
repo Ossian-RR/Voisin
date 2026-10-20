@@ -15,17 +15,14 @@ type ItemRow = Database["public"]["Tables"]["items"]["Row"];
 type ItemInsert = Database["public"]["Tables"]["items"]["Insert"];
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 
-export type ItemOwner = Pick<
-  ProfileRow,
-  "civility" | "first_name" | "last_name" | "location"
->;
+export type ItemOwner = Pick<ProfileRow, "civility" | "last_name" | "location">;
 
 /** An `items` row read together with its owner's profile. */
 export type ItemRowWithOwner = ItemRow & { owner: ItemOwner | null };
 
 /** The columns to ask Supabase for, matching `ItemRowWithOwner`. */
 export const ITEM_SELECT =
-  "id, title, category, kind, status, description, condition, photos, created_at, owner_id, owner:profiles(civility, first_name, last_name, location)";
+  "id, title, category, kind, status, description, condition, photos, created_at, owner_id, owner:profiles(civility, last_name, location)";
 
 const CATEGORIES: ItemCategory[] = [
   "Tools",
@@ -36,11 +33,9 @@ const CATEGORIES: ItemCategory[] = [
 ];
 const STATUSES: ItemStatus[] = ["available", "unavailable", "removed"];
 
-/** How neighbors see the owner: first name when known, else "Madame Martin". */
+/** How neighbors see the owner, e.g. "Madame Martin". */
 export function ownerLabel(owner: ItemOwner | null): string {
   if (!owner) return "Un voisin";
-  const first = owner.first_name?.trim();
-  if (first) return first;
   return displayName({
     civility: owner.civility as Civility,
     lastName: owner.last_name,

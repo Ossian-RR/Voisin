@@ -1,6 +1,7 @@
 -- Demo data copied from shared/mock.ts so the app isn't empty while neighbors join.
 -- Demo neighbors have no login (user_id is null), the last name "Démo" and the
--- civility "Famille". Remove them all with:
+-- civility "Famille", so the app shows them as "Famille Démo". The first names
+-- below only pair each item with its neighbor while seeding. Remove them all with:
 --   delete from public.profiles where user_id is null and last_name = 'Démo';
 
 with demo (first_name, location, admitted_on) as (
@@ -16,9 +17,12 @@ with demo (first_name, location, admitted_on) as (
     ('Inès',   'A-0b', date '2026-03-23')
 ),
 neighbors as (
-  insert into public.profiles (civility, first_name, last_name, location, admitted_on)
-  select 'Famille', first_name, 'Démo', location, admitted_on from demo
-  returning id, first_name
+  insert into public.profiles (civility, last_name, location, admitted_on)
+  select 'Famille', 'Démo', location, admitted_on from demo
+  returning id, location
+),
+named as (
+  select n.id, d.first_name from neighbors n join demo d on d.location = n.location
 )
 insert into public.items (owner_id, title, category, kind, status, description, condition, photos)
 select n.id, i.title, i.category, i.kind, i.status, i.description, 'Bon état',
@@ -50,4 +54,4 @@ from (
     ('Leo', 'Pompe à vélo', 'Outdoor', 'loan', 'removed',
      'Retiré par son propriétaire.', 240)
 ) as i (first_name, title, category, kind, status, description, hue)
-join neighbors n on n.first_name = i.first_name;
+join named n on n.first_name = i.first_name;
