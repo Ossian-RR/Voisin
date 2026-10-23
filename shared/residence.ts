@@ -21,7 +21,6 @@ export const MIN_MESSAGE_LENGTH = 50;
 export const HELP_TOPICS = [
   "Créer notre résidence",
   "Ajouter des voisins ou des étages",
-  "Désigner un administrateur",
   "Autre question",
 ] as const;
 

@@ -4,6 +4,7 @@ import {
   itemPhotoPath,
   newItemRow,
   newProfileRow,
+  newRequestRow,
   newWantedRow,
   personName,
   photoPaths,
@@ -106,6 +107,8 @@ describe("requestFromRow", () => {
         item_id: "item-1",
         borrower_id: "profile-2",
         status: "approved",
+        requested_from: "2026-10-25",
+        requested_at: "18:15:00",
         created_at: "2026-10-21T10:00:00Z",
         borrower: {
           civility: "Famille",
@@ -120,6 +123,8 @@ describe("requestFromRow", () => {
       borrowerName: "Famille Durand",
       borrowerLocation: "A-1a",
       status: "approved",
+      wantedOn: "2026-10-25",
+      wantedAt: "18:15",
     });
     expect(request.item?.title).toBe("Perceuse");
   });
@@ -196,6 +201,29 @@ describe("newProfileRow", () => {
       civility: "Madame",
       last_name: "Le Gall",
       location: "A-3a",
+    });
+  });
+});
+
+describe("newRequestRow", () => {
+  it("keeps the wished day and an allowed time", () => {
+    expect(
+      newRequestRow("item-1", "p1", {
+        wantedOn: "2026-10-25",
+        wantedAt: "09:30",
+      }),
+    ).toEqual({
+      item_id: "item-1",
+      borrower_id: "p1",
+      requested_from: "2026-10-25",
+      requested_at: "09:30",
+    });
+  });
+
+  it("leaves day and time empty when not given or not allowed", () => {
+    expect(newRequestRow("item-1", "p1", { wantedAt: "06:00" })).toMatchObject({
+      requested_from: null,
+      requested_at: null,
     });
   });
 });

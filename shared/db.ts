@@ -22,7 +22,7 @@ type Person = Pick<Row<"profiles">, "civility" | "last_name" | "location">;
 const PERSON = "civility, last_name, location";
 export const ITEM_SELECT = `id, title, kind, status, description, condition, photos, created_at, owner_id, owner:profiles(${PERSON})`;
 export const WANTED_SELECT = `id, text, wanted_on, wanted_at, created_at, author_id, author:profiles(${PERSON})`;
-export const REQUEST_SELECT = `id, item_id, borrower_id, status, created_at, borrower:profiles(${PERSON}), item:items(${ITEM_SELECT})`;
+export const REQUEST_SELECT = `id, item_id, borrower_id, status, requested_from, requested_at, created_at, borrower:profiles(${PERSON}), item:items(${ITEM_SELECT})`;
 export const ME_SELECT = `id, ${PERSON}, photo_path, admitted_on, residence:residences(id, name, address)`;
 
 export type ItemRow = Pick<
@@ -43,7 +43,13 @@ export type WantedRow = Pick<
 > & { author: Person | null };
 export type RequestRow = Pick<
   Row<"borrow_requests">,
-  "id" | "item_id" | "borrower_id" | "status" | "created_at"
+  | "id"
+  | "item_id"
+  | "borrower_id"
+  | "status"
+  | "requested_from"
+  | "requested_at"
+  | "created_at"
 > & { borrower: Person | null; item: ItemRow | null };
 export type MeRow = Person &
   Pick<Row<"profiles">, "id" | "photo_path" | "admitted_on"> & {
@@ -57,6 +63,23 @@ const REQUEST_STATUSES: BorrowRequestStatus[] = [
   "declined",
   "returned",
 ];
+
+/** Optional day and time; Postgres returns times as "14:30:00". */
+function when(day: string | null, time: string | null) {
+  return {
+    ...(day ? { wantedOn: day } : {}),
+    ...(time ? { wantedAt: time.slice(0, 5) } : {}),
+  };
+}
+
+/** Day and time as stored: empty becomes null, a time outside the allowed slots is dropped. */
+export function whenColumns(input: { wantedOn?: string; wantedAt?: string }) {
+  return {
+    day: input.wantedOn || null,
+    time:
+      input.wantedAt && isAllowedTime(input.wantedAt) ? input.wantedAt : null,
+  };
+}
 
 /** "Madame Martin", or "Un voisin" when the profile can't be read. */
 export function personName(person: Person | null): string {
@@ -136,9 +159,7 @@ export function wantedFromRow(row: WantedRow): WantedRequest {
     authorId: row.author_id,
     authorName: personName(row.author),
     text: row.text,
-    ...(row.wanted_on ? { wantedOn: row.wanted_on } : {}),
-    // Postgres returns times as "14:30:00".
-    ...(row.wanted_at ? { wantedAt: row.wanted_at.slice(0, 5) } : {}),
+    ...when(row.wanted_on, row.wanted_at),
     createdAt: row.created_at,
   };
 }
@@ -156,6 +177,7 @@ export function requestFromRow(
     status: REQUEST_STATUSES.includes(row.status as BorrowRequestStatus)
       ? (row.status as BorrowRequestStatus)
       : "pending",
+    ...when(row.requested_from, row.requested_at),
     createdAt: row.created_at,
     ...(row.item ? { item: itemFromRow(row.item, links) } : {}),
   };
@@ -208,12 +230,22 @@ export function newWantedRow(
 ): Insert<"wanted_requests"> | undefined {
   const text = input.text.trim();
   if (!text) return undefined;
+  const { day, time } = whenColumns(input);
+  return { author_id: authorProfileId, text, wanted_on: day, wanted_at: time };
+}
+
+/** The row for a new borrow request, with the wished day and time. */
+export function newRequestRow(
+  itemId: string,
+  borrowerProfileId: string,
+  input: { wantedOn?: string; wantedAt?: string },
+): Insert<"borrow_requests"> {
+  const { day, time } = whenColumns(input);
   return {
-    author_id: authorProfileId,
-    text,
-    wanted_on: input.wantedOn || null,
-    wanted_at:
-      input.wantedAt && isAllowedTime(input.wantedAt) ? input.wantedAt : null,
+    item_id: itemId,
+    borrower_id: borrowerProfileId,
+    requested_from: day,
+    requested_at: time,
   };
 }
 

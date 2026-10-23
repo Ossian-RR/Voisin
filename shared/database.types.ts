@@ -24,6 +24,7 @@ export type Database = {
           created_at: string;
           id: string;
           item_id: string;
+          requested_at: string | null;
           requested_from: string | null;
           requested_until: string | null;
           status: string;
@@ -33,6 +34,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           item_id: string;
+          requested_at?: string | null;
           requested_from?: string | null;
           requested_until?: string | null;
           status?: string;
@@ -42,6 +44,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           item_id?: string;
+          requested_at?: string | null;
           requested_from?: string | null;
           requested_until?: string | null;
           status?: string;

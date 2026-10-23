@@ -2,13 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { displayName } from "@shared/profile";
-import {
-  DEFAULT_HOUR,
-  DEFAULT_MINUTE,
-  HOURS,
-  minutesFor,
-  todayIso,
-} from "@shared/wanted";
+import { DateTimeFields, useDateTime } from "@/components/DateTimeFields";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { fieldClass } from "@/components/ProfileFields";
 import { useMe } from "@/lib/auth";
@@ -20,14 +14,12 @@ export default function Wanted() {
   const publish = usePublishWanted();
   const navigate = useNavigate();
   const [text, setText] = useState("");
-  const [wantedOn, setWantedOn] = useState("");
-  const [hour, setHour] = useState(DEFAULT_HOUR);
-  const [minute, setMinute] = useState(DEFAULT_MINUTE);
+  const when = useDateTime();
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     publish.mutate(
-      { text, wantedOn, wantedAt: hour && minute ? `${hour}:${minute}` : "" },
+      { text, ...when.value },
       {
         onSuccess: () => {
           toast.success("Recherche publiée", {
@@ -54,47 +46,7 @@ export default function Wanted() {
           className={`${fieldClass} h-auto border-border py-2`}
         />
       </label>
-      <label className="block text-sm font-bold">
-        pour la date du
-        <input
-          type="date"
-          value={wantedOn}
-          min={todayIso(new Date())}
-          onChange={(e) => setWantedOn(e.target.value)}
-          className={`${fieldClass} border-border`}
-        />
-      </label>
-      <fieldset>
-        <legend className="text-sm font-bold">à l’heure suivante :</legend>
-        <div className="flex gap-2">
-          <select
-            aria-label="Heure"
-            value={hour}
-            onChange={(e) => {
-              setHour(e.target.value);
-              if (!minutesFor(e.target.value).includes(minute)) setMinute("00");
-            }}
-            className={`${fieldClass} border-border`}
-          >
-            <option value="">Heure</option>
-            {HOURS.map((h) => (
-              <option key={h} value={h}>
-                {h}h
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label="Minutes"
-            value={minute}
-            onChange={(e) => setMinute(e.target.value)}
-            className={`${fieldClass} border-border`}
-          >
-            {minutesFor(hour).map((m) => (
-              <option key={m}>{m}</option>
-            ))}
-          </select>
-        </div>
-      </fieldset>
+      <DateTimeFields state={when} />
       <button
         type="submit"
         disabled={!text.trim() || publish.isPending}

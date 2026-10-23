@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { canRequest, findOpenRequest } from "@shared/borrow";
 import { describeLocation } from "@shared/location";
 import { isGift } from "@shared/new-item";
+import { wantedWhenLabel } from "@shared/wanted";
+import { DateTimeFields, useDateTime } from "@/components/DateTimeFields";
 import { ItemImage } from "@/components/items/ItemImage";
 import { StatusBadge } from "@/components/items/StatusBadge";
 import { useDocumentTitle } from "@/components/layout/PageHeader";
@@ -14,7 +17,7 @@ import {
   useItems,
   useRemoveItem,
 } from "@/lib/data";
-import { primaryButton, secondaryButton } from "@/lib/styles";
+import { card, primaryButton, secondaryButton } from "@/lib/styles";
 
 export default function ItemDetail() {
   const { id } = useParams();
@@ -25,6 +28,8 @@ export default function ItemDetail() {
   const remove = useRemoveItem();
   const navigate = useNavigate();
   const item = items.data?.find((i) => i.id === id);
+  const when = useDateTime();
+  const [asking, setAsking] = useState(false);
   useDocumentTitle(item?.title ?? "Objet");
 
   if (items.isPending) {
@@ -53,13 +58,18 @@ export default function ItemDetail() {
   const sent = findOpenRequest(requests, item.id, profileId);
 
   const handleAsk = () =>
-    ask.mutate(item, {
-      onSuccess: () =>
-        toast.success(`Demande envoyée à ${item.ownerName}`, {
-          description: "Suivez-la dans l’onglet Demandes.",
-        }),
-      onError: () => toast.error("La demande n’a pas pu être envoyée"),
-    });
+    ask.mutate(
+      { item, ...when.value },
+      {
+        onSuccess: () => {
+          setAsking(false);
+          toast.success(`Demande envoyée à ${item.ownerName}`, {
+            description: "Suivez-la dans l’onglet Demandes.",
+          });
+        },
+        onError: () => toast.error("La demande n’a pas pu être envoyée"),
+      },
+    );
 
   const handleRemove = () => {
     if (
@@ -118,11 +128,33 @@ export default function ItemDetail() {
         >
           Retirer cet objet
         </button>
+      ) : asking ? (
+        <section className={`${card} space-y-4`}>
+          <h2 className="font-bold">
+            Quand souhaitez-vous {gift ? "le récupérer" : "l’emprunter"} ?
+          </h2>
+          <DateTimeFields state={when} />
+          <button
+            type="button"
+            onClick={handleAsk}
+            disabled={ask.isPending}
+            className={primaryButton}
+          >
+            Envoyer la demande
+          </button>
+          <button
+            type="button"
+            onClick={() => setAsking(false)}
+            className="w-full text-sm font-bold text-muted-foreground"
+          >
+            Annuler
+          </button>
+        </section>
       ) : (
         <button
           type="button"
-          onClick={handleAsk}
-          disabled={!canRequest(item, requests, profileId) || ask.isPending}
+          onClick={() => setAsking(true)}
+          disabled={!canRequest(item, requests, profileId)}
           className={primaryButton}
         >
           {sent
@@ -133,6 +165,11 @@ export default function ItemDetail() {
                 ? "Je le veux"
                 : "Demander à emprunter"}
         </button>
+      )}
+      {sent && (
+        <p className="text-center text-sm text-muted-foreground">
+          {wantedWhenLabel(sent)} · suivez-la dans l’onglet Demandes.
+        </p>
       )}
     </article>
   );

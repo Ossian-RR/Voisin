@@ -15,6 +15,7 @@ import {
   itemFromRow,
   itemPhotoPath,
   newItemRow,
+  newRequestRow,
   newWantedRow,
   photoPaths,
   requestFromRow,
@@ -161,11 +162,15 @@ export function useAskToBorrow() {
   const { profileId } = useMe();
   const onSuccess = useRefreshRequests();
   return useMutation({
-    mutationFn: async (item: Item) =>
+    mutationFn: async (input: {
+      item: Item;
+      wantedOn?: string;
+      wantedAt?: string;
+    }) =>
       check(
         await supabase
           .from("borrow_requests")
-          .insert({ item_id: item.id, borrower_id: profileId }),
+          .insert(newRequestRow(input.item.id, profileId, input)),
       ),
     onSuccess,
   });

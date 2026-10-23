@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import type { BorrowRequest, BorrowRequestStatus } from "@shared/api";
+import { wantedWhenLabel } from "@shared/wanted";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useMe } from "@/lib/auth";
 import {
@@ -111,6 +112,7 @@ function ReceivedCard({ request }: { request: BorrowRequest }) {
         {request.borrowerName} ({request.borrowerLocation}) ·{" "}
         {STATUS_LABEL[request.status]}
       </p>
+      <p className="text-sm font-semibold">{wantedWhenLabel(request)}</p>
       <div className="mt-2 flex flex-wrap gap-2">
         {request.status === "pending" && (
           <>
@@ -155,6 +157,7 @@ function SentCard({ request }: { request: BorrowRequest }) {
           : ""}{" "}
         · {STATUS_LABEL[request.status]}
       </p>
+      <p className="text-sm font-semibold">{wantedWhenLabel(request)}</p>
       {request.status === "pending" && (
         <button
           disabled={cancel.isPending}

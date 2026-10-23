@@ -66,6 +66,9 @@ export interface BorrowRequest {
   borrowerName: string;
   borrowerLocation: string;
   status: BorrowRequestStatus;
+  /** When the borrower would like it: yyyy-mm-dd and HH:mm, both optional. */
+  wantedOn?: string;
+  wantedAt?: string;
   createdAt: string;
   /** Missing if the item is no longer visible. */
   item?: Item;
