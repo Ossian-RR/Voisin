@@ -25,38 +25,51 @@ import {
   type WantedRow,
 } from "@shared/db";
 import type { NewItemDraft } from "@shared/new-item";
+import { createLinkCache } from "@shared/link-cache";
 import { cleanProfile } from "@shared/profile";
 import { useAuth, useMe } from "./auth";
 import { supabase } from "./supabase";
 
 const BUCKET = "photos";
-/** Photo links stay valid one hour; lists refresh well before. */
-const LINK_SECONDS = 60 * 60;
+const HOUR = 60 * 60 * 1000;
+/** Photo links last 6 hours and are reused until less than 1 hour is left. */
+const LINK_MS = 6 * HOUR;
+const links = createLinkCache(HOUR);
 const STALE = 60 * 1000;
 
-/** Short-lived links for private photos, by path. */
+/** Links for private photos, by path. Known links are reused, so the browser keeps the images. */
 async function photoLinks(paths: string[]): Promise<Map<string, string>> {
-  const links = new Map<string, string>();
-  if (paths.length === 0) return links;
-  const { data } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrls(paths, LINK_SECONDS);
-  for (const entry of data ?? []) {
-    if (entry.path && entry.signedUrl) links.set(entry.path, entry.signedUrl);
+  const now = Date.now();
+  const { found, missing } = links.lookup(paths, now);
+  if (missing.length > 0) {
+    const { data } = await supabase.storage
+      .from(BUCKET)
+      .createSignedUrls(missing, LINK_MS / 1000);
+    for (const entry of data ?? []) {
+      if (!entry.path || !entry.signedUrl) continue;
+      links.store(entry.path, entry.signedUrl, now + LINK_MS);
+      found.set(entry.path, entry.signedUrl);
+    }
   }
-  return links;
+  return found;
 }
 
 async function upload(path: string, dataUrl: string) {
   const blob = await (await fetch(dataUrl)).blob();
-  const { error } = await supabase.storage
-    .from(BUCKET)
-    .upload(path, blob, { contentType: "image/jpeg", upsert: true });
+  const { error } = await supabase.storage.from(BUCKET).upload(path, blob, {
+    contentType: "image/jpeg",
+    upsert: true,
+    // Let the browser keep photos a day; a replaced photo gets a new link.
+    cacheControl: "86400",
+  });
   if (error) throw error;
+  links.forget(path);
 }
 
 async function removeFiles(paths: string[]) {
-  if (paths.length > 0) await supabase.storage.from(BUCKET).remove(paths);
+  if (paths.length === 0) return;
+  await supabase.storage.from(BUCKET).remove(paths);
+  paths.forEach(links.forget);
 }
 
 /** Throws the Supabase error so React Query reports it. */
