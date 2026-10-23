@@ -1,5 +1,4 @@
-import type { Item, ItemConditionChoice, NeighborProfile } from "./api";
-import { displayName } from "./wanted";
+import type { Item, ItemConditionChoice } from "./api";
 
 export const MIN_PHOTOS = 2;
 export const MAX_PHOTOS = 5;
@@ -44,30 +43,4 @@ export function validateNewItem(draft: NewItemDraft): NewItemErrors {
 
 export function isGift(item: Pick<Item, "kind">): boolean {
   return item.kind === "gift";
-}
-
-/** Builds the item shown to neighbors. Assumes the draft passed validation. */
-export function createUserItem(
-  draft: NewItemDraft,
-  owner: { id: string; profile: NeighborProfile },
-  now: Date,
-  id: string,
-): Item {
-  return {
-    id,
-    title: draft.title.trim(),
-    kind: draft.isGift ? "gift" : "loan",
-    status: "available",
-    description: draft.description.trim(),
-    condition: draft.condition as ItemConditionChoice,
-    ownerId: owner.id,
-    ownerFirstName: displayName(owner.profile),
-    location: owner.profile.location,
-    photos: draft.photos.map((src, index) => ({
-      label: `Photo ${index + 1}`,
-      hue: 160,
-      src,
-    })),
-    createdAt: now.toISOString(),
-  };
 }

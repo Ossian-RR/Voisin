@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { describeLocation, isValidLocation, parseLocation } from "./location";
-import { items } from "./mock";
 
 describe("parseLocation", () => {
   it("reads part, floor and door", () => {
@@ -18,14 +17,8 @@ describe("describeLocation", () => {
   it("spells the flat out in French", () => {
     expect(describeLocation("A-3a")).toBe("Bâtiment A, 3e étage, porte a");
     expect(describeLocation("C-1b")).toBe("Bâtiment C, 1er étage, porte b");
-    expect(describeLocation("B-0c")).toBe("Bâtiment B, rez-de-chaussée, porte c");
-  });
-});
-
-describe("mock data", () => {
-  it("uses valid flat references everywhere", () => {
-    for (const entry of items) {
-      expect(isValidLocation(entry.location)).toBe(true);
-    }
+    expect(describeLocation("B-0c")).toBe(
+      "Bâtiment B, rez-de-chaussée, porte c",
+    );
   });
 });

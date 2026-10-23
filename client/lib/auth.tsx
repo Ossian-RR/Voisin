@@ -7,34 +7,81 @@ import {
   type ReactNode,
 } from "react";
 import type { Session } from "@supabase/supabase-js";
-import type { NeighborProfile } from "@shared/api";
-import { newProfileRow, profileFromRow } from "@shared/auth";
-import { saveProfile } from "./profile";
+import type { NeighborProfile, Residence } from "@shared/api";
+import {
+  ME_SELECT,
+  newProfileRow,
+  profileFromRow,
+  residenceFromRow,
+  type MeRow,
+} from "@shared/db";
 import { supabase } from "./supabase";
 
+/** The signed-in neighbor. */
+export interface Me {
+  userId: string;
+  email?: string;
+  profileId: string;
+  profile: NeighborProfile;
+  photoPath?: string;
+  admittedOn: string;
+  residence: Residence;
+}
+
 /**
- * - loading: checking the saved session, or reading the profile.
- * - signed-out: show the sign-in screen.
- * - needs-profile: signed in for the first time, the profile is missing.
- * - ready: signed in with a profile.
- * - error: the profile could not be read (network, database).
+ * loading: checking the session or reading the profile · signed-out ·
+ * needs-profile: first sign-in · no-residence: the admin hasn't set one ·
+ * error: the profile couldn't be read · ready.
  */
 export type AuthState =
-  | { status: "loading" }
-  | { status: "signed-out" }
-  | { status: "needs-profile"; session: Session }
-  | { status: "ready"; session: Session; profileId: string }
-  | { status: "error"; session: Session };
+  | { status: "loading" | "signed-out" }
+  | { status: "needs-profile" | "no-residence" | "error"; session: Session }
+  | { status: "ready"; session: Session; me: Me };
 
 interface AuthContextValue {
   state: AuthState;
-  /** Creates the neighbor's profile on first sign-in. Returns false on failure. */
+  /** Creates the profile on first sign-in. Returns false on failure. */
   createProfile: (profile: NeighborProfile) => Promise<boolean>;
-  retry: () => void;
+  /** Reads the profile again (after an edit). */
+  reload: () => void;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+async function readMe(session: Session): Promise<AuthState> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select(ME_SELECT)
+    .eq("user_id", session.user.id)
+    .returns<MeRow[]>()
+    .maybeSingle();
+  if (error) return { status: "error", session };
+  if (!data) {
+    // No profile yet: the residence set by the admin must exist first.
+    const { data: residence } = await supabase
+      .from("residences")
+      .select("id")
+      .maybeSingle();
+    return { status: residence ? "needs-profile" : "no-residence", session };
+  }
+  const profile = profileFromRow(data);
+  const residence = residenceFromRow(data.residence);
+  if (!profile || !residence) return { status: "error", session };
+  return {
+    status: "ready",
+    session,
+    me: {
+      userId: session.user.id,
+      email: session.user.email,
+      profileId: data.id,
+      profile,
+      photoPath: data.photo_path ?? undefined,
+      admittedOn: data.admitted_on,
+      residence,
+    },
+  };
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null | undefined>();
@@ -55,60 +102,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (session === undefined) return;
-    if (!session) {
-      setState({ status: "signed-out" });
-      return;
-    }
+    if (!session) return setState({ status: "signed-out" });
     let cancelled = false;
-    setState({ status: "loading" });
-    supabase
-      .from("profiles")
-      .select("id, civility, last_name, location")
-      .eq("user_id", session.user.id)
-      .maybeSingle()
-      .then(({ data, error }) => {
-        if (cancelled) return;
-        if (error) {
-          setState({ status: "error", session });
-        } else if (!data) {
-          setState({ status: "needs-profile", session });
-        } else {
-          // The other screens still read the profile from the browser (until
-          // they move to Supabase), so keep that copy in step.
-          const profile = profileFromRow(data);
-          if (profile) saveProfile(profile);
-          setState({ status: "ready", session, profileId: data.id });
-        }
-      });
+    readMe(session).then((next) => !cancelled && setState(next));
     return () => {
       cancelled = true;
     };
   }, [sessionKey, attempt]);
 
+  const reload = useCallback(() => setAttempt((n) => n + 1), []);
+
   const createProfile = useCallback(
     async (profile: NeighborProfile) => {
       if (state.status !== "needs-profile") return false;
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("profiles")
-        .insert(newProfileRow(state.session.user.id, profile))
-        .select("id")
-        .single();
-      if (error || !data) return false;
-      saveProfile(profile);
-      setState({ status: "ready", session: state.session, profileId: data.id });
+        .insert(newProfileRow(state.session.user.id, profile));
+      if (error) return false;
+      reload();
       return true;
     },
-    [state],
+    [state, reload],
   );
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
   }, []);
 
-  const retry = useCallback(() => setAttempt((n) => n + 1), []);
-
   return (
-    <AuthContext.Provider value={{ state, createProfile, retry, signOut }}>
+    <AuthContext.Provider value={{ state, createProfile, reload, signOut }}>
       {children}
     </AuthContext.Provider>
   );
@@ -120,11 +142,11 @@ export function useAuth(): AuthContextValue {
   return value;
 }
 
-/** The signed-in neighbor's login id and profile id. The app only renders once both exist. */
-export function useMe(): { userId: string; profileId: string } {
+/** The signed-in neighbor. Only use it inside the app (after AuthGate). */
+export function useMe(): Me {
   const { state } = useAuth();
   if (state.status !== "ready") {
     throw new Error("useMe must be used once the neighbor is signed in");
   }
-  return { userId: state.session.user.id, profileId: state.profileId };
+  return state.me;
 }

@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import {
-  createUserItem,
   EMPTY_DRAFT,
   isGift,
   validateNewItem,
@@ -15,15 +14,6 @@ const complete: NewItemDraft = {
   description: "Avec deux lames.",
   condition: "Bon état",
 };
-const owner = {
-  id: "me",
-  profile: {
-    civility: "Madame" as const,
-    lastName: "Martin",
-    location: "B-2c",
-  },
-};
-
 describe("validateNewItem", () => {
   it("accepts a complete draft", () => {
     expect(validateNewItem(complete)).toEqual({});
@@ -48,29 +38,9 @@ describe("validateNewItem", () => {
   });
 });
 
-describe("createUserItem", () => {
-  const now = new Date("2026-10-13T10:00:00.000Z");
-
-  it("creates an available loan owned by the neighbor", () => {
-    const item = createUserItem(complete, owner, now, "i1");
-    expect(item).toMatchObject({
-      id: "i1",
-      title: "Scie sauteuse",
-      kind: "loan",
-      status: "available",
-      condition: "Bon état",
-      ownerId: "me",
-      ownerFirstName: "Madame Martin",
-      location: "B-2c",
-      createdAt: "2026-10-13T10:00:00.000Z",
-    });
-    expect(item.photos.map((p) => p.src)).toEqual([photo, photo]);
-    expect(isGift(item)).toBe(false);
-  });
-
-  it("marks a gift when “Je donne” is on", () => {
-    expect(
-      isGift(createUserItem({ ...complete, isGift: true }, owner, now, "i2")),
-    ).toBe(true);
+describe("isGift", () => {
+  it("tells gifts from loans", () => {
+    expect(isGift({ kind: "gift" })).toBe(true);
+    expect(isGift({ kind: "loan" })).toBe(false);
   });
 });
