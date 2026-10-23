@@ -1,36 +1,32 @@
-import { CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import type { WantedRequest } from "@shared/api";
 import { wantedWhenLabel } from "@shared/wanted";
-import { CURRENT_USER_ID } from "@/lib/borrow-requests";
-import { removeWantedRequest } from "@/lib/wanted-requests";
+import { useMe } from "@/lib/auth";
+import { useRemoveWanted } from "@/lib/data";
+import { card } from "@/lib/styles";
 
 export function WantedCard({ request }: { request: WantedRequest }) {
-  const isMine = request.authorId === CURRENT_USER_ID;
-
-  const handleRemove = () => {
-    removeWantedRequest(request.id);
-    toast("Recherche retirée");
-  };
+  const { profileId } = useMe();
+  const remove = useRemoveWanted();
 
   return (
-    <article className="rounded-2xl border border-border bg-card p-4">
-      <p className="font-display font-extrabold">
-        {request.authorName || "Un voisin"} recherche
-      </p>
-      <p className="mt-1 text-[15px] leading-relaxed break-words whitespace-pre-wrap">
-        {request.text}
-      </p>
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
-          <CalendarDays className="size-3.5 shrink-0" aria-hidden />
-          {wantedWhenLabel(request)}
-        </p>
-        {isMine && (
+    <article className={card}>
+      <p className="font-bold">{request.authorName} recherche</p>
+      <p className="mt-1 break-words whitespace-pre-wrap">{request.text}</p>
+      <div className="mt-2 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+        <span>{wantedWhenLabel(request)}</span>
+        {request.authorId === profileId && (
           <button
             type="button"
-            onClick={handleRemove}
-            className="shrink-0 text-xs font-bold text-destructive underline-offset-2 hover:underline"
+            disabled={remove.isPending}
+            onClick={() =>
+              remove.mutate(request.id, {
+                onSuccess: () => toast("Recherche retirée"),
+                onError: () =>
+                  toast.error("La recherche n’a pas pu être retirée"),
+              })
+            }
+            className="font-bold text-destructive"
           >
             Retirer
           </button>

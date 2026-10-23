@@ -24,6 +24,7 @@ export type Database = {
           created_at: string;
           id: string;
           item_id: string;
+          requested_at: string | null;
           requested_from: string | null;
           requested_until: string | null;
           status: string;
@@ -33,6 +34,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           item_id: string;
+          requested_at?: string | null;
           requested_from?: string | null;
           requested_until?: string | null;
           status?: string;
@@ -42,6 +44,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           item_id?: string;
+          requested_at?: string | null;
           requested_from?: string | null;
           requested_until?: string | null;
           status?: string;
@@ -119,6 +122,7 @@ export type Database = {
           last_name: string;
           location: string;
           photo_path: string | null;
+          residence_id: string;
           user_id: string | null;
         };
         Insert: {
@@ -129,6 +133,7 @@ export type Database = {
           last_name: string;
           location: string;
           photo_path?: string | null;
+          residence_id?: string;
           user_id?: string | null;
         };
         Update: {
@@ -139,7 +144,37 @@ export type Database = {
           last_name?: string;
           location?: string;
           photo_path?: string | null;
+          residence_id?: string;
           user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profiles_residence_id_fkey";
+            columns: ["residence_id"];
+            isOneToOne: false;
+            referencedRelation: "residences";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      residences: {
+        Row: {
+          address: string;
+          created_at: string;
+          id: string;
+          name: string | null;
+        };
+        Insert: {
+          address: string;
+          created_at?: string;
+          id?: string;
+          name?: string | null;
+        };
+        Update: {
+          address?: string;
+          created_at?: string;
+          id?: string;
+          name?: string | null;
         };
         Relationships: [];
       };

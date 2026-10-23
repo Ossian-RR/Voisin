@@ -2,8 +2,9 @@ import { describe, it, expect } from "vitest";
 import { normalizeLocation } from "./location";
 import {
   cleanProfile,
+  displayName,
   hasFieldChanges,
-  isNeighborProfile,
+  isCivility,
   validateProfile,
 } from "./profile";
 
@@ -62,43 +63,31 @@ describe("cleanProfile", () => {
   });
 });
 
-describe("isNeighborProfile", () => {
-  it("rejects unknown civilities and missing fields", () => {
-    expect(
-      isNeighborProfile({
-        civility: "Docteur",
-        lastName: "X",
-        location: "A-1a",
-      }),
-    ).toBe(false);
-    expect(isNeighborProfile({ civility: "Madame" })).toBe(false);
-    expect(isNeighborProfile(null)).toBe(false);
+describe("isCivility", () => {
+  it("accepts only the three civilities", () => {
+    expect(isCivility("Famille")).toBe(true);
+    expect(isCivility("Docteur")).toBe(false);
+    expect(isCivility(null)).toBe(false);
   });
 });
 
-describe("profile photo", () => {
+describe("displayName", () => {
+  it("puts the civility before the family name", () => {
+    expect(displayName({ civility: "Famille", lastName: "Martin" })).toBe(
+      "Famille Martin",
+    );
+  });
+});
+
+describe("hasFieldChanges", () => {
   const base = {
     civility: "Madame" as const,
     lastName: "Martin",
     location: "B-2c",
   };
-  const photo = "data:image/jpeg;base64,AAAA";
 
-  it("keeps a valid photo and drops anything else", () => {
-    expect(cleanProfile({ ...base, photo }).photo).toBe(photo);
-    expect(
-      cleanProfile({ ...base, photo: "https://example.com/x.jpg" }).photo,
-    ).toBeUndefined();
-  });
-
-  it("accepts a stored profile with or without a photo", () => {
-    expect(isNeighborProfile({ ...base, photo })).toBe(true);
-    expect(isNeighborProfile(base)).toBe(true);
-    expect(isNeighborProfile({ ...base, photo: 42 })).toBe(false);
-  });
-
-  it("ignores the photo when checking for unsaved form changes", () => {
-    expect(hasFieldChanges(base, { ...base, photo })).toBe(false);
+  it("ignores spacing and case differences that cleaning removes", () => {
+    expect(hasFieldChanges({ ...base, location: "b-2C" }, base)).toBe(false);
     expect(hasFieldChanges({ ...base, civility: "Famille" }, base)).toBe(true);
   });
 });

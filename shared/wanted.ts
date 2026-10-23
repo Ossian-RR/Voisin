@@ -1,39 +1,6 @@
 import { format, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
-import type { Civility, NeighborProfile, WantedRequest } from "./api";
-
-export const CIVILITIES: Civility[] = ["Monsieur", "Madame", "Famille"];
-
-/** "Madame Martin", "Famille Martin"… */
-export function displayName(profile: NeighborProfile): string {
-  return `${profile.civility} ${profile.lastName}`;
-}
-
-/**
- * The text is kept exactly as typed (no filter, no correction).
- * Only surrounding spaces are trimmed; an empty text is refused.
- */
-export function createWantedRequest(
-  input: { text: string; wantedOn?: string; wantedAt?: string },
-  author: { id: string; profile: NeighborProfile },
-  now: Date,
-  id: string,
-): WantedRequest | undefined {
-  const text = input.text.trim();
-  if (!text) return undefined;
-  return {
-    id,
-    authorId: author.id,
-    authorName: displayName(author.profile),
-    text,
-    wantedOn: input.wantedOn || undefined,
-    wantedAt:
-      input.wantedAt && isAllowedTime(input.wantedAt)
-        ? input.wantedAt
-        : undefined,
-    createdAt: now.toISOString(),
-  };
-}
+import type { WantedRequest } from "./api";
 
 /** Searches are set to the quarter hour, between 7:00 and 22:00. */
 export const QUARTER_MINUTES = ["00", "15", "30", "45"] as const;

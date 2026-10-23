@@ -1,10 +1,3 @@
-import type { NeighborProfile } from "./api";
-import type { Database } from "./database.types";
-import { cleanProfile, isNeighborProfile } from "./profile";
-
-type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
-type ProfileInsert = Database["public"]["Tables"]["profiles"]["Insert"];
-
 /** What Supabase Auth sends back when a sign-in link can't be sent. */
 export interface AuthErrorLike {
   code?: string;
@@ -47,30 +40,4 @@ export function linkErrorMessage(hash: string): string | undefined {
     return "Ce lien a expiré ou a déjà servi. Demandez-en un nouveau.";
   }
   return "Ce lien de connexion ne fonctionne pas. Demandez-en un nouveau.";
-}
-
-/** The row to create in `profiles` the first time a neighbor signs in. */
-export function newProfileRow(
-  userId: string,
-  profile: NeighborProfile,
-): ProfileInsert {
-  const clean = cleanProfile(profile);
-  return {
-    user_id: userId,
-    civility: clean.civility,
-    last_name: clean.lastName,
-    location: clean.location,
-  };
-}
-
-/** The app's profile shape, from a `profiles` row. Undefined if the row is odd. */
-export function profileFromRow(
-  row: Pick<ProfileRow, "civility" | "last_name" | "location">,
-): NeighborProfile | undefined {
-  const profile = {
-    civility: row.civility,
-    lastName: row.last_name,
-    location: row.location,
-  };
-  return isNeighborProfile(profile) ? profile : undefined;
 }

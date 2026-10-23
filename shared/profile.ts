@@ -1,8 +1,16 @@
-import type { NeighborProfile } from "./api";
+import type { Civility, NeighborProfile } from "./api";
 import { isValidLocation, normalizeLocation } from "./location";
-import { CIVILITIES } from "./wanted";
+
+export const CIVILITIES: Civility[] = ["Monsieur", "Madame", "Famille"];
 
 export type ProfileErrors = Partial<Record<"lastName" | "location", string>>;
+
+/** "Madame Martin", "Famille Martin"… */
+export function displayName(
+  profile: Pick<NeighborProfile, "civility" | "lastName">,
+): string {
+  return `${profile.civility} ${profile.lastName}`;
+}
 
 /** Trims the name and tidies the flat reference before saving. */
 export function cleanProfile(profile: NeighborProfile): NeighborProfile {
@@ -10,15 +18,10 @@ export function cleanProfile(profile: NeighborProfile): NeighborProfile {
     civility: profile.civility,
     lastName: profile.lastName.trim().replace(/\s+/g, " "),
     location: normalizeLocation(profile.location),
-    ...(isPhoto(profile.photo) ? { photo: profile.photo } : {}),
   };
 }
 
-export function isPhoto(value: unknown): value is string {
-  return typeof value === "string" && value.startsWith("data:image/");
-}
-
-/** True when the fields typed in the form differ (the photo is saved on its own). */
+/** True when the fields typed in the form differ from the saved profile. */
 export function hasFieldChanges(
   draft: NeighborProfile,
   saved: NeighborProfile,
@@ -45,14 +48,6 @@ export function validateProfile(profile: NeighborProfile): ProfileErrors {
   return errors;
 }
 
-/** Guards what comes back from storage. */
-export function isNeighborProfile(value: unknown): value is NeighborProfile {
-  if (!value || typeof value !== "object") return false;
-  const profile = value as Record<string, unknown>;
-  return (
-    CIVILITIES.includes(profile.civility as NeighborProfile["civility"]) &&
-    typeof profile.lastName === "string" &&
-    typeof profile.location === "string" &&
-    (profile.photo === undefined || isPhoto(profile.photo))
-  );
+export function isCivility(value: unknown): value is Civility {
+  return CIVILITIES.includes(value as Civility);
 }

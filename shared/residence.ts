@@ -1,15 +1,7 @@
-export interface Residence {
-  /** Optional: many residences have no name. */
-  name?: string;
-  address: string;
-}
-
-export const RESIDENCE: Residence = {
-  address: "333 rue des Pyrénées",
-};
+import type { Residence } from "./api";
 
 /** "Résidence" is always shown, followed by the name when there is one. */
-export function residenceTitle(residence: Residence): string {
+export function residenceTitle(residence: Pick<Residence, "name">): string {
   const name = residence.name?.trim();
   return name ? `Résidence ${name}` : "Résidence";
 }
@@ -29,7 +21,6 @@ export const MIN_MESSAGE_LENGTH = 50;
 export const HELP_TOPICS = [
   "Créer notre résidence",
   "Ajouter des voisins ou des étages",
-  "Désigner un administrateur",
   "Autre question",
 ] as const;
 
@@ -46,7 +37,7 @@ export function helpMailto(
   topic: HelpTopic,
   message: string,
   from: { name: string; location: string; email?: string },
-  residence: Residence,
+  residence: Pick<Residence, "name" | "address">,
 ): string {
   const subject = `[${residenceTitle(residence)} · ${residence.address}] ${topic}`;
   const body = [

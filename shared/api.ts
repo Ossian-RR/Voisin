@@ -1,91 +1,75 @@
-/**
- * Shared code between client and server
- * Useful to share types between client and server
- * and/or small pure JS functions that can be used on both client and server
- */
-
-/**
- * Example response type for /api/demo
- */
-export interface DemoResponse {
-  message: string;
-}
-
-export type ItemStatus = "available" | "unavailable" | "removed";
-
-export type ItemCategory =
-  "Tools" | "Garden" | "Cleaning" | "Kitchen" | "Outdoor";
-
-export interface ItemPhoto {
-  label: string;
-  hue: number;
-  /** Real photo: a data URL before publishing, then a short-lived link. Sample items only have a colored placeholder. */
-  src?: string;
-  /** Where the photo is kept in the Supabase "photos" bucket. */
-  path?: string;
-}
-
-/** "loan": lent and returned. "gift": given away for good. */
-export type ItemKind = "loan" | "gift";
-
-export type ItemConditionChoice = "Neuf" | "Bon état";
-
-export interface Item {
-  id: string;
-  title: string;
-  /** Missing for items posted from the app (the form has no category). */
-  category?: ItemCategory;
-  /** Defaults to "loan" when missing. */
-  kind?: ItemKind;
-  status: ItemStatus;
-  description: string;
-  /** Only two values: "Bon état" or "Neuf". */
-  condition: ItemConditionChoice;
-  ownerId: string;
-  ownerFirstName: string;
-  /** Owner's flat, written X-Nn: building part, floor number, door letter (e.g. "A-3a"). */
-  location: string;
-  photos: ItemPhoto[];
-  /** ISO date-time, for items posted from the app. */
-  createdAt?: string;
-}
+/** Types the app works with. Database rows are converted in ./db.ts. */
 
 export type Civility = "Monsieur" | "Madame" | "Famille";
+export type ItemStatus = "available" | "unavailable" | "removed";
+/** "loan": lent and returned. "gift": given away for good. */
+export type ItemKind = "loan" | "gift";
+export type ItemConditionChoice = "Neuf" | "Bon état";
+export type BorrowRequestStatus =
+  "pending" | "approved" | "declined" | "returned";
+
+export interface Residence {
+  id: string;
+  name?: string;
+  address: string;
+}
 
 export interface NeighborProfile {
   civility: Civility;
   lastName: string;
   /** Flat reference X-Nn, e.g. "A-3a". */
   location: string;
-  /** Profile photo as a small JPEG data URL. Optional. */
-  photo?: string;
+}
+
+export interface ItemPhoto {
+  label: string;
+  hue: number;
+  /** A data URL before publishing, then a short-lived link. Missing: colored placeholder. */
+  src?: string;
+  /** Where the photo is kept in the "photos" storage bucket. */
+  path?: string;
+}
+
+export interface Item {
+  id: string;
+  title: string;
+  kind: ItemKind;
+  status: ItemStatus;
+  description: string;
+  condition: ItemConditionChoice;
+  ownerId: string;
+  /** "Madame Martin". */
+  ownerName: string;
+  /** The owner's flat. */
+  location: string;
+  photos: ItemPhoto[];
+  createdAt: string;
 }
 
 /** Something a neighbor is looking for, typed freely. */
 export interface WantedRequest {
   id: string;
   authorId: string;
-  /** Shown to neighbors, e.g. "Madame Martin". */
   authorName: string;
   text: string;
-  /** Wished borrowing date, yyyy-mm-dd. Optional. */
+  /** yyyy-mm-dd. */
   wantedOn?: string;
-  /** Wished time, HH:mm. Optional. */
+  /** HH:mm. */
   wantedAt?: string;
   createdAt: string;
 }
-
-export type BorrowRequestStatus =
-  "pending" | "approved" | "declined" | "returned";
 
 export interface BorrowRequest {
   id: string;
   itemId: string;
   borrowerId: string;
+  borrowerName: string;
+  borrowerLocation: string;
   status: BorrowRequestStatus;
-  /** ISO date-time when the borrower sent the request. */
+  /** When the borrower would like it: yyyy-mm-dd and HH:mm, both optional. */
+  wantedOn?: string;
+  wantedAt?: string;
   createdAt: string;
-  /** Pickup and return dates, agreed later with the owner. */
-  requestedFrom?: string;
-  requestedUntil?: string;
+  /** Missing if the item is no longer visible. */
+  item?: Item;
 }
