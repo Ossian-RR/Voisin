@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import type { BorrowRequest, BorrowRequestStatus } from "@shared/api";
 import { wantedWhenLabel } from "@shared/wanted";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { useMe } from "@/lib/auth";
+import { useMember } from "@/lib/auth";
 import {
   useAnswerRequest,
   useBorrowRequests,
@@ -22,7 +22,7 @@ const small = "rounded-lg px-3 py-1.5 text-sm font-bold";
 
 /** Requests received for my items (to answer) and requests I sent. */
 export default function Requests() {
-  const { profileId } = useMe();
+  const { profileId } = useMember();
   const requests = useBorrowRequests();
   const all = requests.data ?? [];
   const received = all.filter((r) => r.item?.ownerId === profileId);

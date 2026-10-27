@@ -17,7 +17,10 @@ import { card, primaryButton } from "@/lib/styles";
 export default function Help() {
   const me = useMe();
   const send = useSendHelp();
-  const [topic, setTopic] = useState<HelpTopic>(HELP_TOPICS[0]);
+  // Neighbors already in a residence rarely want to join one.
+  const [topic, setTopic] = useState<HelpTopic>(
+    me.residence ? "Autre question" : HELP_TOPICS[0],
+  );
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState(me.email ?? "");
   const length = message.trim().length;

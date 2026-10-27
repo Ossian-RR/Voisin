@@ -10,7 +10,7 @@ import { DateTimeFields, useDateTime } from "@/components/DateTimeFields";
 import { ItemImage } from "@/components/items/ItemImage";
 import { StatusBadge } from "@/components/items/StatusBadge";
 import { useDocumentTitle } from "@/components/layout/PageHeader";
-import { useMe } from "@/lib/auth";
+import { useMember } from "@/lib/auth";
 import {
   useAskToBorrow,
   useBorrowRequests,
@@ -21,7 +21,7 @@ import { card, primaryButton, secondaryButton } from "@/lib/styles";
 
 export default function ItemDetail() {
   const { id } = useParams();
-  const { profileId } = useMe();
+  const { profileId } = useMember();
   const items = useItems();
   const requests = useBorrowRequests().data ?? [];
   const ask = useAskToBorrow();

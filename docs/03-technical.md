@@ -57,7 +57,9 @@ select private.add_to_residence('<id de la résidence>', array['marie@exemple.fr
 
 Le résultat indique combien de comptes ont été trouvés : s'il est plus petit que le nombre d'adresses, une adresse est mal écrite ou n'a pas encore été invitée.
 
-À sa première connexion, chaque voisin remplit civilité, nom et logement ; son profil est créé dans cette résidence. S'il ouvre l'invitation avant l'étape 5, l'appli affiche « Aucune résidence » ; « Réessayer » suffit ensuite.
+**Parcours d'un nouvel utilisateur** : à sa première connexion, l'appli s'ouvre sur **Profil**. Il remplit civilité, nom et logement puis appuie sur « Enregistrer ». Tant qu'il n'a pas de résidence, les autres onglets l'invitent à écrire depuis l'**Aide** (sujet « Rejoindre une résidence existante » ou « Créer notre résidence »), et il ne voit aucun objet ni aucun voisin. Une fois rattaché par `private.add_to_residence`, son profil passe dans la résidence et tout s'ouvre (« Réessayer » ou recharger la page).
+
+Si l'administrateur rattache la personne **avant** sa première connexion, son profil est directement créé dans la résidence.
 
 ## Commandes
 

@@ -10,40 +10,46 @@ import type { Session } from "@supabase/supabase-js";
 import type { NeighborProfile, Residence } from "@shared/api";
 import {
   ME_SELECT,
-  newProfileRow,
   profileFromRow,
   residenceFromRow,
   type MeRow,
 } from "@shared/db";
 import { supabase } from "./supabase";
 
-/** The signed-in neighbor. */
+/** The signed-in person. A new user has no profile and no residence yet. */
 export interface Me {
   userId: string;
   email?: string;
-  profileId: string;
-  profile: NeighborProfile;
+  /** Missing until the profile is saved for the first time (Profil page). */
+  profileId?: string;
+  profile?: NeighborProfile;
   photoPath?: string;
-  admittedOn: string;
+  admittedOn?: string;
   /** Set once the neighbor pressed « Enregistrer » on the Profil page. */
   confirmed: boolean;
-  residence: Residence;
+  /** Missing until the admin attaches them to a residence. */
+  residence?: Residence;
 }
 
-/**
- * loading: checking the session or reading the profile · signed-out ·
- * needs-profile: first sign-in · no-residence: the admin hasn't set one ·
- * error: the profile couldn't be read · ready.
- */
+/** A neighbor with a profile in a residence: everything in the app works. */
+export type Member = Me & {
+  profileId: string;
+  profile: NeighborProfile;
+  admittedOn: string;
+  residence: Residence;
+};
+
+export function isMember(me: Me): me is Member {
+  return Boolean(me.profileId && me.profile && me.residence);
+}
+
 export type AuthState =
   | { status: "loading" | "signed-out" }
-  | { status: "needs-profile" | "no-residence" | "error"; session: Session }
+  | { status: "error"; session: Session }
   | { status: "ready"; session: Session; me: Me };
 
 interface AuthContextValue {
   state: AuthState;
-  /** Creates the profile on first sign-in. Returns false on failure. */
-  createProfile: (profile: NeighborProfile) => Promise<boolean>;
   /** Reads the profile again (after an edit). */
   reload: () => void;
   signOut: () => Promise<void>;
@@ -59,31 +65,24 @@ async function readMe(session: Session): Promise<AuthState> {
     .returns<MeRow[]>()
     .maybeSingle();
   if (error) return { status: "error", session };
-  if (!data) {
-    // No profile yet: the residence set by the admin must exist first.
-    const { data: residence } = await supabase
-      .from("residences")
-      .select("id")
-      .maybeSingle();
-    return { status: residence ? "needs-profile" : "no-residence", session };
-  }
-  const profile = profileFromRow(data);
-  const residence = residenceFromRow(data.residence);
-  if (!profile || !residence) return { status: "error", session };
-  return {
-    status: "ready",
-    session,
-    me: {
-      userId: session.user.id,
-      email: session.user.email,
+  const me: Me = {
+    userId: session.user.id,
+    email: session.user.email,
+    confirmed: false,
+  };
+  if (data) {
+    const profile = profileFromRow(data);
+    if (!profile) return { status: "error", session };
+    Object.assign(me, {
       profileId: data.id,
       profile,
       photoPath: data.photo_path ?? undefined,
       admittedOn: data.admitted_on,
       confirmed: Boolean(data.confirmed_at),
-      residence,
-    },
-  };
+      residence: residenceFromRow(data.residence),
+    });
+  }
+  return { status: "ready", session, me };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -114,26 +113,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [sessionKey, attempt]);
 
   const reload = useCallback(() => setAttempt((n) => n + 1), []);
-
-  const createProfile = useCallback(
-    async (profile: NeighborProfile) => {
-      if (state.status !== "needs-profile") return false;
-      const { error } = await supabase
-        .from("profiles")
-        .insert(newProfileRow(state.session.user.id, profile));
-      if (error) return false;
-      reload();
-      return true;
-    },
-    [state, reload],
-  );
-
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ state, createProfile, reload, signOut }}>
+    <AuthContext.Provider value={{ state, reload, signOut }}>
       {children}
     </AuthContext.Provider>
   );
@@ -145,11 +130,19 @@ export function useAuth(): AuthContextValue {
   return value;
 }
 
-/** The signed-in neighbor. Only use it inside the app (after AuthGate). */
+/** The signed-in person. Only use it inside the app (after AuthGate). */
 export function useMe(): Me {
   const { state } = useAuth();
   if (state.status !== "ready") {
-    throw new Error("useMe must be used once the neighbor is signed in");
+    throw new Error("useMe must be used once signed in");
   }
   return state.me;
+}
+
+/** For pages that need a residence; AppLayout only shows them to members. */
+export function useMember(): Member {
+  const me = useMe();
+  if (!isMember(me))
+    throw new Error("useMember needs a profile and a residence");
+  return me;
 }

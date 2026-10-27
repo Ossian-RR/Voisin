@@ -10,6 +10,7 @@ export function residenceTitle(residence: Pick<Residence, "name">): string {
 export const MIN_MESSAGE_LENGTH = 50;
 
 export const HELP_TOPICS = [
+  "Rejoindre une résidence existante",
   "Créer notre résidence",
   "Ajouter des voisins ou des étages",
   "Autre question",

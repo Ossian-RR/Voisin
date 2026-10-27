@@ -1,12 +1,12 @@
 import { toast } from "sonner";
 import type { WantedRequest } from "@shared/api";
 import { wantedWhenLabel } from "@shared/wanted";
-import { useMe } from "@/lib/auth";
+import { useMember } from "@/lib/auth";
 import { useRemoveWanted } from "@/lib/data";
 import { card } from "@/lib/styles";
 
 export function WantedCard({ request }: { request: WantedRequest }) {
-  const { profileId } = useMe();
+  const { profileId } = useMember();
   const remove = useRemoveWanted();
 
   return (
