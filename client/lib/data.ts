@@ -344,3 +344,25 @@ export function useSavePhoto() {
     },
   });
 }
+
+// Help -----------------------------------------------------------------------
+
+/** Sends a message to the admin; the database e-mails it (see help_messages). */
+export function useSendHelp() {
+  const { profileId } = useMe();
+  return useMutation({
+    mutationFn: async (input: {
+      topic: string;
+      message: string;
+      replyEmail: string;
+    }) =>
+      check(
+        await supabase.from("help_messages").insert({
+          profile_id: profileId,
+          topic: input.topic,
+          message: input.message.trim(),
+          reply_email: input.replyEmail.trim(),
+        }),
+      ),
+  });
+}

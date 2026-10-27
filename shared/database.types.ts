@@ -66,6 +66,33 @@ export type Database = {
           },
         ];
       };
+      help_messages: {
+        Row: {
+          created_at: string;
+          id: string;
+          message: string;
+          profile_id: string;
+          reply_email: string;
+          topic: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          message: string;
+          profile_id: string;
+          reply_email: string;
+          topic: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          message?: string;
+          profile_id?: string;
+          reply_email?: string;
+          topic?: string;
+        };
+        Relationships: [];
+      };
       items: {
         Row: {
           category: string | null;

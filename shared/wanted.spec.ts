@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { helpMailto, isValidEmail, residenceTitle } from "./residence";
+import { isValidEmail, residenceTitle } from "./residence";
 import {
   DEFAULT_HOUR,
   DEFAULT_MINUTE,
@@ -58,40 +58,6 @@ describe("default time", () => {
   });
 });
 
-describe("helpMailto", () => {
-  it("addresses the app manager with the topic and who is writing", () => {
-    const link = helpMailto(
-      "responsable@example.org",
-      "Créer notre résidence",
-      "Bonjour, nous sommes 12 logements.",
-      { name: "Madame Martin", location: "B-2c" },
-      { address: "333 rue des Pyrénées" },
-    );
-    expect(link.startsWith("mailto:responsable%40example.org?subject=")).toBe(
-      true,
-    );
-    const params = new URLSearchParams(link.split("?")[1]);
-    expect(params.get("subject")).toBe(
-      "[Résidence · 333 rue des Pyrénées] Créer notre résidence",
-    );
-    expect(params.get("body")).toContain("Bonjour, nous sommes 12 logements.");
-    expect(params.get("body")).toContain("Madame Martin, logement B-2c");
-  });
-});
-
-describe("helpMailto without a manager address", () => {
-  it("still opens a ready message, with no recipient", () => {
-    const link = helpMailto(
-      "",
-      "Autre question",
-      "Bonjour",
-      { name: "Madame Martin", location: "B-2c" },
-      { address: "333 rue des Pyrénées" },
-    );
-    expect(link.startsWith("mailto:?subject=")).toBe(true);
-  });
-});
-
 describe("reply address", () => {
   it("accepts a normal address and rejects incomplete ones", () => {
     expect(isValidEmail(" marie.martin@exemple.fr ")).toBe(true);
@@ -103,21 +69,5 @@ describe("reply address", () => {
       "marie @exemple.fr",
     ])
       expect(isValidEmail(ko)).toBe(false);
-  });
-
-  it("adds it to the message so the manager can reply", () => {
-    const link = helpMailto(
-      "",
-      "Autre question",
-      "Bonjour",
-      {
-        name: "Madame Martin",
-        location: "B-2c",
-        email: "marie.martin@exemple.fr",
-      },
-      { address: "333 rue des Pyrénées" },
-    );
-    const body = new URLSearchParams(link.split("?")[1]).get("body");
-    expect(body).toContain("Me répondre à : marie.martin@exemple.fr");
   });
 });

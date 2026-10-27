@@ -30,6 +30,7 @@ supabase/migrations/      # Le schéma, migration par migration
 | `items` | Objets prêtés ou donnés ; photos dans le bucket privé `photos` |
 | `borrow_requests` | Demandes d'emprunt : en attente, acceptée, refusée, rendu |
 | `wanted_requests` | « Je cherche… » |
+| `help_messages` | Messages envoyés depuis Profil → Aide ; e-mail automatique à l'administrateur |
 | `residence_requests` | Demandes de nouvelles résidences (formulaire public) ; lisibles seulement dans le tableau de bord |
 
 **Isolation par résidence** : la sécurité par ligne (RLS) limite tout ce qu'un voisin voit à sa résidence (`private.my_residence_id()`). Un voisin ne peut ni choisir ni changer sa résidence.
@@ -38,7 +39,7 @@ supabase/migrations/      # Le schéma, migration par migration
 
 1. **La demande arrive.** Sur l'écran Connexion, « Demander Voisin pour ma résidence » ouvre un formulaire public (nom, e-mail, adresse, nombre de logements, message). La demande est enregistrée dans `residence_requests` et un e-mail part vers l'administrateur via Resend. Il suffit de répondre à cet e-mail pour écrire au demandeur.
    Prérequis, une fois pour toutes : dans Supabase → Project Settings → **Vault**, deux secrets : `resend_api_key` (clé API Resend, permission « Sending access ») et `admin_email` (votre adresse). Sans eux, les demandes sont quand même enregistrées, mais sans e-mail.
-2. **Voir les demandes** : Table Editor → `residence_requests`. Passez `status` à `done` ou `refused` une fois traitée.
+2. **Voir les demandes** : Table Editor → `residence_requests` (formulaire public) et `help_messages` (page Aide, voisins déjà inscrits). Passez `status` à `done` ou `refused` une fois traitée.
 3. **Créer la résidence** (SQL Editor) :
 
 ```sql
