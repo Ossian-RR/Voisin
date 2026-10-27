@@ -157,6 +157,39 @@ export type Database = {
           },
         ];
       };
+      residence_requests: {
+        Row: {
+          address: string;
+          contact_name: string;
+          created_at: string;
+          email: string;
+          flats: number | null;
+          id: string;
+          message: string | null;
+          status: string;
+        };
+        Insert: {
+          address: string;
+          contact_name: string;
+          created_at?: string;
+          email: string;
+          flats?: number | null;
+          id?: string;
+          message?: string | null;
+          status?: string;
+        };
+        Update: {
+          address?: string;
+          contact_name?: string;
+          created_at?: string;
+          email?: string;
+          flats?: number | null;
+          id?: string;
+          message?: string | null;
+          status?: string;
+        };
+        Relationships: [];
+      };
       residences: {
         Row: {
           address: string;

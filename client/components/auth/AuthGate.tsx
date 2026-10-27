@@ -1,9 +1,10 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
 import { hideSplash } from "@/lib/splash";
 import SignIn from "@/pages/SignIn";
 import Welcome from "@/pages/Welcome";
 import { AuthScreen, authButtonClass } from "./AuthScreen";
+import { RequestResidence } from "./RequestResidence";
 
 /**
  * Shows the app only to signed-in neighbors with a profile in a residence.
@@ -12,6 +13,7 @@ import { AuthScreen, authButtonClass } from "./AuthScreen";
 export function AuthGate({ children }: { children: ReactNode }) {
   const { state, reload, signOut } = useAuth();
   const checking = state.status === "loading";
+  const [asking, setAsking] = useState(false);
 
   useEffect(() => {
     if (!checking) hideSplash();
@@ -35,12 +37,31 @@ export function AuthGate({ children }: { children: ReactNode }) {
     case "needs-profile":
       return <Welcome />;
     case "no-residence":
+      if (asking) {
+        return (
+          <RequestResidence
+            initialEmail={state.session.user.email}
+            onBack={() => setAsking(false)}
+          />
+        );
+      }
       return (
         <AuthScreen
           title="Aucune résidence"
-          intro="Votre invitation n’est rattachée à aucune résidence. Demandez à la personne qui gère Voisin de vous ajouter à la vôtre."
+          intro="Votre compte n’est rattaché à aucune résidence. Si votre résidence n’est pas encore sur Voisin, demandez-la ; sinon, réessayez un peu plus tard."
         >
-          <button type="button" onClick={reload} className={authButtonClass}>
+          <button
+            type="button"
+            onClick={() => setAsking(true)}
+            className={authButtonClass}
+          >
+            Demander Voisin pour ma résidence
+          </button>
+          <button
+            type="button"
+            onClick={reload}
+            className="mt-3 h-11 w-full rounded-2xl text-sm font-bold text-primary"
+          >
             Réessayer
           </button>
           {signOutButton}

@@ -7,6 +7,7 @@ import {
   authButtonClass,
   authFieldClass,
 } from "@/components/auth/AuthScreen";
+import { RequestResidence } from "@/components/auth/RequestResidence";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ export default function SignIn() {
   );
   const [sending, setSending] = useState(false);
   const [sentTo, setSentTo] = useState<string>();
+  const [asking, setAsking] = useState(false);
 
   // Once shown, drop the link error from the address so a reload doesn't repeat it.
   useEffect(() => {
@@ -58,6 +60,15 @@ export default function SignIn() {
     }
     void sendLink(address);
   };
+
+  if (asking) {
+    return (
+      <RequestResidence
+        initialEmail={email.trim()}
+        onBack={() => setAsking(false)}
+      />
+    );
+  }
 
   if (sentTo) {
     return (
@@ -153,6 +164,16 @@ export default function SignIn() {
           {sending ? "Envoi…" : "Recevoir mon lien de connexion"}
         </button>
       </form>
+      <p className="mt-8 text-center text-sm text-muted-foreground">
+        Votre résidence n’est pas encore sur Voisin ?
+      </p>
+      <button
+        type="button"
+        onClick={() => setAsking(true)}
+        className="mt-1 h-11 w-full text-sm font-bold text-primary"
+      >
+        Demander Voisin pour ma résidence
+      </button>
     </AuthScreen>
   );
 }
