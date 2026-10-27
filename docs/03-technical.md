@@ -26,7 +26,7 @@ supabase/migrations/      # Le schéma, migration par migration
 | Table | Contenu |
 |---|---|
 | `residences` | Nom (facultatif) et adresse |
-| `profiles` | Un par voisin : civilité, nom, logement, photo, date d'admission, **résidence** |
+| `profiles` | Un par voisin : civilité, nom, logement, photo, date d'admission, **résidence**, **e-mail** de connexion (rempli et tenu à jour par la base, visible seulement dans le tableau de bord) |
 | `items` | Objets prêtés ou donnés ; photos dans le bucket privé `photos` |
 | `borrow_requests` | Demandes d'emprunt : en attente, acceptée, refusée, rendu |
 | `wanted_requests` | « Je cherche… » |
