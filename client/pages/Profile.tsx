@@ -99,6 +99,12 @@ export default function Profile() {
         <h2 className="font-display text-lg font-extrabold">
           Mes informations
         </h2>
+        {!me.confirmed && (
+          <p className="text-sm text-muted-foreground">
+            Vérifiez vos informations puis appuyez sur « Enregistrer » : c’est
+            nécessaire pour écrire à l’Aide.
+          </p>
+        )}
         <ProfileFields
           value={draft}
           errors={errors}
@@ -110,7 +116,8 @@ export default function Profile() {
         <button
           type="submit"
           disabled={
-            !hasFieldChanges(draft, me.profile) || saveProfile.isPending
+            (me.confirmed && !hasFieldChanges(draft, me.profile)) ||
+            saveProfile.isPending
           }
           className={primaryButton}
         >

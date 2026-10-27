@@ -25,6 +25,8 @@ export interface Me {
   profile: NeighborProfile;
   photoPath?: string;
   admittedOn: string;
+  /** Set once the neighbor pressed « Enregistrer » on the Profil page. */
+  confirmed: boolean;
   residence: Residence;
 }
 
@@ -78,6 +80,7 @@ async function readMe(session: Session): Promise<AuthState> {
       profile,
       photoPath: data.photo_path ?? undefined,
       admittedOn: data.admitted_on,
+      confirmed: Boolean(data.confirmed_at),
       residence,
     },
   };

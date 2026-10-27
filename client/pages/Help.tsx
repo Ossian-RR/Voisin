@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
   HELP_TOPICS,
@@ -37,6 +38,21 @@ export default function Help() {
       },
     );
   };
+
+  if (!me.confirmed) {
+    return (
+      <div className="flex flex-col gap-4 px-5">
+        <PageHeader title="Aide" className="px-0" />
+        <p className={card}>
+          Pour écrire à l’Aide, vérifiez d’abord vos informations dans votre
+          profil puis appuyez sur « Enregistrer ».
+        </p>
+        <Link to="/profile" className={primaryButton}>
+          Aller à mon profil
+        </Link>
+      </div>
+    );
+  }
 
   if (send.isSuccess) {
     return (

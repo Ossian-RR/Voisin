@@ -309,6 +309,8 @@ export function useSaveProfile() {
             civility: clean.civility,
             last_name: clean.lastName,
             location: clean.location,
+            // Pressing « Enregistrer » confirms the profile (needed for Aide).
+            confirmed_at: new Date().toISOString(),
           })
           .eq("id", profileId),
       );

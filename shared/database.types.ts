@@ -144,6 +144,7 @@ export type Database = {
         Row: {
           admitted_on: string;
           civility: string;
+          confirmed_at: string | null;
           created_at: string;
           id: string;
           last_name: string;
@@ -155,6 +156,7 @@ export type Database = {
         Insert: {
           admitted_on?: string;
           civility: string;
+          confirmed_at?: string | null;
           created_at?: string;
           id?: string;
           last_name: string;
@@ -166,6 +168,7 @@ export type Database = {
         Update: {
           admitted_on?: string;
           civility?: string;
+          confirmed_at?: string | null;
           created_at?: string;
           id?: string;
           last_name?: string;
