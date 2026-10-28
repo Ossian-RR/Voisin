@@ -15,6 +15,7 @@ import {
   itemFromRow,
   itemPhotoPath,
   newItemRow,
+  newProfileRow,
   newRequestRow,
   newWantedRow,
   photoPaths,
@@ -27,7 +28,7 @@ import {
 import type { NewItemDraft } from "@shared/new-item";
 import { createLinkCache } from "@shared/link-cache";
 import { cleanProfile } from "@shared/profile";
-import { useAuth, useMe } from "./auth";
+import { useAuth, useMe, useMember } from "./auth";
 import { supabase } from "./supabase";
 
 const BUCKET = "photos";
@@ -100,7 +101,7 @@ export function useItems() {
 }
 
 export function usePublishItem() {
-  const { userId, profileId } = useMe();
+  const { userId, profileId } = useMember();
   const client = useQueryClient();
   return useMutation({
     mutationFn: async (draft: NewItemDraft) => {
@@ -172,7 +173,7 @@ function useRefreshRequests() {
 }
 
 export function useAskToBorrow() {
-  const { profileId } = useMe();
+  const { profileId } = useMember();
   const onSuccess = useRefreshRequests();
   return useMutation({
     mutationFn: async (input: {
@@ -250,7 +251,7 @@ export function useWantedRequests() {
 }
 
 export function usePublishWanted() {
-  const { profileId } = useMe();
+  const { profileId } = useMember();
   const client = useQueryClient();
   return useMutation({
     mutationFn: async (input: {
@@ -295,12 +296,30 @@ export function useMyPhoto() {
   });
 }
 
+/** Creates the profile the first time, then updates it. Either way it is confirmed. */
 export function useSaveProfile() {
-  const { profileId } = useMe();
+  const { userId, profileId } = useMe();
   const { reload } = useAuth();
   const client = useQueryClient();
   return useMutation({
     mutationFn: async (profile: NeighborProfile) => {
+      // Pressing « Enregistrer » confirms the profile (needed for Aide).
+      const confirmed_at = new Date().toISOString();
+      if (!profileId) {
+        // The residence (if the admin already set one) is filled in by the database.
+        check(
+          await supabase
+            .from("profiles")
+            .insert(newProfileRow(userId, profile)),
+        );
+        check(
+          await supabase
+            .from("profiles")
+            .update({ confirmed_at })
+            .eq("user_id", userId),
+        );
+        return;
+      }
       const clean = cleanProfile(profile);
       check(
         await supabase
@@ -309,6 +328,7 @@ export function useSaveProfile() {
             civility: clean.civility,
             last_name: clean.lastName,
             location: clean.location,
+            confirmed_at,
           })
           .eq("id", profileId),
       );
@@ -342,5 +362,27 @@ export function useSavePhoto() {
       reload();
       return client.invalidateQueries({ queryKey: ["avatar"] });
     },
+  });
+}
+
+// Help -----------------------------------------------------------------------
+
+/** Sends a message to the admin; the database e-mails it (see help_messages). */
+export function useSendHelp() {
+  const { profileId } = useMe();
+  return useMutation({
+    mutationFn: async (input: {
+      topic: string;
+      message: string;
+      replyEmail: string;
+    }) =>
+      check(
+        await supabase.from("help_messages").insert({
+          profile_id: profileId,
+          topic: input.topic,
+          message: input.message.trim(),
+          reply_email: input.replyEmail.trim(),
+        }),
+      ),
   });
 }

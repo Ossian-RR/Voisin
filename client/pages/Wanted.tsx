@@ -5,12 +5,12 @@ import { displayName } from "@shared/profile";
 import { DateTimeFields, useDateTime } from "@/components/DateTimeFields";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { fieldClass } from "@/components/ProfileFields";
-import { useMe } from "@/lib/auth";
+import { useMember } from "@/lib/auth";
 import { usePublishWanted } from "@/lib/data";
 import { primaryButton } from "@/lib/styles";
 
 export default function Wanted() {
-  const { profile } = useMe();
+  const { profile } = useMember();
   const publish = usePublishWanted();
   const navigate = useNavigate();
   const [text, setText] = useState("");

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { ItemCard } from "@/components/items/ItemCard";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { WantedCard } from "@/components/wanted/WantedCard";
-import { useMe } from "@/lib/auth";
+import { useMember } from "@/lib/auth";
 import { useItems, useWantedRequests } from "@/lib/data";
 import { residenceTitle } from "@shared/residence";
 
@@ -14,7 +14,7 @@ const normalize = (text: string) =>
     .toLowerCase();
 
 export default function Index() {
-  const { residence } = useMe();
+  const { residence } = useMember();
   const items = useItems();
   const wanted = useWantedRequests().data ?? [];
   const [query, setQuery] = useState("");

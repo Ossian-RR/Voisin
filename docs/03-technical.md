@@ -26,27 +26,40 @@ supabase/migrations/      # Le schéma, migration par migration
 | Table | Contenu |
 |---|---|
 | `residences` | Nom (facultatif) et adresse |
-| `profiles` | Un par voisin : civilité, nom, logement, photo, date d'admission, **résidence** |
+| `profiles` | Un par voisin : civilité, nom, logement, photo, date d'admission, **résidence**, **e-mail** de connexion (rempli et tenu à jour par la base, visible seulement dans le tableau de bord) |
 | `items` | Objets prêtés ou donnés ; photos dans le bucket privé `photos` |
 | `borrow_requests` | Demandes d'emprunt : en attente, acceptée, refusée, rendu |
 | `wanted_requests` | « Je cherche… » |
+| `help_messages` | Messages envoyés depuis Profil → Aide ; e-mail automatique à l'administrateur |
+| `residence_requests` | Demandes de nouvelles résidences (formulaire public) ; lisibles seulement dans le tableau de bord |
 
 **Isolation par résidence** : la sécurité par ligne (RLS) limite tout ce qu'un voisin voit à sa résidence (`private.my_residence_id()`). Un voisin ne peut ni choisir ni changer sa résidence.
 
-## Inviter un voisin
+## Nouvelle résidence : de la demande aux invitations
 
-1. Supabase → Authentication → Users → **Invite user** (son e-mail).
-2. Dans le SQL Editor, rattacher la personne à sa résidence :
+1. **La demande arrive.** Sur l'écran Connexion, « Demander Voisin pour ma résidence » ouvre un formulaire public (nom, e-mail, adresse, nombre de logements, message). La demande est enregistrée dans `residence_requests` et un e-mail part vers l'administrateur via Resend. Il suffit de répondre à cet e-mail pour écrire au demandeur.
+   Prérequis, une fois pour toutes : dans Supabase → Project Settings → **Vault**, deux secrets : `resend_api_key` (clé API Resend, permission « Sending access ») et `admin_email` (votre adresse). Sans eux, les demandes sont quand même enregistrées, mais sans e-mail.
+2. **Voir les demandes** : Table Editor → `residence_requests` (formulaire public) et `help_messages` (page Aide, voisins déjà inscrits). Passez `status` à `done` ou `refused` une fois traitée.
+3. **Créer la résidence** (SQL Editor) :
 
 ```sql
-update auth.users
-set raw_app_meta_data = raw_app_meta_data || jsonb_build_object('residence_id', '<id de la résidence>')
-where email = 'voisin@exemple.fr';
+insert into public.residences (name, address)
+values ('Les Tilleuls', '12 rue des Lilas, Lyon')
+returning id;
 ```
 
-À sa première connexion, le voisin remplit civilité, nom et logement ; son profil est créé dans cette résidence. Sans résidence, l'appli affiche « Aucune résidence ».
+4. **Inviter les voisins** : Authentication → Users → **Invite user**, une fois par adresse e-mail.
+5. **Les rattacher à la résidence** (SQL Editor), avec l'`id` obtenu à l'étape 3 :
 
-Nouvelle résidence : `insert into public.residences (address, name) values ('…', '…') returning id;`
+```sql
+select private.add_to_residence('<id de la résidence>', array['marie@exemple.fr', 'paul@exemple.fr']);
+```
+
+Le résultat indique combien de comptes ont été trouvés : s'il est plus petit que le nombre d'adresses, une adresse est mal écrite ou n'a pas encore été invitée.
+
+**Parcours d'un nouvel utilisateur** : à sa première connexion, l'appli s'ouvre sur **Profil**. Il remplit civilité, nom et logement puis appuie sur « Enregistrer ». Tant qu'il n'a pas de résidence, les autres onglets l'invitent à écrire depuis l'**Aide** (sujet « Rejoindre une résidence existante » ou « Créer notre résidence »), et il ne voit aucun objet ni aucun voisin. Une fois rattaché par `private.add_to_residence`, son profil passe dans la résidence et tout s'ouvre (« Réessayer » ou recharger la page).
+
+Si l'administrateur rattache la personne **avant** sa première connexion, son profil est directement créé dans la résidence.
 
 ## Commandes
 

@@ -2,12 +2,11 @@ import { useEffect, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth";
 import { hideSplash } from "@/lib/splash";
 import SignIn from "@/pages/SignIn";
-import Welcome from "@/pages/Welcome";
 import { AuthScreen, authButtonClass } from "./AuthScreen";
 
 /**
- * Shows the app only to signed-in neighbors with a profile in a residence.
- * The opening screen stays up while the saved session is checked.
+ * Shows the app to signed-in people. New users land on Profil (see
+ * AppLayout). The opening screen stays up while the session is checked.
  */
 export function AuthGate({ children }: { children: ReactNode }) {
   const { state, reload, signOut } = useAuth();
@@ -17,35 +16,11 @@ export function AuthGate({ children }: { children: ReactNode }) {
     if (!checking) hideSplash();
   }, [checking]);
 
-  const signOutButton = (
-    <button
-      type="button"
-      onClick={() => void signOut()}
-      className="mt-3 h-11 w-full rounded-2xl text-sm font-bold text-muted-foreground"
-    >
-      Se déconnecter
-    </button>
-  );
-
   switch (state.status) {
     case "loading":
       return null;
     case "signed-out":
       return <SignIn />;
-    case "needs-profile":
-      return <Welcome />;
-    case "no-residence":
-      return (
-        <AuthScreen
-          title="Aucune résidence"
-          intro="Votre invitation n’est rattachée à aucune résidence. Demandez à la personne qui gère Voisin de vous ajouter à la vôtre."
-        >
-          <button type="button" onClick={reload} className={authButtonClass}>
-            Réessayer
-          </button>
-          {signOutButton}
-        </AuthScreen>
-      );
     case "error":
       return (
         <AuthScreen
@@ -55,7 +30,13 @@ export function AuthGate({ children }: { children: ReactNode }) {
           <button type="button" onClick={reload} className={authButtonClass}>
             Réessayer
           </button>
-          {signOutButton}
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="mt-3 h-11 w-full rounded-2xl text-sm font-bold text-muted-foreground"
+          >
+            Se déconnecter
+          </button>
         </AuthScreen>
       );
     case "ready":

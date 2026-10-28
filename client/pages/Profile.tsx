@@ -18,6 +18,12 @@ import { useItems, useMyPhoto, useSavePhoto, useSaveProfile } from "@/lib/data";
 import { toAvatarDataUrl } from "@/lib/image";
 import { card, primaryButton, secondaryButton } from "@/lib/styles";
 
+const EMPTY: NeighborProfile = {
+  civility: "Madame",
+  lastName: "",
+  location: "",
+};
+
 export default function Profile() {
   const me = useMe();
   const { signOut } = useAuth();
@@ -27,8 +33,9 @@ export default function Profile() {
   const myItems = (useItems().data ?? []).filter(
     (i) => i.ownerId === me.profileId,
   );
-  const [draft, setDraft] = useState<NeighborProfile>(me.profile);
+  const [draft, setDraft] = useState<NeighborProfile>(me.profile ?? EMPTY);
   const [errors, setErrors] = useState<ProfileErrors>({});
+  const unsaved = !me.profile || hasFieldChanges(draft, me.profile);
 
   const handlePhoto = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -56,49 +63,76 @@ export default function Profile() {
   return (
     <div className="flex flex-col gap-5 px-5">
       <PageHeader title="Profil" className="px-0" />
-      <section className="flex items-center gap-4">
-        <label className="relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-full bg-primary text-primary-foreground">
-          {photo ? (
-            <img src={photo} alt="" className="size-full object-cover" />
-          ) : (
-            <span className="grid size-full place-items-center text-2xl font-extrabold">
-              {me.profile.lastName.charAt(0).toUpperCase()}
-            </span>
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handlePhoto}
-            className="sr-only"
-          />
-          <span className="sr-only">Changer la photo de profil</span>
-        </label>
-        <div className="min-w-0 text-sm">
-          <p className="font-display text-xl font-extrabold">
-            {displayName(me.profile)}
+
+      {!me.residence && (
+        <div className={`${card} space-y-3 border-primary/40`}>
+          <p className="font-bold">Rejoignez votre résidence</p>
+          <p className="text-sm text-muted-foreground">
+            {me.confirmed
+              ? "Votre profil est enregistré. Écrivez-nous depuis l’Aide pour rejoindre la résidence de vos voisins ou la créer : vous verrez ensuite leurs objets."
+              : "1. Complétez vos informations ci-dessous et appuyez sur « Enregistrer ». 2. Écrivez-nous depuis l’Aide pour rejoindre la résidence de vos voisins ou la créer."}
           </p>
-          <p className="text-muted-foreground">
-            {me.profile.location} · {describeLocation(me.profile.location)}
-          </p>
-          <p className="text-muted-foreground">
-            {residenceTitle(me.residence)} · {me.residence.address}
-          </p>
-          {photo && (
-            <button
-              type="button"
-              onClick={() => savePhoto.mutate(null)}
-              className="text-xs font-bold text-destructive"
-            >
-              Retirer la photo
-            </button>
+          {me.confirmed && (
+            <Link to="/help" className={primaryButton}>
+              Demander via l’Aide
+            </Link>
           )}
         </div>
-      </section>
+      )}
+
+      {me.profile && (
+        <section className="flex items-center gap-4">
+          <label className="relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-full bg-primary text-primary-foreground">
+            {photo ? (
+              <img src={photo} alt="" className="size-full object-cover" />
+            ) : (
+              <span className="grid size-full place-items-center text-2xl font-extrabold">
+                {me.profile.lastName.charAt(0).toUpperCase()}
+              </span>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handlePhoto}
+              className="sr-only"
+            />
+            <span className="sr-only">Changer la photo de profil</span>
+          </label>
+          <div className="min-w-0 text-sm">
+            <p className="font-display text-xl font-extrabold">
+              {displayName(me.profile)}
+            </p>
+            <p className="text-muted-foreground">
+              {me.profile.location} · {describeLocation(me.profile.location)}
+            </p>
+            {me.residence && (
+              <p className="text-muted-foreground">
+                {residenceTitle(me.residence)} · {me.residence.address}
+              </p>
+            )}
+            {photo && (
+              <button
+                type="button"
+                onClick={() => savePhoto.mutate(null)}
+                className="text-xs font-bold text-destructive"
+              >
+                Retirer la photo
+              </button>
+            )}
+          </div>
+        </section>
+      )}
 
       <form onSubmit={handleSubmit} noValidate className={`${card} space-y-4`}>
         <h2 className="font-display text-lg font-extrabold">
           Mes informations
         </h2>
+        {me.profile && !me.confirmed && (
+          <p className="text-sm text-muted-foreground">
+            Vérifiez vos informations puis appuyez sur « Enregistrer » : c’est
+            nécessaire pour écrire à l’Aide.
+          </p>
+        )}
         <ProfileFields
           value={draft}
           errors={errors}
@@ -109,41 +143,44 @@ export default function Profile() {
         />
         <button
           type="submit"
-          disabled={
-            !hasFieldChanges(draft, me.profile) || saveProfile.isPending
-          }
+          disabled={(me.confirmed && !unsaved) || saveProfile.isPending}
           className={primaryButton}
         >
           Enregistrer
         </button>
       </form>
 
-      <section className="space-y-2">
-        <h2 className="font-display text-lg font-extrabold">Mes objets</h2>
-        {myItems.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
-            {myItems.map((item) => (
-              <ItemCard key={item.id} item={item} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Aucun objet pour l’instant.{" "}
-            <Link to="/add" className="font-bold text-primary">
-              Prêter un objet
-            </Link>
-          </p>
-        )}
-      </section>
+      {me.residence && (
+        <section className="space-y-2">
+          <h2 className="font-display text-lg font-extrabold">Mes objets</h2>
+          {myItems.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {myItems.map((item) => (
+                <ItemCard key={item.id} item={item} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Aucun objet pour l’instant.{" "}
+              <Link to="/add" className="font-bold text-primary">
+                Prêter un objet
+              </Link>
+            </p>
+          )}
+        </section>
+      )}
 
       <section className={`${card} space-y-2 text-sm`}>
         <h2 className="font-display text-lg font-extrabold">Mon compte</h2>
         <p>
           Connecté avec <strong>{me.email}</strong>
         </p>
-        <p className="text-muted-foreground">
-          Voisin depuis le {new Date(me.admittedOn).toLocaleDateString("fr-FR")}
-        </p>
+        {me.admittedOn && me.residence && (
+          <p className="text-muted-foreground">
+            Voisin depuis le{" "}
+            {new Date(me.admittedOn).toLocaleDateString("fr-FR")}
+          </p>
+        )}
         <Link to="/help" className={secondaryButton}>
           Aide
         </Link>

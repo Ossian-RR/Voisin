@@ -23,7 +23,7 @@ const PERSON = "civility, last_name, location";
 export const ITEM_SELECT = `id, title, kind, status, description, condition, photos, created_at, owner_id, owner:profiles(${PERSON})`;
 export const WANTED_SELECT = `id, text, wanted_on, wanted_at, created_at, author_id, author:profiles(${PERSON})`;
 export const REQUEST_SELECT = `id, item_id, borrower_id, status, requested_from, requested_at, created_at, borrower:profiles(${PERSON}), item:items(${ITEM_SELECT})`;
-export const ME_SELECT = `id, ${PERSON}, photo_path, admitted_on, residence:residences(id, name, address)`;
+export const ME_SELECT = `id, ${PERSON}, photo_path, admitted_on, confirmed_at, residence:residences(id, name, address)`;
 
 export type ItemRow = Pick<
   Row<"items">,
@@ -52,7 +52,10 @@ export type RequestRow = Pick<
   | "created_at"
 > & { borrower: Person | null; item: ItemRow | null };
 export type MeRow = Person &
-  Pick<Row<"profiles">, "id" | "photo_path" | "admitted_on"> & {
+  Pick<
+    Row<"profiles">,
+    "id" | "photo_path" | "admitted_on" | "confirmed_at"
+  > & {
     residence: Pick<Row<"residences">, "id" | "name" | "address"> | null;
   };
 
