@@ -14,7 +14,17 @@ import {
   residenceFromRow,
   type MeRow,
 } from "@shared/db";
+import { rememberEmail, type EmailStore } from "@shared/remembered-email";
 import { supabase } from "./supabase";
+
+/** This phone's storage, if the browser allows it (not in some private modes). */
+export function phoneStore(): EmailStore | undefined {
+  try {
+    return window.localStorage;
+  } catch {
+    return undefined;
+  }
+}
 
 /** The signed-in person. A new user has no profile and no residence yet. */
 export interface Me {
@@ -65,6 +75,8 @@ async function readMe(session: Session): Promise<AuthState> {
     .returns<MeRow[]>()
     .maybeSingle();
   if (error) return { status: "error", session };
+  // For « Bon retour » on the sign-in screen after « Se déconnecter ».
+  rememberEmail(phoneStore(), session.user.email);
   const me: Me = {
     userId: session.user.id,
     email: session.user.email,

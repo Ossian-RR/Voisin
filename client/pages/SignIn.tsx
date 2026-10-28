@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { MailCheck } from "lucide-react";
 import { linkErrorMessage, signInErrorMessage } from "@shared/auth";
+import { readRememberedEmail, rememberEmail } from "@shared/remembered-email";
 import { isValidEmail } from "@shared/residence";
 import {
   AuthScreen,
@@ -8,10 +9,15 @@ import {
   authFieldClass,
 } from "@/components/auth/AuthScreen";
 import { RequestResidence } from "@/components/auth/RequestResidence";
+import { phoneStore } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
-/** Sign-in with a link sent by e-mail. Only invited neighbors can get one. */
+/**
+ * Sign-in with a link sent by e-mail. Only invited neighbors can get one.
+ * Once signed in, the phone stays signed in; after « Se déconnecter » the
+ * address used last is offered again (« Bon retour »), one tap away.
+ */
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | undefined>(() =>
@@ -20,6 +26,9 @@ export default function SignIn() {
   const [sending, setSending] = useState(false);
   const [sentTo, setSentTo] = useState<string>();
   const [asking, setAsking] = useState(false);
+  const [remembered] = useState(() => readRememberedEmail(phoneStore()));
+  // « Utiliser une autre adresse » shows the usual form.
+  const [otherAddress, setOtherAddress] = useState(false);
 
   // Once shown, drop the link error from the address so a reload doesn't repeat it.
   useEffect(() => {
@@ -48,6 +57,7 @@ export default function SignIn() {
       setError(signInErrorMessage(failure));
       return;
     }
+    rememberEmail(phoneStore(), address);
     setSentTo(address);
   };
 
@@ -109,6 +119,47 @@ export default function SignIn() {
           type="button"
           onClick={() => {
             setSentTo(undefined);
+            setError(undefined);
+            setOtherAddress(true);
+          }}
+          className="mt-3 h-11 w-full rounded-2xl text-sm font-bold text-primary"
+        >
+          Utiliser une autre adresse
+        </button>
+      </AuthScreen>
+    );
+  }
+
+  if (remembered && !otherAddress) {
+    return (
+      <AuthScreen
+        title="Bon retour !"
+        intro="Recevez un lien par e-mail pour retrouver votre profil et votre résidence."
+      >
+        <p className="text-sm font-bold">Continuer avec</p>
+        <p className="mt-2 flex h-12 items-center rounded-2xl border border-border bg-secondary px-4 text-base font-semibold break-all text-secondary-foreground">
+          {remembered}
+        </p>
+        {error && (
+          <p
+            role="alert"
+            className="mt-1.5 text-sm font-semibold text-destructive"
+          >
+            {error}
+          </p>
+        )}
+        <button
+          type="button"
+          disabled={sending}
+          onClick={() => void sendLink(remembered)}
+          className={authButtonClass}
+        >
+          {sending ? "Envoi…" : "Recevoir mon lien de connexion"}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setOtherAddress(true);
             setError(undefined);
           }}
           className="mt-3 h-11 w-full rounded-2xl text-sm font-bold text-primary"
