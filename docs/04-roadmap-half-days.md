@@ -71,9 +71,10 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 - Déjà bornés avant : titre d'objet (120 en base, 80 dans l'appli), « Je cherche » (500), Aide (2000), demandes de résidence.
 - Testé sur un Postgres 16 local : valeurs trop longues ou trop nombreuses refusées, bornes exactes acceptées.
 
-### 8.5 Photos [fait, à compléter]
-- Déjà fait : bucket privé, 2 Mo maximum, JPEG, PNG ou WebP seulement (pas de SVG), chaque voisin n'écrit que dans son dossier, lecture limitée à sa résidence, liens temporaires.
-- **Reste** : réserver l'envoi de photos aux voisins rattachés à une résidence, et supprimer les photos d'un objet supprimé (sinon elles restent stockées).
+### 8.5 Photos [fait, à appliquer à la base]
+- Déjà fait : bucket privé, 2 Mo maximum, JPEG, PNG ou WebP seulement (pas de SVG), lecture limitée à sa résidence, liens temporaires ; supprimer un objet supprime ses photos (`useRemoveItem`).
+- `20261102180000_photo_upload_rules.sql` : on ne peut plus écrire n'importe quel nom de fichier dans son dossier. Seuls deux chemins sont acceptés : `<id>/avatar.jpg` dès qu'on a un profil (photo de Profil, même avant d'être rattaché), et `<id>/items/<objet>/<n>.jpg` une fois membre d'une résidence. Testé sur un Postgres 16 local (compte sans profil, profil sans résidence, membre).
+- Photos orphelines (suppression interrompue par une coupure réseau, photo de profil retirée) : pas de nettoyage automatique, Supabase déconseille d'effacer les fichiers en SQL. Requête pour les repérer dans `03-technical.md`, à passer de temps en temps ; on les supprime depuis Storage.
 
 ### 8.6 Test d'isolation entre résidences [à faire]
 - Script de test (SQL ou Vitest contre une base de test) avec deux résidences et trois voisins. Il vérifie qu'un voisin de la résidence A ne lit, ne modifie ni ne supprime rien de la résidence B (profils, objets, demandes, photos), et qu'il ne peut changer ni son `residence_id` ni sa date d'admission.
@@ -119,7 +120,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 13 | Requêtes paramétrées | Fait | Client Supabase (aucune requête SQL écrite à la main dans l'appli). Les fonctions SQL n'exécutent pas de SQL construit à partir de texte. |
 | 14 | Valider toutes les saisies | Fait | Règles dans `shared/` et mêmes bornes en base : 8.4. |
 | 15 | Échapper le contenu des utilisateurs | Fait | React échappe tout ; aucun `dangerouslySetInnerHTML`. E-mails à l'admin en texte brut. |
-| 16 | Restreindre les envois de fichiers | Fait, à compléter | Taille, types et dossiers limités. Reste : 8.5. |
+| 16 | Restreindre les envois de fichiers | Fait | Taille, types et chemins limités ; photos d'objets réservées aux membres : 8.5. |
 | 17 | Alléger les réponses de l'API | Fait | Colonnes choisies une à une dans `shared/db.ts`, et `email` illisible pour les voisins : 8.1. |
 | 18 | Ajouter les en-têtes de sécurité | Fait | `vercel.json` (CSP, HSTS, nosniff, cadres interdits…) : 8.2. |
 | 19 | Forcer HTTPS | Fait | Vercel et Supabase en HTTPS uniquement, HSTS sur 2 ans : 8.2. |
@@ -131,7 +132,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 |---|---|---|---|
 | 1 | XSS | Faible | React échappe le texte, pas de HTML injecté, CSP sans script extérieur ni inline : 8.2. |
 | 2 | CSRF | Sans objet | La connexion passe par un jeton envoyé dans l'en-tête, pas par un cookie. |
-| 3 | Envois de fichiers dangereux | Faible | Images uniquement (pas de SVG), 2 Mo maximum, affichées en `<img>`. Reste : 8.5. |
+| 3 | Envois de fichiers dangereux | Faible | Images uniquement (pas de SVG), 2 Mo maximum, deux chemins autorisés, affichées en `<img>` : 8.5. |
 | 4 | Accès à des fichiers hors de son dossier (« path traversal ») | Fait | Les règles de stockage n'autorisent l'écriture que dans le dossier du voisin. |
 | 5 | Requêtes forcées vers d'autres serveurs (SSRF) | Fait | Seul appel sortant : `api.resend.com`, adresse fixe dans la base. |
 | 6 | Réinitialisation de mot de passe défaillante | Sans objet | Pas de mot de passe. Vérifier que « Secure email change » est actif dans Supabase (8.7). |

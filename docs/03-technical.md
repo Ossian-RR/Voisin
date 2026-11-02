@@ -63,6 +63,25 @@ Le résultat indique combien de comptes ont été trouvés : s'il est plus petit
 
 Si l'administrateur rattache la personne **avant** sa première connexion, son profil est directement créé dans la résidence.
 
+## Photos orphelines
+
+Supprimer un objet supprime ses photos. Si la suppression est interrompue (coupure réseau), ou quand un voisin retire sa photo de profil, des fichiers peuvent rester dans le bucket `photos` sans être utilisés. Pour les repérer (SQL Editor), de temps en temps :
+
+```sql
+select o.name, o.created_at::date
+from storage.objects o
+where o.bucket_id = 'photos'
+  and o.created_at < now() - interval '1 day'
+  and not exists (
+    select 1 from public.items i, jsonb_array_elements(i.photos) p
+    where p ->> 'path' = o.name)
+  and not exists (
+    select 1 from public.profiles pr where pr.photo_path = o.name)
+order by o.created_at;
+```
+
+Supprimez-les ensuite depuis Storage → `photos` (pas en SQL : le fichier resterait stocké). Les fichiers de moins d'un jour sont ignorés, car un envoi peut être en cours.
+
 ## Commandes
 
 ```
