@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   EMPTY_DRAFT,
   isGift,
+  MAX_DESCRIPTION,
   validateNewItem,
   type NewItemDraft,
 } from "./new-item";
@@ -17,6 +18,16 @@ const complete: NewItemDraft = {
 describe("validateNewItem", () => {
   it("accepts a complete draft", () => {
     expect(validateNewItem(complete)).toEqual({});
+  });
+
+  it("refuses a description longer than the database allows", () => {
+    const long = "a".repeat(MAX_DESCRIPTION + 1);
+    expect(
+      validateNewItem({ ...complete, description: long }).description,
+    ).toMatch(/2000 caractères/);
+    expect(
+      validateNewItem({ ...complete, description: ` ${long.slice(1)} ` }),
+    ).toEqual({});
   });
 
   it("asks for every field on an empty draft", () => {

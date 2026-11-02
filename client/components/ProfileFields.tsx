@@ -1,5 +1,5 @@
 import type { NeighborProfile } from "@shared/api";
-import { CIVILITIES, type ProfileErrors } from "@shared/profile";
+import { CIVILITIES, MAX_LAST_NAME, type ProfileErrors } from "@shared/profile";
 import { cn } from "@/lib/utils";
 
 export const fieldClass =
@@ -40,6 +40,7 @@ export function ProfileFields({
             value={value.lastName}
             onChange={(e) => onChange({ lastName: e.target.value })}
             autoComplete="family-name"
+            maxLength={MAX_LAST_NAME}
             aria-invalid={Boolean(errors.lastName)}
             className={cn(
               fieldClass,

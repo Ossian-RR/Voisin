@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import {
   HELP_TOPICS,
   MIN_MESSAGE_LENGTH,
+  helpErrorMessage,
   isValidEmail,
   type HelpTopic,
 } from "@shared/residence";
@@ -34,9 +35,9 @@ export default function Help() {
       { topic, message, replyEmail: email },
       {
         onSuccess: () => toast.success("Message envoyé"),
-        onError: () =>
+        onError: (error) =>
           toast.error("Le message n’a pas pu être envoyé", {
-            description: "Vérifiez votre connexion internet, puis réessayez.",
+            description: helpErrorMessage(error),
           }),
       },
     );

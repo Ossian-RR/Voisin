@@ -5,6 +5,7 @@ import {
   displayName,
   hasFieldChanges,
   isCivility,
+  MAX_LAST_NAME,
   validateProfile,
 } from "./profile";
 
@@ -26,6 +27,23 @@ describe("validateProfile", () => {
         civility: "Famille",
         lastName: "Durand",
         location: "c-1b",
+      }),
+    ).toEqual({});
+  });
+
+  it("refuses a name longer than the database allows", () => {
+    expect(
+      validateProfile({
+        civility: "Madame",
+        lastName: "M".repeat(MAX_LAST_NAME + 1),
+        location: "A-1a",
+      }).lastName,
+    ).toMatch(/60 caractères/);
+    expect(
+      validateProfile({
+        civility: "Madame",
+        lastName: ` ${"M".repeat(MAX_LAST_NAME)} `,
+        location: "A-1a",
       }),
     ).toEqual({});
   });
