@@ -58,11 +58,11 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 - Testé en local (build servi avec ces en-têtes, Chromium) : polices, aperçu et envoi des photos et appels Supabase passent ; une adresse non prévue est bloquée.
 - **Reste** : sur l'adresse de production, securityheaders.com doit donner au moins A, et la connexion, les photos et les statistiques Vercel doivent marcher. Sur les prévisualisations, la barre d'outils Vercel (commentaires) est bloquée par la CSP : c'est voulu, l'appli fonctionne quand même.
 
-### 8.3 Limites et robots [à faire]
+### 8.3 Limites et robots [en partie]
 - **Connexion** : vérifier Authentication → Rate Limits (envois d'e-mails par heure, vérifications de lien) **[tableau de bord]**.
 - **E-mails** : vérifier qu'un SMTP personnel (Resend) est réglé dans Authentication → SMTP. L'envoi par défaut de Supabase est limité à quelques e-mails par heure : au-delà, les voisins ne reçoivent plus de lien **[tableau de bord]**.
 - **Robots** : activer le CAPTCHA de Supabase (Cloudflare Turnstile) sur la connexion et sur le formulaire public « Demander Voisin pour ma résidence ». Ce formulaire a déjà une limite en base (1 demande par e-mail et par jour, 30 par heure).
-- **Aide** : ajouter une limite à `help_messages` (par exemple 5 messages par voisin et par jour), sur le modèle de `private.limit_residence_requests`. Chaque message envoie un e-mail à l'admin.
+- **Aide** [fait, à appliquer à la base] : 5 messages par voisin et par jour au plus (`20261102160000_limit_help_messages.sql`, message en français dans `shared/residence.ts`). Chaque message envoie un e-mail à l'admin.
 - **Terminé quand** : une 6e aide dans la journée est refusée avec un message en français, et le CAPTCHA s'affiche sur les deux formulaires publics.
 
 ### 8.4 Bornes sur les champs [à faire]
@@ -137,7 +137,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 7 | Gestion de session faible | Fait | Jeton court renouvelé automatiquement ; « Se déconnecter » ferme la session. |
 | 8 | Secret JWT exposé | Fait | Géré par Supabase, jamais dans le code. |
 | 9 | CORS trop permissif | Acceptable | L'API Supabase accepte toutes les origines par conception ; la protection vient de la RLS et du jeton. |
-| 10 | Absence de limites | À faire | Demandes de résidence limitées ; reste l'Aide et la connexion : 8.3. |
+| 10 | Absence de limites | En partie | Demandes de résidence et messages d'Aide limités ; reste la connexion (tableau de bord) : 8.3. |
 | 11 | Variables d'environnement exposées | Fait | Seules les variables `VITE_` (publiques) partent dans le navigateur. Vérifier Vercel : 8.7. |
 | 12 | Identifiants par défaut | À vérifier | Double authentification et mots de passe des comptes : 8.7. |
 | 13 | Webhooks non signés | Sans objet | Aucun webhook entrant. |

@@ -18,6 +18,16 @@ export const HELP_TOPICS = [
 
 export type HelpTopic = (typeof HELP_TOPICS)[number];
 
+/** Same number as private.limit_help_messages (supabase/migrations). */
+export const HELP_MESSAGES_PER_DAY = 5;
+
+/** French message when an Aide message could not be sent. */
+export function helpErrorMessage(error: { message?: string }): string {
+  if (error.message?.includes("too_many_help_messages"))
+    return `Vous avez déjà envoyé ${HELP_MESSAGES_PER_DAY} messages aujourd’hui. Réessayez demain : nous lisons ceux déjà reçus.`;
+  return "Vérifiez votre connexion internet, puis réessayez.";
+}
+
 /** Simple check for the reply address typed in the Aide form. */
 export function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
