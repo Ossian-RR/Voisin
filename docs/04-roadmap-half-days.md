@@ -52,10 +52,11 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 - **Correction** : `supabase/migrations/20261102100000_hide_profile_email.sql` retire la lecture de toute la table et la rend colonne par colonne, sauf `email`. Testée sur un Postgres 16 local : avant, un voisin lit les e-mails ; après, la lecture est refusée (même avec `select *`), et la lecture, la création et la modification du profil marchent comme avant.
 - **Reste** : exécuter la migration dans Supabase (SQL Editor), puis vérifier dans l'appli que Profil s'affiche et s'enregistre.
 
-### 8.2 En-têtes de sécurité et HTTPS [à faire]
-- Ajouter dans `vercel.json` : `Content-Security-Policy` (sources autorisées : le site, `*.supabase.co`, Google Fonts, Vercel Analytics ; `frame-ancestors 'none'`), `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (caméra seulement si la prise de photo en a besoin).
-- La CSP compte particulièrement : la session Supabase est gardée dans le stockage du navigateur, donc une faille XSS permettrait de la voler.
-- **Terminé quand** : securityheaders.com donne au moins A sur l'adresse de production, et toutes les pages marchent (connexion, photos, statistiques).
+### 8.2 En-têtes de sécurité et HTTPS [fait, à vérifier en production]
+- `vercel.json` envoie sur toutes les pages : `Content-Security-Policy`, `Strict-Transport-Security` (2 ans), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (caméra, micro, position, paiement coupés : la photo passe par le sélecteur de fichiers, qui n'en a pas besoin) et `Cross-Origin-Opener-Policy`.
+- La CSP n'autorise que le site lui-même, Supabase (`*.supabase.co`, données et photos), Google Fonts, les images locales (`blob:`, `data:`) et les styles en ligne (écran d'accueil, notifications). Aucun script extérieur ni inline ; l'appli ne peut pas être affichée dans un cadre. Elle compte particulièrement : la session Supabase est gardée dans le stockage du navigateur, donc une faille XSS permettrait de la voler.
+- Testé en local (build servi avec ces en-têtes, Chromium) : polices, aperçu et envoi des photos et appels Supabase passent ; une adresse non prévue est bloquée.
+- **Reste** : sur l'adresse de production, securityheaders.com doit donner au moins A, et la connexion, les photos et les statistiques Vercel doivent marcher. Sur les prévisualisations, la barre d'outils Vercel (commentaires) est bloquée par la CSP : c'est voulu, l'appli fonctionne quand même.
 
 ### 8.3 Limites et robots [à faire]
 - **Connexion** : vérifier Authentication → Rate Limits (envois d'e-mails par heure, vérifications de lien) **[tableau de bord]**.
@@ -119,15 +120,15 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 15 | Échapper le contenu des utilisateurs | Fait | React échappe tout ; aucun `dangerouslySetInnerHTML`. E-mails à l'admin en texte brut. |
 | 16 | Restreindre les envois de fichiers | Fait, à compléter | Taille, types et dossiers limités. Reste : 8.5. |
 | 17 | Alléger les réponses de l'API | Fait | Colonnes choisies une à une dans `shared/db.ts`, et `email` illisible pour les voisins : 8.1. |
-| 18 | Ajouter les en-têtes de sécurité | À faire | 8.2. |
-| 19 | Forcer HTTPS | Fait, à compléter | Vercel et Supabase en HTTPS uniquement. Ajouter HSTS : 8.2. |
+| 18 | Ajouter les en-têtes de sécurité | Fait | `vercel.json` (CSP, HSTS, nosniff, cadres interdits…) : 8.2. |
+| 19 | Forcer HTTPS | Fait | Vercel et Supabase en HTTPS uniquement, HSTS sur 2 ans : 8.2. |
 | 20 | Analyser les dépendances | À faire | `pnpm audit --prod` propre aujourd'hui ; Dependabot et audit en CI : 8.7. |
 
 ## Liste de contrôle : 18 risques à vérifier avant le lancement
 
 | # | Risque | État | Où / quoi |
 |---|---|---|---|
-| 1 | XSS | Faible | React échappe le texte, pas de HTML injecté. CSP en plus : 8.2. |
+| 1 | XSS | Faible | React échappe le texte, pas de HTML injecté, CSP sans script extérieur ni inline : 8.2. |
 | 2 | CSRF | Sans objet | La connexion passe par un jeton envoyé dans l'en-tête, pas par un cookie. |
 | 3 | Envois de fichiers dangereux | Faible | Images uniquement (pas de SVG), 2 Mo maximum, affichées en `<img>`. Reste : 8.5. |
 | 4 | Accès à des fichiers hors de son dossier (« path traversal ») | Fait | Les règles de stockage n'autorisent l'écriture que dans le dossier du voisin. |
