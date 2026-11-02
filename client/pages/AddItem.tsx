@@ -171,7 +171,7 @@ export default function AddItem() {
           onChange={(e) => update({ isGift: e.target.checked })}
           className="size-5"
         />
-        Je donne (il ne me sera pas rendu)
+        Je donne
       </label>
 
       <button type="submit" disabled={busy} className={primaryButton}>
