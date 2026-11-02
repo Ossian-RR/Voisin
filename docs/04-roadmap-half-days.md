@@ -47,10 +47,10 @@ Mise à jour du 29 octobre 2026 : le plan d'origine prévoyait Neon et un serveu
 
 Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont reprises point par point en fin de document. Les étapes ci-dessous regroupent ce qui reste à faire, par ordre de priorité.
 
-### 8.1 Cacher l'e-mail des voisins [à faire, priorité 1]
-- **Problème** : `grant select on public.profiles to authenticated` (première migration) porte sur toute la table, donc aussi sur la colonne `email` ajoutée ensuite. Tout voisin connecté peut lire l'e-mail de ses voisins de résidence avec `supabase.from("profiles").select("email")`. Le commentaire de `20261027180000_profile_email.sql` (« neighbors can't read it ») et `03-technical.md` disent le contraire.
-- **Correction** : une migration qui fait `revoke select on public.profiles from authenticated`, puis `grant select (id, user_id, civility, last_name, location, photo_path, admitted_on, residence_id, confirmed_at, created_at)` (toutes les colonnes sauf `email`).
-- **Terminé quand** : connecté en voisin, `select email from profiles` est refusé, et l'appli fonctionne comme avant.
+### 8.1 Cacher l'e-mail des voisins [fait, à appliquer à la base]
+- **Problème** : `grant select on public.profiles to authenticated` (première migration) portait sur toute la table, donc aussi sur la colonne `email` ajoutée ensuite. Tout voisin connecté pouvait lire l'e-mail de ses voisins de résidence.
+- **Correction** : `supabase/migrations/20261102100000_hide_profile_email.sql` retire la lecture de toute la table et la rend colonne par colonne, sauf `email`. Testée sur un Postgres 16 local : avant, un voisin lit les e-mails ; après, la lecture est refusée (même avec `select *`), et la lecture, la création et la modification du profil marchent comme avant.
+- **Reste** : exécuter la migration dans Supabase (SQL Editor), puis vérifier dans l'appli que Profil s'affiche et s'enregistre.
 
 ### 8.2 En-têtes de sécurité et HTTPS [à faire]
 - Ajouter dans `vercel.json` : `Content-Security-Policy` (sources autorisées : le site, `*.supabase.co`, Google Fonts, Vercel Analytics ; `frame-ancestors 'none'`), `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (caméra seulement si la prise de photo en a besoin).
@@ -106,7 +106,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 2 | Purger les secrets de Git | Fait | Historique vérifié le 29 octobre 2026 : aucune clé secrète. Protection contre l'envoi de secrets : 8.7. |
 | 3 | Protéger les clés de la base | À vérifier | 8.7 : ni clé secrète ni `service_role` dans Vercel, mot de passe de la base fort. |
 | 4 | Activer la sécurité par ligne | Fait | RLS sur les 7 tables et le bucket `photos`. Test automatique : 8.6. |
-| 5 | Chiffrer les données sensibles | En partie | Chiffrement au repos et en transit (Supabase, HTTPS). Fuite de l'e-mail entre voisins : 8.1. |
+| 5 | Chiffrer les données sensibles | Fait | Chiffrement au repos et en transit (Supabase, HTTPS). E-mail des voisins caché : 8.1. |
 | 6 | Contrôler les droits côté serveur | Fait | Tout est vérifié par la base (RLS, droits par colonne). Les contrôles de l'appli ne servent qu'à l'affichage. |
 | 7 | Verrouiller l'accès aux enregistrements | Fait | Seul le propriétaire modifie ou supprime son objet, sa demande ou son profil. |
 | 8 | Bloquer la modification de champs interdits | Fait | Droits par colonne : impossible de changer sa résidence, sa date d'admission ou l'emprunteur d'une demande. |
@@ -118,7 +118,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 14 | Valider toutes les saisies | En partie | Règles dans `shared/` et contraintes en base. Bornes manquantes : 8.4. |
 | 15 | Échapper le contenu des utilisateurs | Fait | React échappe tout ; aucun `dangerouslySetInnerHTML`. E-mails à l'admin en texte brut. |
 | 16 | Restreindre les envois de fichiers | Fait, à compléter | Taille, types et dossiers limités. Reste : 8.5. |
-| 17 | Alléger les réponses de l'API | À faire | Colonnes choisies une à une dans `shared/db.ts`, mais `email` reste lisible : 8.1. |
+| 17 | Alléger les réponses de l'API | Fait | Colonnes choisies une à une dans `shared/db.ts`, et `email` illisible pour les voisins : 8.1. |
 | 18 | Ajouter les en-têtes de sécurité | À faire | 8.2. |
 | 19 | Forcer HTTPS | Fait, à compléter | Vercel et Supabase en HTTPS uniquement. Ajouter HSTS : 8.2. |
 | 20 | Analyser les dépendances | À faire | `pnpm audit --prod` propre aujourd'hui ; Dependabot et audit en CI : 8.7. |
