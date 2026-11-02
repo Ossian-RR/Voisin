@@ -52,11 +52,11 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 - **Correction** : `supabase/migrations/20261102100000_hide_profile_email.sql` retire la lecture de toute la table et la rend colonne par colonne, sauf `email`. Testée sur un Postgres 16 local : avant, un voisin lit les e-mails ; après, la lecture est refusée (même avec `select *`), et la lecture, la création et la modification du profil marchent comme avant.
 - **Reste** : exécuter la migration dans Supabase (SQL Editor), puis vérifier dans l'appli que Profil s'affiche et s'enregistre.
 
-### 8.2 En-têtes de sécurité et HTTPS [fait, à vérifier en production]
+### 8.2 En-têtes de sécurité et HTTPS [fait]
 - `vercel.json` envoie sur toutes les pages : `Content-Security-Policy`, `Strict-Transport-Security` (2 ans), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (caméra, micro, position, paiement coupés : la photo passe par le sélecteur de fichiers, qui n'en a pas besoin) et `Cross-Origin-Opener-Policy`.
 - La CSP n'autorise que le site lui-même, Supabase (`*.supabase.co`, données et photos), Google Fonts, les images locales (`blob:`, `data:`) et les styles en ligne (écran d'accueil, notifications). Aucun script extérieur ni inline ; l'appli ne peut pas être affichée dans un cadre. Elle compte particulièrement : la session Supabase est gardée dans le stockage du navigateur, donc une faille XSS permettrait de la voler.
 - Testé en local (build servi avec ces en-têtes, Chromium) : polices, aperçu et envoi des photos et appels Supabase passent ; une adresse non prévue est bloquée.
-- **Reste** : sur l'adresse de production, securityheaders.com doit donner au moins A, et la connexion, les photos et les statistiques Vercel doivent marcher. Sur les prévisualisations, la barre d'outils Vercel (commentaires) est bloquée par la CSP : c'est voulu, l'appli fonctionne quand même.
+- **Vérifié en production** le 2 novembre 2026 : securityheaders.com donne **A+** sur `voisin-mu.vercel.app`. Sur les prévisualisations, la barre d'outils Vercel (commentaires) est bloquée par la CSP : c'est voulu, l'appli fonctionne quand même. `access-control-allow-origin: *` est mis par Vercel sur les fichiers statiques : sans risque, ils sont publics et aucune session n'y passe.
 
 ### 8.3 Limites et robots [en partie]
 - **Connexion** : vérifier Authentication → Rate Limits (envois d'e-mails par heure, vérifications de lien) **[tableau de bord]**.
