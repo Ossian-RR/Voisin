@@ -61,14 +61,15 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 ### 8.3 Limites et robots [en partie]
 - **Connexion** : vérifier Authentication → Rate Limits (envois d'e-mails par heure, vérifications de lien) **[tableau de bord]**.
 - **E-mails** : vérifier qu'un SMTP personnel (Resend) est réglé dans Authentication → SMTP. L'envoi par défaut de Supabase est limité à quelques e-mails par heure : au-delà, les voisins ne reçoivent plus de lien **[tableau de bord]**.
-- **Robots** : activer le CAPTCHA de Supabase (Cloudflare Turnstile) sur la connexion et sur le formulaire public « Demander Voisin pour ma résidence ». Ce formulaire a déjà une limite en base (1 demande par e-mail et par jour, 30 par heure).
+- **Robots** [reporté après le pilote, décision du 2 novembre 2026 : les limites actuelles suffisent pour 5 à 10 voisins] : activer le CAPTCHA de Supabase (Cloudflare Turnstile) sur la connexion et sur le formulaire public « Demander Voisin pour ma résidence ». Ce formulaire a déjà une limite en base (1 demande par e-mail et par jour, 30 par heure).
 - **Aide** [fait, à appliquer à la base] : 5 messages par voisin et par jour au plus (`20261102160000_limit_help_messages.sql`, message en français dans `shared/residence.ts`). Chaque message envoie un e-mail à l'admin.
 - **Terminé quand** : une 6e aide dans la journée est refusée avec un message en français, et le CAPTCHA s'affiche sur les deux formulaires publics.
 
-### 8.4 Bornes sur les champs [à faire]
-- Ajouter dans une migration des contraintes de longueur qui manquent : `profiles.last_name` (ex. 1 à 60), `items.description` (ex. 2000 max), nombre de photos dans `items.photos` (ex. 5 max).
-- Mettre les mêmes bornes dans `shared/` (avec tests) pour afficher le message avant l'envoi.
-- **Terminé quand** : un envoi trop long est refusé par la base, même en contournant l'appli.
+### 8.4 Bornes sur les champs [fait, à appliquer à la base]
+- `20261102170000_field_bounds.sql` : nom de famille de 1 à 60 caractères, description d'objet de 2000 caractères au plus, 5 photos au plus (et une vraie liste). Contraintes `not valid` : vérifiées sur chaque ligne créée ou modifiée, sans faire échouer la migration à cause de lignes plus anciennes.
+- Mêmes bornes dans `shared/profile.ts` (`MAX_LAST_NAME`) et `shared/new-item.ts` (`MAX_DESCRIPTION`, `MAX_PHOTOS`), avec tests ; les champs ont un `maxLength`, donc on ne peut pas taper plus.
+- Déjà bornés avant : titre d'objet (120 en base, 80 dans l'appli), « Je cherche » (500), Aide (2000), demandes de résidence.
+- Testé sur un Postgres 16 local : valeurs trop longues ou trop nombreuses refusées, bornes exactes acceptées.
 
 ### 8.5 Photos [fait, à compléter]
 - Déjà fait : bucket privé, 2 Mo maximum, JPEG, PNG ou WebP seulement (pas de SVG), chaque voisin n'écrit que dans son dossier, lecture limitée à sa résidence, liens temporaires.
@@ -116,7 +117,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 11 | Limiter les tentatives de connexion | À vérifier | 8.3 : limites d'Authentication et SMTP Resend. |
 | 12 | Protéger contre les robots | À faire | 8.3 : CAPTCHA Turnstile sur la connexion et la demande de résidence. |
 | 13 | Requêtes paramétrées | Fait | Client Supabase (aucune requête SQL écrite à la main dans l'appli). Les fonctions SQL n'exécutent pas de SQL construit à partir de texte. |
-| 14 | Valider toutes les saisies | En partie | Règles dans `shared/` et contraintes en base. Bornes manquantes : 8.4. |
+| 14 | Valider toutes les saisies | Fait | Règles dans `shared/` et mêmes bornes en base : 8.4. |
 | 15 | Échapper le contenu des utilisateurs | Fait | React échappe tout ; aucun `dangerouslySetInnerHTML`. E-mails à l'admin en texte brut. |
 | 16 | Restreindre les envois de fichiers | Fait, à compléter | Taille, types et dossiers limités. Reste : 8.5. |
 | 17 | Alléger les réponses de l'API | Fait | Colonnes choisies une à une dans `shared/db.ts`, et `email` illisible pour les voisins : 8.1. |
@@ -143,7 +144,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 13 | Webhooks non signés | Sans objet | Aucun webhook entrant. |
 | 14 | Paiement vérifié seulement dans l'appli | Sans objet | Pas de paiement. Équivalent ici : les règles d'emprunt (objet disponible, pas le sien) sont vérifiées par la base. |
 | 15 | Accès aux objets d'un autre (IDOR / BOLA) | Fait, à tester | RLS par résidence et par propriétaire. Test automatique : 8.6. |
-| 16 | Saisies acceptées sans contrôle | En partie | 8.4. |
+| 16 | Saisies acceptées sans contrôle | Fait | Bornes en base sur chaque champ libre : 8.4. |
 | 17 | Journaux et détails d'erreur exposés | Fait | Les erreurs Supabase sont traduites en messages français, sans détail technique. |
 | 18 | Cartes de source (source maps) exposées | Fait | Le build n'en produit pas (vérifié : aucun fichier `.map` dans `dist/`). |
 

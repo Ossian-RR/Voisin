@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import {
   CONDITION_CHOICES,
   EMPTY_DRAFT,
+  MAX_DESCRIPTION,
   MAX_PHOTOS,
   MIN_PHOTOS,
   validateNewItem,
@@ -93,6 +94,7 @@ export default function AddItem() {
           value={draft.description}
           onChange={(e) => update({ description: e.target.value })}
           rows={4}
+          maxLength={MAX_DESCRIPTION}
           className={cn(
             fieldClass,
             "h-auto py-2",

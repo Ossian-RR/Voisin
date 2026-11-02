@@ -3,6 +3,9 @@ import { isValidLocation, normalizeLocation } from "./location";
 
 export const CIVILITIES: Civility[] = ["Monsieur", "Madame", "Famille"];
 
+/** Same bound as the profiles_last_name_length check in the database. */
+export const MAX_LAST_NAME = 60;
+
 export type ProfileErrors = Partial<Record<"lastName" | "location", string>>;
 
 /** "Madame Martin", "Famille Martin"… */
@@ -39,6 +42,8 @@ export function validateProfile(profile: NeighborProfile): ProfileErrors {
   const clean = cleanProfile(profile);
   const errors: ProfileErrors = {};
   if (!clean.lastName) errors.lastName = "Indiquez votre nom.";
+  else if (clean.lastName.length > MAX_LAST_NAME)
+    errors.lastName = `Le nom ne doit pas dépasser ${MAX_LAST_NAME} caractères.`;
   if (!clean.location) {
     errors.location = "Indiquez votre logement.";
   } else if (!isValidLocation(clean.location)) {
