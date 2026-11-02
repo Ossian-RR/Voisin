@@ -59,6 +59,8 @@ Le résultat indique combien de comptes ont été trouvés : s'il est plus petit
 
 **Parcours d'un nouvel utilisateur** : à sa première connexion, l'appli s'ouvre sur **Profil**. Il remplit civilité, nom et logement puis appuie sur « Enregistrer ». Tant qu'il n'a pas de résidence, les autres onglets l'invitent à écrire depuis l'**Aide** (sujet « Rejoindre une résidence existante » ou « Créer notre résidence »), et il ne voit aucun objet ni aucun voisin. Une fois rattaché par `private.add_to_residence`, son profil passe dans la résidence et tout s'ouvre (« Réessayer » ou recharger la page).
 
+**Reconnexion** : la session reste ouverte sur le téléphone, on ne repasse par la connexion qu'après « Se déconnecter » (ou données du navigateur effacées). Le téléphone retient alors la dernière adresse utilisée et l'écran affiche « Bon retour ! » : un appui pour recevoir le lien (`shared/remembered-email.ts`).
+
 Si l'administrateur rattache la personne **avant** sa première connexion, son profil est directement créé dans la résidence.
 
 ## Commandes
