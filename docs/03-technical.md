@@ -87,11 +87,14 @@ Supprimez-les ensuite depuis Storage → `photos` (pas en SQL : le fichier reste
 ```
 pnpm dev        # http://localhost:8080
 pnpm test       # tests de shared/
+pnpm test:db    # isolation entre résidences (Postgres local, voir ci-dessous)
 pnpm typecheck
 pnpm build      # dist/spa, servi par Vercel
 ```
 
-Chaque pull request est vérifiée par GitHub Actions (`Vérifier`) et reçoit un lien de prévisualisation Vercel. Un merge dans `main` met l'appli en ligne.
+`pnpm test:db` crée une base jetable `voisin_test` sur un Postgres 16 ordinaire (jamais celui de Supabase), y ajoute une copie minimale de Supabase (`supabase/tests/supabase-stub.sql` : rôles, `auth.uid()`, stockage), applique toutes les migrations puis `supabase/tests/isolation.sql` : deux résidences, cinq voisins, 75 contrôles (lire, modifier, supprimer chez les autres, changer de résidence, visiteur non connecté). Connexion par les variables habituelles, par exemple `PGHOST=localhost PGUSER=postgres PGPASSWORD=postgres pnpm test:db`. Toute nouvelle table ou règle de sécurité ajoute ses contrôles dans `isolation.sql`.
+
+Chaque pull request est vérifiée par GitHub Actions (`Vérifier`, y compris le test d'isolation) et reçoit un lien de prévisualisation Vercel. Un merge dans `main` met l'appli en ligne.
 
 ## Règles
 

@@ -76,9 +76,11 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 - `20261102180000_photo_upload_rules.sql` : on ne peut plus écrire n'importe quel nom de fichier dans son dossier. Seuls deux chemins sont acceptés : `<id>/avatar.jpg` dès qu'on a un profil (photo de Profil, même avant d'être rattaché), et `<id>/items/<objet>/<n>.jpg` une fois membre d'une résidence. Testé sur un Postgres 16 local (compte sans profil, profil sans résidence, membre).
 - Photos orphelines (suppression interrompue par une coupure réseau, photo de profil retirée) : pas de nettoyage automatique, Supabase déconseille d'effacer les fichiers en SQL. Requête pour les repérer dans `03-technical.md`, à passer de temps en temps ; on les supprime depuis Storage.
 
-### 8.6 Test d'isolation entre résidences [à faire]
-- Script de test (SQL ou Vitest contre une base de test) avec deux résidences et trois voisins. Il vérifie qu'un voisin de la résidence A ne lit, ne modifie ni ne supprime rien de la résidence B (profils, objets, demandes, photos), et qu'il ne peut changer ni son `residence_id` ni sa date d'admission.
-- **Terminé quand** : le script passe et se relance après chaque migration.
+### 8.6 Test d'isolation entre résidences [fait, une migration à appliquer à la base]
+- `pnpm test:db` (`supabase/tests/`) : toutes les migrations sur un Postgres jetable avec une copie minimale de Supabase, puis 75 contrôles avec deux résidences et cinq voisins (deux dans A, un dans B, un profil sans résidence, une invitée sans profil) et un visiteur non connecté. Un voisin de B ne lit, ne modifie ni ne supprime rien de A (profils, e-mails, objets, demandes d'emprunt, « Je cherche », Aide, photos) ; personne ne change sa résidence, sa date d'admission ou l'emprunteur d'une demande ; dans une même résidence, chacun ne modifie que ce qui est à lui. Contrôles positifs aussi : ce qui est permis marche encore.
+- Lancé à chaque pull request (« Vérifier », tâche `database`), donc après chaque migration.
+- **Trouvé** : un voisin sans résidence pouvait créer un objet ou un « Je cherche » en appelant l'API (l'appli ne le propose pas). Personne ne les voyait, mais ils seraient apparus dans sa résidence une fois rattaché. Corrigé par `20261109100000_posts_need_residence.sql`.
+- **Reste** : exécuter cette migration dans Supabase (SQL Editor).
 
 ### 8.7 Comptes et dépendances [à faire]
 - Double authentification sur les comptes Supabase, Vercel, GitHub et Resend. Mot de passe de la base unique et fort **[tableau de bord]**.
@@ -108,7 +110,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 1 | Cacher les clés d'API | Fait | Seule la clé publique Supabase est dans `.env`, prévue pour le navigateur. La clé Resend est dans le coffre (Vault) de Supabase. |
 | 2 | Purger les secrets de Git | Fait | Historique vérifié le 29 octobre 2026 : aucune clé secrète. Protection contre l'envoi de secrets : 8.7. |
 | 3 | Protéger les clés de la base | À vérifier | 8.7 : ni clé secrète ni `service_role` dans Vercel, mot de passe de la base fort. |
-| 4 | Activer la sécurité par ligne | Fait | RLS sur les 7 tables et le bucket `photos`. Test automatique : 8.6. |
+| 4 | Activer la sécurité par ligne | Fait | RLS sur les 7 tables et le bucket `photos`. Test automatique à chaque pull request : 8.6. |
 | 5 | Chiffrer les données sensibles | Fait | Chiffrement au repos et en transit (Supabase, HTTPS). E-mail des voisins caché : 8.1. |
 | 6 | Contrôler les droits côté serveur | Fait | Tout est vérifié par la base (RLS, droits par colonne). Les contrôles de l'appli ne servent qu'à l'affichage. |
 | 7 | Verrouiller l'accès aux enregistrements | Fait | Seul le propriétaire modifie ou supprime son objet, sa demande ou son profil. |
@@ -144,7 +146,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 12 | Identifiants par défaut | À vérifier | Double authentification et mots de passe des comptes : 8.7. |
 | 13 | Webhooks non signés | Sans objet | Aucun webhook entrant. |
 | 14 | Paiement vérifié seulement dans l'appli | Sans objet | Pas de paiement. Équivalent ici : les règles d'emprunt (objet disponible, pas le sien) sont vérifiées par la base. |
-| 15 | Accès aux objets d'un autre (IDOR / BOLA) | Fait, à tester | RLS par résidence et par propriétaire. Test automatique : 8.6. |
+| 15 | Accès aux objets d'un autre (IDOR / BOLA) | Fait | RLS par résidence et par propriétaire, vérifiée par 75 contrôles à chaque pull request : 8.6. |
 | 16 | Saisies acceptées sans contrôle | Fait | Bornes en base sur chaque champ libre : 8.4. |
 | 17 | Journaux et détails d'erreur exposés | Fait | Les erreurs Supabase sont traduites en messages français, sans détail technique. |
 | 18 | Cartes de source (source maps) exposées | Fait | Le build n'en produit pas (vérifié : aucun fichier `.map` dans `dist/`). |
@@ -153,4 +155,4 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 
 ## Total restant
 
-Environ 10 demi-journées : phase 7 (2), phase 8 (6), phase 9 (2), plus le temps du pilote.
+Environ 6 demi-journées : phase 7 (2), phase 8 (2), phase 9 (2), plus le temps du pilote.
