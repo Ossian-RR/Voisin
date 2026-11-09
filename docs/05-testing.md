@@ -1,86 +1,89 @@
-# Testing
+# Tests
 
-## Automated tests (Vitest)
+## Tests automatiques
 
-Run with `pnpm test`. Put tests next to the code as `*.spec.ts` or `*.test.ts`.
+Lancés par GitHub Actions (« Vérifier ») à chaque pull request et à chaque merge dans `main`. À lancer aussi avant chaque commit.
 
-What to cover first:
+| Commande            | Ce qu'elle vérifie                                                                                                                           |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm typecheck`    | Les types TypeScript de tout le projet.                                                                                                      |
+| `pnpm test`         | Les règles de `shared/` (Vitest), un fichier `*.spec.ts` à côté de chaque fichier.                                                           |
+| `pnpm test:db`      | L'isolation entre résidences : toutes les migrations sur un Postgres jetable, puis 75 contrôles (`supabase/tests/`, voir `03-technical.md`). |
+| `pnpm build`        | Le build de production (`dist/spa`).                                                                                                         |
+| `pnpm audit --prod` | Les failles connues dans ce qui part dans le navigateur (`dependencies`).                                                                    |
 
-- **Item helpers** in `shared/mock.ts`:
-  - `visibleItems` removes items with status `removed`.
-  - `findItem` returns `undefined` for an unknown id and for a removed item.
-- **Status rules** (once the API exists): approving a borrow sets the item to `unavailable`, returning it sets `available`.
-- **Input schemas** (once Zod is used on the server): a title shorter than 3 characters is rejected.
+Ce que couvrent les tests de `shared/` aujourd'hui : connexion et adresse mémorisée, demandes d'emprunt, conversions de la base (`db.ts`), cache des liens de photos, références de logement `X-Nn`, nouvel objet, profil, demande de résidence, résidence et Aide, « Je cherche ».
 
-Keep tests fast. A test that needs a browser belongs in the manual checklist below.
+Règles :
 
-Run `pnpm typecheck` before every commit. Types catch many mistakes that tests miss.
+- Toute nouvelle règle dans `shared/` a son test.
+- Toute nouvelle table ou règle de sécurité ajoute ses contrôles dans `supabase/tests/isolation.sql` : ce qu'un voisin d'une autre résidence ne peut pas faire, et ce que le propriétaire peut toujours faire.
+- Un test qui a besoin d'un navigateur va dans les contrôles à la main ci-dessous.
 
-## Manual checks at each width
+## Contrôles à la main, par largeur
 
-Use browser devtools device mode. Test these widths:
+Sur la prévisualisation Vercel de la pull request, connecté avec un compte de test, dans le mode « appareil » des outils de développement du navigateur :
 
-| Width    | Role                                          |
-| -------- | --------------------------------------------- |
-| 360 x 800 | Primary design frame. Check this first.      |
-| 375      | Common iPhone width. Check it second.         |
-| 430      | Large phone width. Check it third.            |
+| Largeur   | Rôle                                         |
+| --------- | -------------------------------------------- |
+| 360 x 800 | Largeur de référence. À vérifier en premier. |
+| 375       | iPhone courant.                              |
+| 430       | Grand téléphone.                             |
 
-For each width, confirm:
+Pour chaque largeur :
 
-- [ ] No horizontal scrollbar on the home page, item detail, or any placeholder page.
-- [ ] Header text and the location chip do not overlap. The chip shortens instead of pushing the brand off screen.
-- [ ] Item cards stay in two equal columns with no overflow. Long titles clamp to two lines.
-- [ ] Search input text is at least 16 px, so iOS does not zoom.
-- [ ] Category chips scroll sideways without a visible scrollbar.
-- [ ] The tab bar is fully visible and the Add button is not clipped.
-- [ ] On a phone with a notch or home indicator, nothing sits under the status bar or home indicator.
-- [ ] The "Ask to borrow" button is reachable while scrolling and does not cover the tab bar.
-- [ ] An unavailable item shows the warning panel and a disabled button.
-- [ ] Swiping the photo carousel updates the counter and the dots.
-- [ ] Tapping a dot scrolls to that photo.
-- [ ] `/items/does-not-exist` shows "Item not found" with a working link.
-- [ ] Every tab opens a page. No link returns a 404.
+- [ ] Aucun défilement horizontal, sur aucune page (J'emprunte, fiche objet, Je cherche, Je prête, Demandes, Profil, Aide).
+- [ ] L'en-tête (nom et adresse de la résidence) ne déborde pas.
+- [ ] Les cartes d'objets restent sur deux colonnes égales ; un titre long est coupé à deux lignes.
+- [ ] Le champ « Rechercher un objet… » a un texte d'au moins 16 px (sinon iOS zoome).
+- [ ] La barre d'onglets est entière, le bouton « Je prête » n'est pas coupé.
+- [ ] Sur une fiche objet, le bouton « Demander à emprunter » (ou « Je le veux » pour un don) reste accessible en faisant défiler et ne cache pas la barre d'onglets.
+- [ ] Un objet déjà emprunté affiche « Emprunté en ce moment » et le bouton est désactivé.
+- [ ] Les photos de la fiche défilent d'un glissement de doigt, une photo à la fois.
+- [ ] `/items/nexiste-pas` affiche « Objet introuvable » avec le lien « Retour aux objets ».
+- [ ] Chaque onglet ouvre une page ; une adresse inconnue affiche la page introuvable, avec « Retour aux objets ».
+- [ ] Le bouton retour du téléphone ramène à la page précédente.
 
-## Safe-area checks
+## Encoche et barre du bas
 
-- Open the preview on an iPhone with a notch (or use the devtools setting for a notched device).
-- The header must sit below the status bar. The tab bar must sit above the home indicator.
-- Rotate the device to landscape. Nothing important should be hidden.
+- Ouvrir la prévisualisation sur un iPhone avec encoche (ou l'appareil correspondant dans les outils de développement).
+- L'en-tête est sous la barre d'état, la barre d'onglets au-dessus de la barre d'accueil.
+- En paysage, rien d'important n'est caché.
 
-## Accessibility basics
+## Accessibilité
 
-- [ ] Every page has one `h1`, and headings do not skip levels.
-- [ ] Icon-only buttons have an `aria-label` (for example the Add tab and carousel dots).
-- [ ] Focus rings are visible when tabbing with a keyboard.
-- [ ] Text contrast passes WCAG AA. Status colors also use a word, not color alone.
-- [ ] Reduced motion is respected. Animations are short and can be turned off by the OS setting.
+- [ ] Tout texte visible est en français, y compris les `aria-label` et les messages d'erreur.
+- [ ] Chaque page a un seul `h1`, et les titres ne sautent pas de niveau.
+- [ ] Les boutons sans texte (icônes) ont un `aria-label`.
+- [ ] Le contour de focus est visible en naviguant au clavier (Tab).
+- [ ] Les contrastes respectent WCAG AA ; un statut (« En attente », « Acceptée »…) est écrit, pas seulement en couleur.
+- [ ] Avec VoiceOver (iPhone) ou TalkBack (Android) : l'accueil et le parcours d'emprunt se suivent à l'oreille.
 
-## Performance check
+## Performance
 
-- Run `pnpm build` and note the main JavaScript file size. Aim for under 200 KB gzipped on the first screen.
-- Run Lighthouse in Chrome on the production build. Aim for a mobile performance score above 85.
+- `pnpm build` : noter la taille du fichier JavaScript principal (Vite l'affiche). Viser moins de 200 Ko compressé.
+- Lighthouse dans Chrome sur `voisin-mu.vercel.app`, en mode mobile : viser plus de 85 en performance.
 
-## Pilot checks
+## Pilote
 
-Before the pilot, ask one neighbor to complete these tasks on their own phone, with no help:
+Avant d'élargir le pilote, demander à un voisin de faire seul, sur son téléphone :
 
-1. Find a drill.
-2. Open its detail page and read the condition.
-3. Ask to borrow it.
-4. Post an item with a photo.
-5. Delete the item.
-6. Find a food request for eggs.
+1. Trouver une perceuse avec « Rechercher un objet… ».
+2. Ouvrir sa fiche et lire son état.
+3. Demander à l'emprunter, puis suivre la demande dans l'onglet Demandes.
+4. Prêter un objet avec une photo (« Je prête »).
+5. Retirer cet objet.
+6. Publier un « Je cherche », puis le retrouver dans la liste.
 
-Record every point of confusion. Fix the top three before expanding the pilot.
+Noter chaque hésitation. Corriger les trois premiers problèmes avant d'inviter plus de voisins.
 
-## Bug report template
+## Signaler un bug
 
 ```
-Page:
-Width and device:
-Steps:
-Expected:
-Actual:
-Screenshot:
+Page :
+Largeur et téléphone :
+Étapes :
+Attendu :
+Obtenu :
+Capture :
 ```
