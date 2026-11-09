@@ -1,0 +1,26 @@
+# Weekly updates, grouped so that one pull request carries every minor or
+# patch update of a kind: no more conflicts between two Dependabot pull
+# requests that both change pnpm-lock.yaml. Security fixes still come at once.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      appli:
+        dependency-type: production
+        update-types: [minor, patch]
+      outils:
+        dependency-type: development
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
