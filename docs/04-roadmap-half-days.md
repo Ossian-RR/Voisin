@@ -95,9 +95,11 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 
 ## Phase 9 : pilote et lancement (1 jour)
 
-### 9.1 Mise en ligne [fait, à compléter]
+### 9.1 Mise en ligne [fait, à vérifier sur téléphone]
 - Vercel déploie `main` ; chaque pull request a sa prévisualisation.
-- **Reste** : manifeste et icônes pour l'ajout à l'écran d'accueil ; phase 8 terminée avant d'inviter des voisins.
+- [fait, 9 novembre 2026] Ajout à l'écran d'accueil : `public/manifest.webmanifest` (nom « Voisin », plein écran sans barre d'adresse, fond vert de l'écran d'accueil), icônes dans `public/icons/` tirées du logo (192 et 512 px, une version « maskable » pour Android qui découpe en rond, et `apple-touch-icon.png` pour iOS). Chromium lit le manifeste sans erreur et juge l'appli installable.
+- Pas de « service worker » (fonctionnement hors ligne) : inutile pour s'installer aujourd'hui, et il compliquerait les mises à jour et la session Supabase.
+- **Reste** : l'essai sur un vrai iPhone et un vrai Android (voir `05-testing.md`) ; phase 8 terminée avant d'inviter des voisins.
 
 ### 9.2 Pilote avec des voisins [à faire]
 - Inviter 5 à 10 voisins d'une résidence. Chacun prête un objet et en emprunte un. Noter les retours, corriger les trois premiers problèmes.
