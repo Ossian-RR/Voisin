@@ -88,7 +88,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 - Supabase → Authentication → URL Configuration : n'autoriser que l'adresse de production et les adresses de prévisualisation Vercel du projet **[tableau de bord]**.
 - GitHub : activer les alertes et les correctifs de sécurité Dependabot et la protection contre l'envoi de secrets (« push protection ») **[tableau de bord]**.
 - [fait, 9 novembre 2026] `pnpm audit --prod` dans « Vérifier ». Les bibliothèques envoyées au navigateur (React, React Router, React Query…) étaient rangées dans `devDependencies`, donc l'audit `--prod` ne les voyait pas : il annonçait « rien » alors que React Router avait une faille grave (XSS par redirection). Elles sont passées dans `dependencies`, et React Router en version 7. Vite, Vitest et `yaml` mis à jour : `pnpm audit` ne trouve plus rien, même dans les outils.
-- [fait] `.github/dependabot.yml` : mises à jour chaque lundi, regroupées (une PR pour l'appli, une pour les outils, une par mois pour les actions GitHub), ce qui évite les conflits entre deux PR Dependabot.
+- [fait] `.github/dependabot.yml` : une fois par mois, trois PR au plus (appli, outils, versions majeures à tester), plus une pour les actions GitHub ; les correctifs de sécurité arrivent sans attendre. Les mises à jour regroupées évitent les conflits entre deux PR Dependabot.
 - **Terminé quand** : chaque case est cochée et `pnpm audit --prod` ne trouve rien.
 
 ---
@@ -128,7 +128,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 17 | Alléger les réponses de l'API | Fait | Colonnes choisies une à une dans `shared/db.ts`, et `email` illisible pour les voisins : 8.1. |
 | 18 | Ajouter les en-têtes de sécurité | Fait | `vercel.json` (CSP, HSTS, nosniff, cadres interdits…) : 8.2. |
 | 19 | Forcer HTTPS | Fait | Vercel et Supabase en HTTPS uniquement, HSTS sur 2 ans : 8.2. |
-| 20 | Analyser les dépendances | Fait | `pnpm audit --prod` à chaque pull request, Dependabot chaque semaine : 8.7. Reste à activer les alertes dans GitHub. |
+| 20 | Analyser les dépendances | Fait | `pnpm audit --prod` à chaque pull request, Dependabot chaque mois : 8.7. Reste à activer les alertes dans GitHub. |
 
 ## Liste de contrôle : 18 risques à vérifier avant le lancement
 
