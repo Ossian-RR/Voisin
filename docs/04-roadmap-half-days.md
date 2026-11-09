@@ -31,9 +31,9 @@ Mise à jour du 29 octobre 2026 : le plan d'origine prévoyait Neon et un serveu
 
 ## Phase 7 : tests et finitions (1 jour)
 
-### 7.1 Tests unitaires [fait, à compléter]
+### 7.1 Tests unitaires [fait]
 - Toute règle de `shared/` a son `*.spec.ts`. `pnpm test` tourne à chaque pull request (GitHub Actions « Vérifier »).
-- **Reste** : mettre à jour `05-testing.md`, qui parle encore de `shared/mock.ts` et de Zod.
+- `05-testing.md` à jour (9 novembre 2026) : commandes (`typecheck`, `test`, `test:db`, `build`, `audit`), ce que couvrent les tests, contrôles à la main avec les vrais libellés de l'appli.
 
 ### 7.2 Contrôles par largeur [à faire]
 - Liste de `05-testing.md` à 360 x 800, 375 et 430. Une capture par défaut trouvé.
@@ -76,15 +76,15 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 - `20261102180000_photo_upload_rules.sql` : on ne peut plus écrire n'importe quel nom de fichier dans son dossier. Seuls deux chemins sont acceptés : `<id>/avatar.jpg` dès qu'on a un profil (photo de Profil, même avant d'être rattaché), et `<id>/items/<objet>/<n>.jpg` une fois membre d'une résidence. Testé sur un Postgres 16 local (compte sans profil, profil sans résidence, membre).
 - Photos orphelines (suppression interrompue par une coupure réseau, photo de profil retirée) : pas de nettoyage automatique, Supabase déconseille d'effacer les fichiers en SQL. Requête pour les repérer dans `03-technical.md`, à passer de temps en temps ; on les supprime depuis Storage.
 
-### 8.6 Test d'isolation entre résidences [fait, une migration à appliquer à la base]
+### 8.6 Test d'isolation entre résidences [fait]
 - `pnpm test:db` (`supabase/tests/`) : toutes les migrations sur un Postgres jetable avec une copie minimale de Supabase, puis 75 contrôles avec deux résidences et cinq voisins (deux dans A, un dans B, un profil sans résidence, une invitée sans profil) et un visiteur non connecté. Un voisin de B ne lit, ne modifie ni ne supprime rien de A (profils, e-mails, objets, demandes d'emprunt, « Je cherche », Aide, photos) ; personne ne change sa résidence, sa date d'admission ou l'emprunteur d'une demande ; dans une même résidence, chacun ne modifie que ce qui est à lui. Contrôles positifs aussi : ce qui est permis marche encore.
 - Lancé à chaque pull request (« Vérifier », tâche `database`), donc après chaque migration.
 - **Trouvé** : un voisin sans résidence pouvait créer un objet ou un « Je cherche » en appelant l'API (l'appli ne le propose pas). Personne ne les voyait, mais ils seraient apparus dans sa résidence une fois rattaché. Corrigé par `20261109100000_posts_need_residence.sql`.
-- **Reste** : exécuter cette migration dans Supabase (SQL Editor).
+- Migration appliquée à la base le 9 novembre 2026.
 
 ### 8.7 Comptes et dépendances [code fait, réglages à vérifier]
 - Double authentification sur les comptes Supabase, Vercel, GitHub et Resend. Mot de passe de la base unique et fort **[tableau de bord]**.
-- Vercel : aucune variable n'est nécessaire (l'URL et la clé publique sont dans `.env`, versionné). Le 9 novembre 2026, l'intégration Supabase de Vercel avait ajouté 16 variables, dont `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_SECRET_KEY`, `SUPABASE_JWT_SECRET` et `POSTGRES_PASSWORD` : jamais envoyées au navigateur (Vite ne publie que `VITE_*`), mais lisibles pendant chaque build. À supprimer toutes, sans désinstaller l'intégration (risque pour la base), puis vérifier qu'elles ne reviennent pas **[tableau de bord]**.
+- [fait, 9 novembre 2026] Vercel : aucune variable n'est nécessaire (l'URL et la clé publique sont dans `.env`, versionné). Le 9 novembre 2026, l'intégration Supabase de Vercel avait ajouté 16 variables, dont `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_SECRET_KEY`, `SUPABASE_JWT_SECRET` et `POSTGRES_PASSWORD` : jamais envoyées au navigateur (Vite ne publie que `VITE_*`), mais lisibles pendant chaque build. Supprimées le 9 novembre 2026 (aucune base reliée dans Vercel → Storage, donc sans risque pour la base) ; appli redéployée et vérifiée. Vérifier dans quelques jours qu'elles ne sont pas revenues **[tableau de bord]**.
 - Supabase → Authentication → URL Configuration : n'autoriser que l'adresse de production et les adresses de prévisualisation Vercel du projet **[tableau de bord]**.
 - GitHub : activer les alertes et les correctifs de sécurité Dependabot et la protection contre l'envoi de secrets (« push protection ») **[tableau de bord]**.
 - [fait, 9 novembre 2026] `pnpm audit --prod` dans « Vérifier ». Les bibliothèques envoyées au navigateur (React, React Router, React Query…) étaient rangées dans `devDependencies`, donc l'audit `--prod` ne les voyait pas : il annonçait « rien » alors que React Router avait une faille grave (XSS par redirection). Elles sont passées dans `dependencies`, et React Router en version 7. Vite, Vitest et `yaml` mis à jour : `pnpm audit` ne trouve plus rien, même dans les outils.
@@ -111,7 +111,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 |---|---|---|---|
 | 1 | Cacher les clés d'API | Fait | Seule la clé publique Supabase est dans `.env`, prévue pour le navigateur. La clé Resend est dans le coffre (Vault) de Supabase. |
 | 2 | Purger les secrets de Git | Fait | Historique vérifié le 29 octobre 2026 : aucune clé secrète. Protection contre l'envoi de secrets : 8.7. |
-| 3 | Protéger les clés de la base | À vérifier | 8.7 : ni clé secrète ni `service_role` dans Vercel, mot de passe de la base fort. |
+| 3 | Protéger les clés de la base | En partie | Clés secrètes retirées de Vercel le 9 novembre 2026 (8.7). Reste : mot de passe de la base fort. |
 | 4 | Activer la sécurité par ligne | Fait | RLS sur les 7 tables et le bucket `photos`. Test automatique à chaque pull request : 8.6. |
 | 5 | Chiffrer les données sensibles | Fait | Chiffrement au repos et en transit (Supabase, HTTPS). E-mail des voisins caché : 8.1. |
 | 6 | Contrôler les droits côté serveur | Fait | Tout est vérifié par la base (RLS, droits par colonne). Les contrôles de l'appli ne servent qu'à l'affichage. |

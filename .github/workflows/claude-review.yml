@@ -14,7 +14,9 @@ concurrency:
 jobs:
   review:
     # Les secrets ne sont pas transmis aux PR venant d'un fork : on les ignore.
-    if: github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft
+    # Dependabot non plus : l'action refuse les PR ouvertes par un robot, et
+    # ses mises à jour sont vérifiées par « Vérifier » (types, tests, audit).
+    if: github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
