@@ -19,7 +19,7 @@ jobs:
       id-token: write
     steps:
       # Branche par défaut uniquement : on ne récupère jamais le code d'une PR ici.
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
