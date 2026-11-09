@@ -76,11 +76,11 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 - `20261102180000_photo_upload_rules.sql` : on ne peut plus écrire n'importe quel nom de fichier dans son dossier. Seuls deux chemins sont acceptés : `<id>/avatar.jpg` dès qu'on a un profil (photo de Profil, même avant d'être rattaché), et `<id>/items/<objet>/<n>.jpg` une fois membre d'une résidence. Testé sur un Postgres 16 local (compte sans profil, profil sans résidence, membre).
 - Photos orphelines (suppression interrompue par une coupure réseau, photo de profil retirée) : pas de nettoyage automatique, Supabase déconseille d'effacer les fichiers en SQL. Requête pour les repérer dans `03-technical.md`, à passer de temps en temps ; on les supprime depuis Storage.
 
-### 8.6 Test d'isolation entre résidences [fait, une migration à appliquer à la base]
+### 8.6 Test d'isolation entre résidences [fait]
 - `pnpm test:db` (`supabase/tests/`) : toutes les migrations sur un Postgres jetable avec une copie minimale de Supabase, puis 75 contrôles avec deux résidences et cinq voisins (deux dans A, un dans B, un profil sans résidence, une invitée sans profil) et un visiteur non connecté. Un voisin de B ne lit, ne modifie ni ne supprime rien de A (profils, e-mails, objets, demandes d'emprunt, « Je cherche », Aide, photos) ; personne ne change sa résidence, sa date d'admission ou l'emprunteur d'une demande ; dans une même résidence, chacun ne modifie que ce qui est à lui. Contrôles positifs aussi : ce qui est permis marche encore.
 - Lancé à chaque pull request (« Vérifier », tâche `database`), donc après chaque migration.
 - **Trouvé** : un voisin sans résidence pouvait créer un objet ou un « Je cherche » en appelant l'API (l'appli ne le propose pas). Personne ne les voyait, mais ils seraient apparus dans sa résidence une fois rattaché. Corrigé par `20261109100000_posts_need_residence.sql`.
-- **Reste** : exécuter cette migration dans Supabase (SQL Editor).
+- Migration appliquée à la base le 9 novembre 2026.
 
 ### 8.7 Comptes et dépendances [code fait, réglages à vérifier]
 - Double authentification sur les comptes Supabase, Vercel, GitHub et Resend. Mot de passe de la base unique et fort **[tableau de bord]**.
