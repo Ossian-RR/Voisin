@@ -47,10 +47,10 @@ Mise à jour du 29 octobre 2026 : le plan d'origine prévoyait Neon et un serveu
 
 Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont reprises point par point en fin de document. Les étapes ci-dessous regroupent ce qui reste à faire, par ordre de priorité.
 
-### 8.1 Cacher l'e-mail des voisins [fait, à appliquer à la base]
+### 8.1 Cacher l'e-mail des voisins [fait]
 - **Problème** : `grant select on public.profiles to authenticated` (première migration) portait sur toute la table, donc aussi sur la colonne `email` ajoutée ensuite. Tout voisin connecté pouvait lire l'e-mail de ses voisins de résidence.
 - **Correction** : `supabase/migrations/20261102100000_hide_profile_email.sql` retire la lecture de toute la table et la rend colonne par colonne, sauf `email`. Testée sur un Postgres 16 local : avant, un voisin lit les e-mails ; après, la lecture est refusée (même avec `select *`), et la lecture, la création et la modification du profil marchent comme avant.
-- **Reste** : exécuter la migration dans Supabase (SQL Editor), puis vérifier dans l'appli que Profil s'affiche et s'enregistre.
+- Appliquée à la base le 9 novembre 2026.
 
 ### 8.2 En-têtes de sécurité et HTTPS [fait]
 - `vercel.json` envoie sur toutes les pages : `Content-Security-Policy`, `Strict-Transport-Security` (2 ans), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (caméra, micro, position, paiement coupés : la photo passe par le sélecteur de fichiers, qui n'en a pas besoin) et `Cross-Origin-Opener-Policy`.
@@ -62,16 +62,16 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 - **Connexion** : vérifier Authentication → Rate Limits (envois d'e-mails par heure, vérifications de lien) **[tableau de bord]**.
 - **E-mails** : vérifier qu'un SMTP personnel (Resend) est réglé dans Authentication → SMTP. L'envoi par défaut de Supabase est limité à quelques e-mails par heure : au-delà, les voisins ne reçoivent plus de lien **[tableau de bord]**.
 - **Robots** [reporté après le pilote, décision du 2 novembre 2026 : les limites actuelles suffisent pour 5 à 10 voisins] : activer le CAPTCHA de Supabase (Cloudflare Turnstile) sur la connexion et sur le formulaire public « Demander Voisin pour ma résidence ». Ce formulaire a déjà une limite en base (1 demande par e-mail et par jour, 30 par heure).
-- **Aide** [fait, à appliquer à la base] : 5 messages par voisin et par jour au plus (`20261102160000_limit_help_messages.sql`, message en français dans `shared/residence.ts`). Chaque message envoie un e-mail à l'admin.
+- **Aide** [fait, appliquée à la base le 9 novembre 2026] : 5 messages par voisin et par jour au plus (`20261102160000_limit_help_messages.sql`, message en français dans `shared/residence.ts`). Chaque message envoie un e-mail à l'admin.
 - **Terminé quand** : une 6e aide dans la journée est refusée avec un message en français, et le CAPTCHA s'affiche sur les deux formulaires publics.
 
-### 8.4 Bornes sur les champs [fait, à appliquer à la base]
+### 8.4 Bornes sur les champs [fait, appliquée à la base le 9 novembre 2026]
 - `20261102170000_field_bounds.sql` : nom de famille de 1 à 60 caractères, description d'objet de 2000 caractères au plus, 5 photos au plus (et une vraie liste). Contraintes `not valid` : vérifiées sur chaque ligne créée ou modifiée, sans faire échouer la migration à cause de lignes plus anciennes.
 - Mêmes bornes dans `shared/profile.ts` (`MAX_LAST_NAME`) et `shared/new-item.ts` (`MAX_DESCRIPTION`, `MAX_PHOTOS`), avec tests ; les champs ont un `maxLength`, donc on ne peut pas taper plus.
 - Déjà bornés avant : titre d'objet (120 en base, 80 dans l'appli), « Je cherche » (500), Aide (2000), demandes de résidence.
 - Testé sur un Postgres 16 local : valeurs trop longues ou trop nombreuses refusées, bornes exactes acceptées.
 
-### 8.5 Photos [fait, à appliquer à la base]
+### 8.5 Photos [fait, appliquée à la base le 9 novembre 2026]
 - Déjà fait : bucket privé, 2 Mo maximum, JPEG, PNG ou WebP seulement (pas de SVG), lecture limitée à sa résidence, liens temporaires ; supprimer un objet supprime ses photos (`useRemoveItem`).
 - `20261102180000_photo_upload_rules.sql` : on ne peut plus écrire n'importe quel nom de fichier dans son dossier. Seuls deux chemins sont acceptés : `<id>/avatar.jpg` dès qu'on a un profil (photo de Profil, même avant d'être rattaché), et `<id>/items/<objet>/<n>.jpg` une fois membre d'une résidence. Testé sur un Postgres 16 local (compte sans profil, profil sans résidence, membre).
 - Photos orphelines (suppression interrompue par une coupure réseau, photo de profil retirée) : pas de nettoyage automatique, Supabase déconseille d'effacer les fichiers en SQL. Requête pour les repérer dans `03-technical.md`, à passer de temps en temps ; on les supprime depuis Storage.
@@ -82,7 +82,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 
 ### 8.7 Comptes et dépendances [à faire]
 - Double authentification sur les comptes Supabase, Vercel, GitHub et Resend. Mot de passe de la base unique et fort **[tableau de bord]**.
-- Vercel : seules les variables `VITE_SUPABASE_URL` et `VITE_SUPABASE_PUBLISHABLE_KEY` sont présentes, jamais la clé secrète ni la clé `service_role` **[tableau de bord]**.
+- Vercel : aucune variable n'est nécessaire (l'URL et la clé publique sont dans `.env`, versionné). Le 9 novembre 2026, l'intégration Supabase de Vercel avait ajouté 16 variables, dont `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_SECRET_KEY`, `SUPABASE_JWT_SECRET` et `POSTGRES_PASSWORD` : jamais envoyées au navigateur (Vite ne publie que `VITE_*`), mais lisibles pendant chaque build. À supprimer toutes, sans désinstaller l'intégration (risque pour la base), puis vérifier qu'elles ne reviennent pas **[tableau de bord]**.
 - Supabase → Authentication → URL Configuration : n'autoriser que l'adresse de production et les adresses de prévisualisation Vercel du projet **[tableau de bord]**.
 - GitHub : activer Dependabot (alertes et mises à jour) et la protection contre l'envoi de secrets (« push protection ») ; ajouter `pnpm audit --prod` à la vérification « Vérifier ».
 - **Terminé quand** : chaque case est cochée et `pnpm audit --prod` ne trouve rien (c'est le cas au 29 octobre 2026).
