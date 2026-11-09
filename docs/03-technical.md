@@ -98,6 +98,8 @@ Chaque pull request est vérifiée par GitHub Actions (`Vérifier`, y compris le
 
 ## Règles
 
+- Ce qui part dans le navigateur (React, bibliothèques importées par `client/`) va dans `dependencies`, les outils de build et de test dans `devDependencies` : `pnpm audit --prod`, lancé par « Vérifier », ne contrôle que les premières.
+
 - Tout texte visible en français.
 - Toute modification du schéma : un nouveau fichier dans `supabase/migrations/`, puis régénérer `shared/database.types.ts`.
 - Toute règle dans `shared/` a son test.

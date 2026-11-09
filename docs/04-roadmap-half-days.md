@@ -82,12 +82,14 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 - **Trouvé** : un voisin sans résidence pouvait créer un objet ou un « Je cherche » en appelant l'API (l'appli ne le propose pas). Personne ne les voyait, mais ils seraient apparus dans sa résidence une fois rattaché. Corrigé par `20261109100000_posts_need_residence.sql`.
 - **Reste** : exécuter cette migration dans Supabase (SQL Editor).
 
-### 8.7 Comptes et dépendances [à faire]
+### 8.7 Comptes et dépendances [code fait, réglages à vérifier]
 - Double authentification sur les comptes Supabase, Vercel, GitHub et Resend. Mot de passe de la base unique et fort **[tableau de bord]**.
 - Vercel : aucune variable n'est nécessaire (l'URL et la clé publique sont dans `.env`, versionné). Le 9 novembre 2026, l'intégration Supabase de Vercel avait ajouté 16 variables, dont `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_SECRET_KEY`, `SUPABASE_JWT_SECRET` et `POSTGRES_PASSWORD` : jamais envoyées au navigateur (Vite ne publie que `VITE_*`), mais lisibles pendant chaque build. À supprimer toutes, sans désinstaller l'intégration (risque pour la base), puis vérifier qu'elles ne reviennent pas **[tableau de bord]**.
 - Supabase → Authentication → URL Configuration : n'autoriser que l'adresse de production et les adresses de prévisualisation Vercel du projet **[tableau de bord]**.
-- GitHub : activer Dependabot (alertes et mises à jour) et la protection contre l'envoi de secrets (« push protection ») ; ajouter `pnpm audit --prod` à la vérification « Vérifier ».
-- **Terminé quand** : chaque case est cochée et `pnpm audit --prod` ne trouve rien (c'est le cas au 29 octobre 2026).
+- GitHub : activer les alertes et les correctifs de sécurité Dependabot et la protection contre l'envoi de secrets (« push protection ») **[tableau de bord]**.
+- [fait, 9 novembre 2026] `pnpm audit --prod` dans « Vérifier ». Les bibliothèques envoyées au navigateur (React, React Router, React Query…) étaient rangées dans `devDependencies`, donc l'audit `--prod` ne les voyait pas : il annonçait « rien » alors que React Router avait une faille grave (XSS par redirection). Elles sont passées dans `dependencies`, et React Router en version 7. Vite, Vitest et `yaml` mis à jour : `pnpm audit` ne trouve plus rien, même dans les outils.
+- [fait] `.github/dependabot.yml` : mises à jour chaque lundi, regroupées (une PR pour l'appli, une pour les outils, une par mois pour les actions GitHub), ce qui évite les conflits entre deux PR Dependabot.
+- **Terminé quand** : chaque case est cochée et `pnpm audit --prod` ne trouve rien.
 
 ---
 
@@ -126,7 +128,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 17 | Alléger les réponses de l'API | Fait | Colonnes choisies une à une dans `shared/db.ts`, et `email` illisible pour les voisins : 8.1. |
 | 18 | Ajouter les en-têtes de sécurité | Fait | `vercel.json` (CSP, HSTS, nosniff, cadres interdits…) : 8.2. |
 | 19 | Forcer HTTPS | Fait | Vercel et Supabase en HTTPS uniquement, HSTS sur 2 ans : 8.2. |
-| 20 | Analyser les dépendances | À faire | `pnpm audit --prod` propre aujourd'hui ; Dependabot et audit en CI : 8.7. |
+| 20 | Analyser les dépendances | Fait | `pnpm audit --prod` à chaque pull request, Dependabot chaque semaine : 8.7. Reste à activer les alertes dans GitHub. |
 
 ## Liste de contrôle : 18 risques à vérifier avant le lancement
 
