@@ -42,7 +42,9 @@ export default function ItemDetail() {
   if (!item) {
     return (
       <div className="p-8 text-center">
-        <p className="font-display text-xl font-extrabold">Objet introuvable</p>
+        <h1 className="font-display text-xl font-extrabold">
+          Objet introuvable
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Son propriétaire l’a peut-être retiré.
         </p>

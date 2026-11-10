@@ -2,8 +2,9 @@ import type { NeighborProfile } from "@shared/api";
 import { CIVILITIES, MAX_LAST_NAME, type ProfileErrors } from "@shared/profile";
 import { cn } from "@/lib/utils";
 
+/** Every form field: a green ring shows where typing goes (keyboard and touch). */
 export const fieldClass =
-  "mt-1 h-12 w-full rounded-xl border bg-background px-3 text-base focus:border-primary focus:outline-none";
+  "mt-1 h-12 w-full rounded-xl border bg-background px-3 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/40";
 
 /** Civility, last name and flat, as on the welcome screen and the Profil page. */
 export function ProfileFields({

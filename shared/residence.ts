@@ -3,7 +3,9 @@ import type { Residence } from "./api";
 /** "Résidence" is always shown, followed by the name when there is one. */
 export function residenceTitle(residence: Pick<Residence, "name">): string {
   const name = residence.name?.trim();
-  return name ? `Résidence ${name}` : "Résidence";
+  if (!name) return "Résidence";
+  // The admin may have typed "Résidence Les Tilleuls": don't say it twice.
+  return /^résidence\b/i.test(name) ? name : `Résidence ${name}`;
 }
 
 /** The "Envoyer" button of the Aide form turns active from this many characters. */

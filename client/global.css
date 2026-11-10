@@ -33,6 +33,8 @@
 
     --apricot: 16 80% 52%;
     --apricot-foreground: 0 0% 100%;
+    /* Darker apricot for small white text (« À donner »): 5.2:1 contrast. */
+    --apricot-strong: 16 80% 42%;
 
     --success: 150 45% 30%;
     --success-soft: 146 40% 91%;
