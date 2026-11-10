@@ -44,6 +44,13 @@ Pour chaque largeur :
 - [ ] Chaque onglet ouvre une page ; une adresse inconnue affiche la page introuvable, avec « Retour aux objets ».
 - [ ] Le bouton retour du téléphone ramène à la page précédente.
 
+## Écran d'accueil
+
+- [ ] iPhone (Safari) : Partager → « Sur l'écran d'accueil ». L'icône est le logo sur fond vert, le nom « Voisin ».
+- [ ] Android (Chrome) : menu ⋮ → « Ajouter à l'écran d'accueil » (ou « Installer l'appli »). L'icône n'est pas coupée dans le rond.
+- [ ] Ouverte depuis l'icône, l'appli s'affiche sans barre d'adresse, et la session reste ouverte.
+- [ ] Un lien de connexion reçu par e-mail ouvre bien l'appli et connecte le voisin.
+
 ## Encoche et barre du bas
 
 - Ouvrir la prévisualisation sur un iPhone avec encoche (ou l'appareil correspondant dans les outils de développement).
