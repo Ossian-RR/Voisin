@@ -26,7 +26,7 @@ export const HELP_MESSAGES_PER_DAY = 5;
 /** French message when an Aide message could not be sent. */
 export function helpErrorMessage(error: { message?: string }): string {
   if (error.message?.includes("too_many_help_messages"))
-    return `Vous avez déjà envoyé ${HELP_MESSAGES_PER_DAY} messages aujourd’hui. Réessayez demain : nous lisons ceux déjà reçus.`;
+    return `Vous avez déjà envoyé ${HELP_MESSAGES_PER_DAY} messages aujourd’hui. Réessayez demain : nous lisons ceux déjà reçus.`;
   return "Vérifiez votre connexion internet, puis réessayez.";
 }
 

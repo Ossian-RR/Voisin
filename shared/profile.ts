@@ -48,7 +48,7 @@ export function validateProfile(profile: NeighborProfile): ProfileErrors {
     errors.location = "Indiquez votre logement.";
   } else if (!isValidLocation(clean.location)) {
     errors.location =
-      "Format attendu : bâtiment-étage-porte, par exemple A-3a.";
+      "Format attendu : bâtiment-étage-porte, par exemple A-3a.";
   }
   return errors;
 }

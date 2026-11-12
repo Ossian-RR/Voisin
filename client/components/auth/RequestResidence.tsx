@@ -67,7 +67,7 @@ export function RequestResidence({
         title="Demande envoyée"
         intro={
           <>
-            Merci ! Nous vous répondrons à{" "}
+            Merci ! Nous vous répondrons à{" "}
             <strong className="text-foreground">{draft.email.trim()}</strong>{" "}
             pour créer votre résidence sur Voisin et inviter vos voisins.
           </>
@@ -83,7 +83,7 @@ export function RequestResidence({
   return (
     <AuthScreen
       title="Voisin pour ma résidence"
-      intro="Votre résidence n’est pas encore sur Voisin ? Écrivez-nous : nous la créons et vous invitons, vous et vos voisins."
+      intro="Votre résidence n’est pas encore sur Voisin ? Écrivez-nous : nous la créons et vous invitons, vous et vos voisins."
     >
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {FIELDS.map(({ key, label, type, multiline }) => {

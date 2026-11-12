@@ -69,8 +69,8 @@ export default function Profile() {
           <p className="font-bold">Rejoignez votre résidence</p>
           <p className="text-sm text-muted-foreground">
             {me.confirmed
-              ? "Votre profil est enregistré. Écrivez-nous depuis l’Aide pour rejoindre la résidence de vos voisins ou la créer : vous verrez ensuite leurs objets."
-              : "1. Complétez vos informations ci-dessous et appuyez sur « Enregistrer ». 2. Écrivez-nous depuis l’Aide pour rejoindre la résidence de vos voisins ou la créer."}
+              ? "Votre profil est enregistré. Écrivez-nous depuis l’Aide pour rejoindre la résidence de vos voisins ou la créer : vous verrez ensuite leurs objets."
+              : "1. Complétez vos informations ci-dessous et appuyez sur « Enregistrer ». 2. Écrivez-nous depuis l’Aide pour rejoindre la résidence de vos voisins ou la créer."}
           </p>
           {me.confirmed && (
             <Link to="/help" className={primaryButton}>
@@ -129,7 +129,7 @@ export default function Profile() {
         </h2>
         {me.profile && !me.confirmed && (
           <p className="text-sm text-muted-foreground">
-            Vérifiez vos informations puis appuyez sur « Enregistrer » : c’est
+            Vérifiez vos informations puis appuyez sur « Enregistrer » : c’est
             nécessaire pour écrire à l’Aide.
           </p>
         )}

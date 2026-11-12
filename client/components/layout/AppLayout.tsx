@@ -76,14 +76,14 @@ export function Onboarding() {
   const me = useMe();
   const step = !me.profileId
     ? {
-        title: "Bienvenue sur Voisin !",
-        text: "Commencez par compléter votre profil : civilité, nom et logement.",
+        title: "Bienvenue sur Voisin !",
+        text: "Commencez par compléter votre profil : civilité, nom et logement.",
         to: "/profile",
         action: "Compléter mon profil",
       }
     : {
         title: "Rejoignez votre résidence",
-        text: "Voisin fonctionne entre voisins d’une même résidence. Écrivez-nous depuis l’Aide pour rejoindre la vôtre ou la créer : nous vous y ajoutons, puis vous voyez les objets de vos voisins.",
+        text: "Voisin fonctionne entre voisins d’une même résidence. Écrivez-nous depuis l’Aide pour rejoindre la vôtre ou la créer : nous vous y ajoutons, puis vous voyez les objets de vos voisins.",
         to: "/help",
         action: "Demander via l’Aide",
       };

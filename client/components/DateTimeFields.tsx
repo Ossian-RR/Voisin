@@ -48,7 +48,7 @@ export function DateTimeFields({
         />
       </label>
       <fieldset>
-        <legend className="text-sm font-bold">à l’heure suivante :</legend>
+        <legend className="text-sm font-bold">à l’heure suivante :</legend>
         <div className="flex gap-2">
           <select
             aria-label="Heure"

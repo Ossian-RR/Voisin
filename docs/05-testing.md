@@ -60,6 +60,7 @@ Pour chaque largeur :
 ## Accessibilité
 
 - [ ] Tout texte visible est en français, y compris les `aria-label` et les messages d'erreur.
+- [ ] Espace insécable (U+00A0) avant « ? », « ! », « : », « ; » et à l'intérieur de « ». Le test `client/lib/typography.spec.ts` le vérifie dans les chaînes ; le texte écrit directement dans le JSX se vérifie à l'œil.
 - [ ] Chaque page a un seul `h1`, et les titres ne sautent pas de niveau.
 - [ ] Les boutons sans texte (icônes) ont un `aria-label`.
 - [ ] Le contour de focus est visible en naviguant au clavier (Tab).

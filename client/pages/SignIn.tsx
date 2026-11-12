@@ -133,7 +133,7 @@ export default function SignIn() {
   if (remembered && !otherAddress) {
     return (
       <AuthScreen
-        title="Bon retour !"
+        title="Bon retour !"
         intro="Recevez un lien par e-mail pour retrouver votre profil et votre résidence."
       >
         <p className="text-sm font-bold">Continuer avec</p>
@@ -173,7 +173,7 @@ export default function SignIn() {
   return (
     <AuthScreen
       title="Connexion"
-      intro="Voisin est réservé aux voisins invités. Indiquez votre adresse e-mail : vous recevrez un lien pour vous connecter, sans mot de passe."
+      intro="Voisin est réservé aux voisins invités. Indiquez votre adresse e-mail : vous recevrez un lien pour vous connecter, sans mot de passe."
     >
       <form onSubmit={handleSubmit} noValidate>
         <label htmlFor="sign-in-email" className="block text-sm font-bold">
@@ -216,7 +216,7 @@ export default function SignIn() {
         </button>
       </form>
       <p className="mt-8 text-center text-sm text-muted-foreground">
-        Votre résidence n’est pas encore sur Voisin ?
+        Votre résidence n’est pas encore sur Voisin ?
       </p>
       <button
         type="button"

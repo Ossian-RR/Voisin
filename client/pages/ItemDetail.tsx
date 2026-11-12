@@ -76,7 +76,7 @@ export default function ItemDetail() {
   const handleRemove = () => {
     if (
       !window.confirm(
-        `Retirer « ${item.title} » ? Vos voisins ne le verront plus.`,
+        `Retirer « ${item.title} » ? Vos voisins ne le verront plus.`,
       )
     )
       return;
@@ -119,7 +119,7 @@ export default function ItemDetail() {
         {describeLocation(item.location)})
       </p>
       <p>
-        {item.description} <strong>État : {item.condition}.</strong>
+        {item.description} <strong>État : {item.condition}.</strong>
       </p>
       {mine ? (
         <button

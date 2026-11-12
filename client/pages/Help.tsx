@@ -49,7 +49,7 @@ export default function Help() {
         <PageHeader title="Aide" className="px-0" />
         <p className={card}>
           Pour écrire à l’Aide, vérifiez d’abord vos informations dans votre
-          profil puis appuyez sur « Enregistrer ».
+          profil puis appuyez sur « Enregistrer ».
         </p>
         <Link to="/profile" className={primaryButton}>
           Aller à mon profil
