@@ -35,11 +35,15 @@ Mise à jour du 29 octobre 2026 : le plan d'origine prévoyait Neon et un serveu
 - Toute règle de `shared/` a son `*.spec.ts`. `pnpm test` tourne à chaque pull request (GitHub Actions « Vérifier »).
 - `05-testing.md` à jour (9 novembre 2026) : commandes (`typecheck`, `test`, `test:db`, `build`, `audit`), ce que couvrent les tests, contrôles à la main avec les vrais libellés de l'appli.
 
-### 7.2 Contrôles par largeur [à faire]
-- Liste de `05-testing.md` à 360 x 800, 375 et 430. Une capture par défaut trouvé.
+### 7.2 Contrôles par largeur [fait]
+- 10 novembre 2026 : 17 écrans (accueil, 4 fiches d'objets dont un don, un objet emprunté et un objet à soi, Je cherche, Je prête, Demandes, Profil, Aide, pages introuvables, nouveau voisin, voisin sans résidence, connexion, demande de résidence) à 360, 375 et 430 px, dans Chromium avec une fausse base (titres et adresse longs, demandes reçues et envoyées). Aucun défilement horizontal, barre d'onglets entière, champs à 16 px (pas de zoom sur iOS), titres longs coupés à deux lignes.
+- **Trouvé et corrigé** : « Résidence Résidence Les Jardins… » dans l'en-tête et sur Profil quand le nom saisi par l'admin commence déjà par « Résidence » (`shared/residence.ts`, avec tests).
+- **Noté, pas corrigé** : pas d'espace insécable devant « ? », « ! » et « : » (typographie française), donc un « ? » peut se retrouver seul en début de ligne (vu sur « Demander Voisin pour ma résidence »). Une quinzaine de textes à reprendre un par un.
 
-### 7.3 Accessibilité [à faire]
-- Libellés en français, focus visibles, ordre des titres, boutons-icônes avec `aria-label`. VoiceOver ou TalkBack sur l'accueil et le parcours d'emprunt.
+### 7.3 Accessibilité [fait, essai lecteur d'écran à faire]
+- Contrôles automatiques sur les mêmes écrans : un seul `h1` par page et pas de saut de niveau, tous les boutons et liens ont un nom, tous les champs ont une étiquette, images avec `alt`, contraste WCAG AA, contour visible en naviguant au clavier, tout texte visible en français, titre d'onglet par page.
+- **Trouvé et corrigé** : badge « À donner » trop peu contrasté (3,6:1, il faut 4,5:1) : fond orange foncé réservé au badge (5,2:1), l'orange du logo ne change pas ; aucun contour au focus sur les champs de formulaire (seule la bordure changeait) : anneau vert comme sur l'écran de connexion ; « Objet introuvable » n'était pas un titre ; sur l'accueil, les titres des cartes (`h3`) n'avaient pas de `h2` au-dessus.
+- **Reste** : VoiceOver (iPhone) ou TalkBack (Android) sur l'accueil et le parcours d'emprunt, à faire sur un vrai téléphone.
 
 ---
 

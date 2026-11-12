@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { helpErrorMessage } from "./residence";
+import { helpErrorMessage, residenceTitle } from "./residence";
 
 describe("helpErrorMessage", () => {
   it("explains the daily limit set by the database", () => {
@@ -15,5 +15,33 @@ describe("helpErrorMessage", () => {
       /connexion/,
     );
     expect(helpErrorMessage({})).toMatch(/connexion/);
+  });
+});
+
+describe("residenceTitle", () => {
+  it("puts « Résidence » before the name", () => {
+    expect(residenceTitle({ name: "Les Tilleuls" })).toBe(
+      "Résidence Les Tilleuls",
+    );
+  });
+
+  it("says « Résidence » alone without a name", () => {
+    expect(residenceTitle({})).toBe("Résidence");
+    expect(residenceTitle({ name: "  " })).toBe("Résidence");
+  });
+
+  it("does not repeat « Résidence » when the name starts with it", () => {
+    expect(residenceTitle({ name: "Résidence Les Tilleuls" })).toBe(
+      "Résidence Les Tilleuls",
+    );
+    expect(residenceTitle({ name: "RÉSIDENCE DU PARC" })).toBe(
+      "RÉSIDENCE DU PARC",
+    );
+  });
+
+  it("keeps a name that only contains the word later", () => {
+    expect(residenceTitle({ name: "Parc Résidence" })).toBe(
+      "Résidence Parc Résidence",
+    );
   });
 });

@@ -51,6 +51,7 @@ export default {
         apricot: {
           DEFAULT: "hsl(var(--apricot))",
           foreground: "hsl(var(--apricot-foreground))",
+          strong: "hsl(var(--apricot-strong))",
         },
         success: {
           DEFAULT: "hsl(var(--success))",

@@ -38,7 +38,11 @@ export function StatusBadge({
   if (kind === "gift" && status === "available") {
     return (
       <span
-        className={cn(base, "bg-apricot text-apricot-foreground", className)}
+        className={cn(
+          base,
+          "bg-apricot-strong text-apricot-foreground",
+          className,
+        )}
       >
         <Gift className="size-3" aria-hidden />À donner
       </span>
