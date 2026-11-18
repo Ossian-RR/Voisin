@@ -69,7 +69,7 @@ Pour chaque largeur :
 ## Performance
 
 - `pnpm build` : noter la taille du fichier JavaScript principal (Vite l'affiche). Viser moins de 200 Ko compressé.
-- Lighthouse dans Chrome sur `voisin-mu.vercel.app`, en mode mobile : viser plus de 85 en performance.
+- Lighthouse dans Chrome sur `voisin.ossianlead.fr`, en mode mobile : viser plus de 85 en performance.
 
 ## Pilote
 

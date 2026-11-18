@@ -2,7 +2,7 @@
 
 ## Pile
 
-React 18 + TypeScript + Vite, Tailwind, React Router, React Query (cache des données), Supabase (base Postgres, connexion par lien e-mail, stockage des photos), Vercel (hébergement + Analytics). Tests : Vitest. pnpm.
+React 18 + TypeScript + Vite, Tailwind, React Router, React Query (cache des données), Supabase (base Postgres, connexion par lien e-mail, stockage des photos), Vercel (hébergement + Analytics, sur `voisin.ossianlead.fr`). Tests : Vitest. pnpm.
 
 ## Dossiers
 
@@ -93,6 +93,10 @@ pnpm build      # dist/spa, servi par Vercel
 ```
 
 `pnpm test:db` crée une base jetable `voisin_test` sur un Postgres 16 ordinaire (jamais celui de Supabase), y ajoute une copie minimale de Supabase (`supabase/tests/supabase-stub.sql` : rôles, `auth.uid()`, stockage), applique toutes les migrations puis `supabase/tests/isolation.sql` : deux résidences, cinq voisins, 75 contrôles (lire, modifier, supprimer chez les autres, changer de résidence, visiteur non connecté). Connexion par les variables habituelles, par exemple `PGHOST=localhost PGUSER=postgres PGPASSWORD=postgres pnpm test:db`. Toute nouvelle table ou règle de sécurité ajoute ses contrôles dans `isolation.sql`.
+
+## Domaine
+
+L'appli est servie sur `https://voisin.ossianlead.fr` : CNAME `voisin` dans la zone DNS OVH de `ossianlead.fr`, déclaré dans Vercel → Settings → Domains. Les enregistrements Resend (`send.voisin`, `resend._domainkey.voisin`) sont à côté : ne pas les toucher. Si le domaine change, mettre à jour Supabase → Authentication → URL Configuration (Site URL et Redirect URLs), sinon le lien de connexion ramène sur l'ancienne adresse. Le code n'a rien à changer : le lien de connexion est construit à partir de l'adresse ouverte (`client/pages/SignIn.tsx`).
 
 Chaque pull request est vérifiée par GitHub Actions (`Vérifier`, y compris le test d'isolation) et reçoit un lien de prévisualisation Vercel. Un merge dans `main` met l'appli en ligne.
 
