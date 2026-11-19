@@ -27,9 +27,9 @@ supabase/migrations/      # Le schéma, migration par migration
 |---|---|
 | `residences` | Nom (facultatif) et adresse |
 | `profiles` | Un par voisin : civilité, nom, logement, photo, date d'admission, **résidence**, **e-mail** de connexion (rempli et tenu à jour par la base, visible seulement dans le tableau de bord) |
-| `items` | Objets prêtés ou donnés ; photos dans le bucket privé `photos` |
+| `items` | Objets prêtés ou donnés, avec la **résidence où ils ont été publiés** (remplie par la base) ; photos dans le bucket privé `photos` |
 | `borrow_requests` | Demandes d'emprunt : en attente, acceptée, refusée, rendu |
-| `wanted_requests` | « Je cherche… » |
+| `wanted_requests` | « Je cherche… », avec la résidence où ils ont été publiés |
 | `help_messages` | Messages envoyés depuis Profil → Aide ; e-mail automatique à l'administrateur |
 | `residence_requests` | Demandes de nouvelles résidences (formulaire public) ; lisibles seulement dans le tableau de bord |
 
@@ -54,6 +54,8 @@ returning id;
 ```sql
 select private.add_to_residence('<id de la résidence>', array['marie@exemple.fr', 'paul@exemple.fr']);
 ```
+
+**Une nouvelle résidence est vide.** Un objet ou un « Je cherche » reste dans la résidence où il a été publié, et n'est visible que tant que son auteur y habite. Rattacher à une nouvelle résidence un voisin qui était déjà ailleurs le **retire** de l'ancienne (une seule résidence par compte) : ses objets et recherches restent là-bas, cachés de tous, sans être supprimés ; ils réapparaissent s'il y revient (`20261119100000_posts_stay_in_their_residence.sql`).
 
 Le résultat indique combien de comptes ont été trouvés : s'il est plus petit que le nombre d'adresses, une adresse est mal écrite ou n'a pas encore été invitée.
 
@@ -92,7 +94,7 @@ pnpm typecheck
 pnpm build      # dist/spa, servi par Vercel
 ```
 
-`pnpm test:db` crée une base jetable `voisin_test` sur un Postgres 16 ordinaire (jamais celui de Supabase), y ajoute une copie minimale de Supabase (`supabase/tests/supabase-stub.sql` : rôles, `auth.uid()`, stockage), applique toutes les migrations puis `supabase/tests/isolation.sql` : deux résidences, cinq voisins, 75 contrôles (lire, modifier, supprimer chez les autres, changer de résidence, visiteur non connecté). Connexion par les variables habituelles, par exemple `PGHOST=localhost PGUSER=postgres PGPASSWORD=postgres pnpm test:db`. Toute nouvelle table ou règle de sécurité ajoute ses contrôles dans `isolation.sql`.
+`pnpm test:db` crée une base jetable `voisin_test` sur un Postgres 16 ordinaire (jamais celui de Supabase), y ajoute une copie minimale de Supabase (`supabase/tests/supabase-stub.sql` : rôles, `auth.uid()`, stockage), applique toutes les migrations puis `supabase/tests/isolation.sql` : deux résidences, cinq voisins, 83 contrôles (lire, modifier, supprimer chez les autres, changer de résidence, nouvelle résidence vide après un déménagement, visiteur non connecté). Connexion par les variables habituelles, par exemple `PGHOST=localhost PGUSER=postgres PGPASSWORD=postgres pnpm test:db`. Toute nouvelle table ou règle de sécurité ajoute ses contrôles dans `isolation.sql`.
 
 ## Domaine
 

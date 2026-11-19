@@ -103,6 +103,7 @@ export type Database = {
           kind: string;
           owner_id: string;
           photos: Json;
+          residence_id: string | null;
           status: string;
           title: string;
         };
@@ -115,6 +116,7 @@ export type Database = {
           kind?: string;
           owner_id: string;
           photos?: Json;
+          residence_id?: string | null;
           status?: string;
           title: string;
         };
@@ -127,6 +129,7 @@ export type Database = {
           kind?: string;
           owner_id?: string;
           photos?: Json;
+          residence_id?: string | null;
           status?: string;
           title?: string;
         };
@@ -136,6 +139,13 @@ export type Database = {
             columns: ["owner_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "items_residence_id_fkey";
+            columns: ["residence_id"];
+            isOneToOne: false;
+            referencedRelation: "residences";
             referencedColumns: ["id"];
           },
         ];
@@ -246,6 +256,7 @@ export type Database = {
           author_id: string;
           created_at: string;
           id: string;
+          residence_id: string | null;
           text: string;
           wanted_at: string | null;
           wanted_on: string | null;
@@ -254,6 +265,7 @@ export type Database = {
           author_id: string;
           created_at?: string;
           id?: string;
+          residence_id?: string | null;
           text: string;
           wanted_at?: string | null;
           wanted_on?: string | null;
@@ -262,6 +274,7 @@ export type Database = {
           author_id?: string;
           created_at?: string;
           id?: string;
+          residence_id?: string | null;
           text?: string;
           wanted_at?: string | null;
           wanted_on?: string | null;
@@ -272,6 +285,13 @@ export type Database = {
             columns: ["author_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wanted_requests_residence_id_fkey";
+            columns: ["residence_id"];
+            isOneToOne: false;
+            referencedRelation: "residences";
             referencedColumns: ["id"];
           },
         ];

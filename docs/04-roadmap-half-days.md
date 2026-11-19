@@ -81,10 +81,11 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 - Photos orphelines (suppression interrompue par une coupure réseau, photo de profil retirée) : pas de nettoyage automatique, Supabase déconseille d'effacer les fichiers en SQL. Requête pour les repérer dans `03-technical.md`, à passer de temps en temps ; on les supprime depuis Storage.
 
 ### 8.6 Test d'isolation entre résidences [fait]
-- `pnpm test:db` (`supabase/tests/`) : toutes les migrations sur un Postgres jetable avec une copie minimale de Supabase, puis 75 contrôles avec deux résidences et cinq voisins (deux dans A, un dans B, un profil sans résidence, une invitée sans profil) et un visiteur non connecté. Un voisin de B ne lit, ne modifie ni ne supprime rien de A (profils, e-mails, objets, demandes d'emprunt, « Je cherche », Aide, photos) ; personne ne change sa résidence, sa date d'admission ou l'emprunteur d'une demande ; dans une même résidence, chacun ne modifie que ce qui est à lui. Contrôles positifs aussi : ce qui est permis marche encore.
+- `pnpm test:db` (`supabase/tests/`) : toutes les migrations sur un Postgres jetable avec une copie minimale de Supabase, puis 83 contrôles avec deux résidences et cinq voisins (deux dans A, un dans B, un profil sans résidence, une invitée sans profil) et un visiteur non connecté. Un voisin de B ne lit, ne modifie ni ne supprime rien de A (profils, e-mails, objets, demandes d'emprunt, « Je cherche », Aide, photos) ; personne ne change sa résidence, sa date d'admission ou l'emprunteur d'une demande ; dans une même résidence, chacun ne modifie que ce qui est à lui. Contrôles positifs aussi : ce qui est permis marche encore.
 - Lancé à chaque pull request (« Vérifier », tâche `database`), donc après chaque migration.
 - **Trouvé** : un voisin sans résidence pouvait créer un objet ou un « Je cherche » en appelant l'API (l'appli ne le propose pas). Personne ne les voyait, mais ils seraient apparus dans sa résidence une fois rattaché. Corrigé par `20261109100000_posts_need_residence.sql`.
 - Migration appliquée à la base le 9 novembre 2026.
+- **Trouvé le 19 novembre 2026** : une résidence neuve (Auber) affichait des objets. La visibilité suivait la résidence *actuelle* de l'auteur : un voisin rattaché à une nouvelle résidence y emmenait ses objets et ses « Je cherche ». Corrigé par `20261119100000_posts_stay_in_their_residence.sql` : chaque objet et « Je cherche » garde la résidence où il a été publié (remplie par la base, non modifiable) ; ceux d'un voisin parti restent cachés, sans être supprimés. Contrôles ajoutés dans `isolation.sql` (83 au total). **Migration à appliquer à la base [tableau de bord]**.
 
 ### 8.7 Comptes et dépendances [code fait, réglages à vérifier]
 - Double authentification sur les comptes Supabase, Vercel, GitHub et Resend. Mot de passe de la base unique et fort **[tableau de bord]**.
@@ -154,7 +155,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 | 12 | Identifiants par défaut | À vérifier | Double authentification et mots de passe des comptes : 8.7. |
 | 13 | Webhooks non signés | Sans objet | Aucun webhook entrant. |
 | 14 | Paiement vérifié seulement dans l'appli | Sans objet | Pas de paiement. Équivalent ici : les règles d'emprunt (objet disponible, pas le sien) sont vérifiées par la base. |
-| 15 | Accès aux objets d'un autre (IDOR / BOLA) | Fait | RLS par résidence et par propriétaire, vérifiée par 75 contrôles à chaque pull request : 8.6. |
+| 15 | Accès aux objets d'un autre (IDOR / BOLA) | Fait | RLS par résidence et par propriétaire, vérifiée par 83 contrôles à chaque pull request : 8.6. |
 | 16 | Saisies acceptées sans contrôle | Fait | Bornes en base sur chaque champ libre : 8.4. |
 | 17 | Journaux et détails d'erreur exposés | Fait | Les erreurs Supabase sont traduites en messages français, sans détail technique. |
 | 18 | Cartes de source (source maps) exposées | Fait | Le build n'en produit pas (vérifié : aucun fichier `.map` dans `dist/`). |

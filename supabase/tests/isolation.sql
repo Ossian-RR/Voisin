@@ -205,6 +205,9 @@ select test.rows('accepte la demande d''Arthur', $$update public.borrow_requests
 select test.refused('ne change pas l''emprunteur', $$update public.borrow_requests set borrower_id = '00000000-0000-0000-0000-000000000a11' where id = '00000000-0000-0000-0000-000000000a31'$$);
 select test.refused('ne change pas l''objet demandé', $$update public.borrow_requests set item_id = '00000000-0000-0000-0000-000000000b21' where id = '00000000-0000-0000-0000-000000000a31'$$);
 select test.refused('ne demande pas l''échelle de Bruno (B)', $$insert into public.borrow_requests (item_id, borrower_id) values ('00000000-0000-0000-0000-000000000b21', '00000000-0000-0000-0000-000000000a11')$$);
+select test.rows('publie un objet dans A, même en demandant B', $$with i as (insert into public.items (owner_id, title, condition, residence_id) values ('00000000-0000-0000-0000-000000000a11', 'Scie', 'Neuf', '00000000-0000-0000-0000-0000000000b0') returning residence_id) select 1 from i where residence_id = '00000000-0000-0000-0000-0000000000a0'$$, 1);
+select test.rows('ne déplace pas sa perceuse dans B', $$with i as (update public.items set residence_id = '00000000-0000-0000-0000-0000000000b0' where id = '00000000-0000-0000-0000-000000000a21' returning residence_id) select 1 from i where residence_id = '00000000-0000-0000-0000-0000000000b0'$$, 0);
+select test.rows('ne déplace pas son « Je cherche » dans B', $$with w as (update public.wanted_requests set residence_id = '00000000-0000-0000-0000-0000000000b0' where id = '00000000-0000-0000-0000-000000000a41' returning residence_id) select 1 from w where residence_id = '00000000-0000-0000-0000-0000000000b0'$$, 0);
 
 
 -- Nina: a profile but no residence yet -------------------------------------------
@@ -231,6 +234,27 @@ set role authenticated;
 select test.rows('crée son profil, rattaché à B', $$with p as (insert into public.profiles (user_id, civility, last_name, location) values ('00000000-0000-0000-0000-0000000000b2', 'Madame', 'Zoé', 'B-2a') returning residence_id) select 1 from p where residence_id = '00000000-0000-0000-0000-0000000000b0'$$, 1);
 select test.refused('ne crée pas son profil dans A', $$insert into public.profiles (user_id, civility, last_name, location, residence_id) values ('00000000-0000-0000-0000-0000000000b2', 'Madame', 'Zoé', 'B-2a', '00000000-0000-0000-0000-0000000000a0')$$);
 select test.refused('ne crée pas de profil pour quelqu''un d''autre', $$insert into public.profiles (user_id, civility, last_name, location) values ('00000000-0000-0000-0000-0000000000a2', 'Madame', 'Zoé', 'B-2a')$$);
+
+
+-- Bruno moves to a new residence C: it starts empty --------------------------------
+-- The admin attaches him with private.add_to_residence (kept: later checks
+-- don't depend on Bruno). His ladder and his search stay in B, hidden.
+reset role;
+insert into public.residences (id, name, address) values
+  ('00000000-0000-0000-0000-0000000000d0', 'Résidence C', '4 rue C');
+select private.add_to_residence('00000000-0000-0000-0000-0000000000d0', array['bruno@exemple.fr']);
+select test.login('bruno');
+set role authenticated;
+
+select test.rows('nouvelle résidence C : aucun objet', $$select 1 from public.items$$, 0);
+select test.rows('nouvelle résidence C : aucun « Je cherche »', $$select 1 from public.wanted_requests$$, 0);
+select test.rows('voit la résidence C', $$select 1 from public.residences where id = '00000000-0000-0000-0000-0000000000d0'$$, 1);
+select test.rows('publie un objet dans C', $$with i as (insert into public.items (owner_id, title, condition) values ('00000000-0000-0000-0000-000000000b11', 'Vélo', 'Neuf') returning residence_id) select 1 from i where residence_id = '00000000-0000-0000-0000-0000000000d0'$$, 1);
+
+reset role;
+select test.login('alice');
+set role authenticated;
+select test.rows('A ne voit pas les objets de Bruno parti dans C', $$select 1 from public.items where owner_id = '00000000-0000-0000-0000-000000000b11'$$, 0);
 
 
 -- Visitor not signed in ------------------------------------------------------------

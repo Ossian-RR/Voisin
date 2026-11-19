@@ -8,7 +8,7 @@ Lancés par GitHub Actions (« Vérifier ») à chaque pull request et à chaque
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | `pnpm typecheck`    | Les types TypeScript de tout le projet.                                                                                                      |
 | `pnpm test`         | Les règles de `shared/` (Vitest), un fichier `*.spec.ts` à côté de chaque fichier.                                                           |
-| `pnpm test:db`      | L'isolation entre résidences : toutes les migrations sur un Postgres jetable, puis 75 contrôles (`supabase/tests/`, voir `03-technical.md`). |
+| `pnpm test:db`      | L'isolation entre résidences : toutes les migrations sur un Postgres jetable, puis 83 contrôles (`supabase/tests/`, voir `03-technical.md`). |
 | `pnpm build`        | Le build de production (`dist/spa`).                                                                                                         |
 | `pnpm audit --prod` | Les failles connues dans ce qui part dans le navigateur (`dependencies`).                                                                    |
 
