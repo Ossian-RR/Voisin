@@ -100,7 +100,7 @@ Les deux listes de contrôle (« 20 choses à faire » et « 18 risques ») sont
 ## Phase 9 : pilote et lancement (1 jour)
 
 ### 9.1 Mise en ligne [fait, à vérifier sur téléphone]
-- Vercel déploie `main` sur `https://voisin.ossianlead.fr` (CNAME `voisin` dans la zone DNS OVH de `ossianlead.fr`, 18 novembre 2026) ; chaque pull request a sa prévisualisation. Reste : Supabase → URL Configuration avec la nouvelle adresse, puis redirection de `voisin-mu.vercel.app` **[tableau de bord]**.
+- Vercel déploie `main` sur `https://voisin.ossianlead.fr` (CNAME `voisin` dans la zone DNS OVH de `ossianlead.fr`, 18 novembre 2026) ; chaque pull request a sa prévisualisation. Supabase → Authentication → URL Configuration pointe sur cette adresse, et `voisin-mu.vercel.app` redirige (308) vers elle (19 novembre 2026).
 - [fait, 9 novembre 2026] Ajout à l'écran d'accueil : `public/manifest.webmanifest` (nom « Voisin », plein écran sans barre d'adresse, fond vert de l'écran d'accueil), icônes dans `public/icons/` tirées du logo (192 et 512 px, une version « maskable » pour Android qui découpe en rond, et `apple-touch-icon.png` pour iOS). Chromium lit le manifeste sans erreur et juge l'appli installable.
 - Pas de « service worker » (fonctionnement hors ligne) : inutile pour s'installer aujourd'hui, et il compliquerait les mises à jour et la session Supabase.
 - **Reste** : l'essai sur un vrai iPhone et un vrai Android (voir `05-testing.md`) ; phase 8 terminée avant d'inviter des voisins.
